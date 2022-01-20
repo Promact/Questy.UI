@@ -1,0 +1,43 @@
+﻿{
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+  },
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "core-js/es7/reflect": [ "../node_modules/core-js/proposals/reflect-metadata" ],
+      "core-js/es6/*": [ "../node_modules/core-js/es/*" ]
+    },
+    "target": "ES2015",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [ "es2018", "dom" ],
+    "noImplicitAny": false,
+    "declaration": false,
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "strict": true,
+    "plugins": [
+      {
+        "name": "typescript-tslint-plugin",
+        "configFile": "../tslint.json"
+      }
+    ],
+    "skipLibCheck": true
+  },
+  "compileOnSave": false  
+}
