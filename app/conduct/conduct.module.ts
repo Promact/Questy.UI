@@ -16,6 +16,7 @@ import { TestService } from "../tests/tests.service";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { SharedComponentsModule } from "../shared/shared-components.module";
 import { ConnectionService } from "../core/connection.service";
+import { FormsModule } from "@angular/forms";
 
 @NgModule({
   bootstrap: [ConductComponent],
@@ -24,6 +25,7 @@ import { ConnectionService } from "../core/connection.service";
     BrowserModule,
     conductRouting,
     CoreModule,
+    FormsModule,
     BrowserAnimationsModule,
   ],
   providers: [ConductService, ReportService, TestService, ConnectionService],

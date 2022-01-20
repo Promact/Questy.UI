@@ -3,6 +3,8 @@ import { TestAttendees } from "./register.model";
 import { ConductService } from "../conduct.service";
 import { Router } from "@angular/router";
 import { ConnectionService } from "../../core/connection.service";
+import { SessionData } from "../session.model";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "register",
@@ -10,7 +12,8 @@ import { ConnectionService } from "../../core/connection.service";
 })
 export class RegisterComponent {
   loader: boolean;
-  isErrorMessage: boolean;
+  isErrorMessage: boolean | undefined;
+  testAttendees: TestAttendees = {} as TestAttendees;
 
   constructor(
     private conductService: ConductService,
@@ -18,15 +21,17 @@ export class RegisterComponent {
     private connectionService: ConnectionService
   ) {
     this.loader = true;
-    this.conductService.getSessionPath().subscribe(
-      (path) => {
-        if (path) this.router.navigate([path.path], { replaceUrl: true });
+    this.conductService.getSessionPath().subscribe({
+      next: async (path: SessionData) => {
+        if (path) await this.router.navigate([path.path], { replaceUrl: true });
         this.loader = false;
       },
-      (err) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      error: (err: HttpErrorResponse) => {
         this.loader = false;
-      }
-    );
+        this.isErrorMessage = true;
+      },
+    });
 
     this.connectionService.startConnection();
   }
@@ -40,25 +45,24 @@ export class RegisterComponent {
       registrationUrl.indexOf("/conduct/") + 9,
       registrationUrl.indexOf("/register")
     );
-    let testAttendees: TestAttendees;
     this.conductService
-      .registerTestAttendee(magicString, testAttendees)
-      .subscribe(
-        (response) => {
+      .registerTestAttendee(magicString, this.testAttendees)
+      .subscribe({
+        next: async (response) => {
           if (response) {
             this.connectionService.registerAttendee(response.id);
             this.connectionService.sendReport(response);
             this.isErrorMessage = false;
             this.loader = false;
-            this.router.navigate(["instructions"], { replaceUrl: true });
+            await this.router.navigate(["instructions"], { replaceUrl: true });
           }
         },
-        (err) => {
+        error: (err: HttpErrorResponse) => {
           if (err.status === 404) {
             this.isErrorMessage = true;
             this.loader = false;
           }
-        }
-      );
+        },
+      });
   }
 }
