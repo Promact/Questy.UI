@@ -1,50 +1,17 @@
-import {
-  throwError as observableThrowError,
-  of as observableOf,
-  BehaviorSubject,
-  Observable,
-  Subscription,
-} from "rxjs";
+import { throwError as observableThrowError, of as observableOf } from "rxjs";
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { BrowserModule, By } from "@angular/platform-browser";
-import { FormsModule, FormGroup } from "@angular/forms";
-import { MatSnackBar, MatSnackBarRef } from "@angular/material/snack-bar";
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from "@angular/platform-browser-dynamic/testing";
-import { RouterModule, Router, ActivatedRoute } from "@angular/router";
-import { QuestionsService } from "../../questions/questions.service";
-import { inject } from "@angular/core/testing";
-import { TestQuestion } from "../../tests/tests.model";
-import { testsRouting } from "../../tests/tests.routing";
+import { BrowserModule } from "@angular/platform-browser";
+import { FormsModule } from "@angular/forms";
+import { BrowserDynamicTestingModule } from "@angular/platform-browser-dynamic/testing";
+import { RouterModule, Router } from "@angular/router";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpService } from "../../core/http.service";
-import { MockTestData } from "../../Mock_Data/test_data.mock";
-import {
-  Component,
-  OnInit,
-  ChangeDetectorRef,
-  ViewChild,
-  AfterViewInit,
-  Input,
-  DebugElement,
-} from "@angular/core";
-import { Location, APP_BASE_HREF } from "@angular/common";
-import { Test } from "../../tests/tests.model";
+import { APP_BASE_HREF } from "@angular/common";
 import { TestPreviewComponent } from "../../tests/test-preview/test-preview.compponent";
-import { TestQuestions } from "../test_conduct.model";
-import { TestOrder } from "../../tests/enum-testorder";
-import { SingleMultipleAnswerQuestionOption } from "../../questions/single-multiple-answer-question-option.model";
 import { ConductService } from "../conduct.service";
 import { QuestionStatus } from "../question_status.enum";
-import { QuestionType } from "../../questions/enum-questiontype";
-import { QuestionBase } from "../../questions/question";
-import { TestAttendee } from "../test_attendee.model";
-import { TestAnswer } from "../test_answer.model";
-import { TestStatus } from "../teststatus.enum";
 import { TestsProgrammingGuideDialogComponent } from "./tests-programming-guide-dialog.component";
-import { AceEditorComponent } from "ng2-ace-editor";
+import { AceEditorComponent } from "ngx-ace-editor-wrapper";
 import "brace";
 import "brace/theme/cobalt";
 import "brace/theme/monokai";
@@ -52,33 +19,28 @@ import "brace/theme/eclipse";
 import "brace/theme/solarized_light";
 import "brace/mode/java";
 import "brace/mode/c_cpp";
-import { TestLogs } from "../../reports/testlogs.model";
-import { AllowTestResume } from "../../tests/enum-allowtestresume";
-import { CodeResponse } from "../code.response.model";
-declare let screenfull: any;
+import screenfull from "screenfull";
 declare let alea: any;
 import { TestService } from "../../tests/tests.service";
 import { PageNotFoundComponent } from "../../page-not-found/page-not-found.component";
 import { TestComponent } from "./test.component";
-import { DifficultyLevel } from "../../questions/enum-difficultylevel";
 import { PopoverModule } from "ngx-bootstrap/popover";
 import { ClipboardModule } from "ngx-clipboard";
-import { ChartsModule } from "ng2-charts";
+import { NgChartsModule } from "ng2-charts";
 import {
   FakeTest,
-  FakeAttendee,
   FakeTestQuestions,
   FakeTestLogs,
-  FakeCodeResponse,
   FakeResumeData,
   FakeBundleData,
 } from "../../Mock_Data/conduct_data.mock";
 import { ConnectionService } from "../../core/connection.service";
 import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
-import { OverlayRef } from "@angular/cdk/overlay";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { HttpClientModule } from "@angular/common/http";
+import { TestQuestion } from "app/tests/tests.model";
+import { TestQuestions } from "../test_conduct.model";
 
 class MockRouter {
   navigate() {
@@ -119,7 +81,7 @@ describe("Test Component", () => {
   }
 
   beforeEach(
-    waitForAsync(() => {
+    waitForAsync(async () => {
       TestBed.overrideModule(BrowserDynamicTestingModule, {
         set: {
           entryComponents: [
@@ -132,7 +94,7 @@ describe("Test Component", () => {
         },
       });
 
-      TestBed.configureTestingModule({
+      await TestBed.configureTestingModule({
         declarations: [
           TestComponent,
           PageNotFoundComponent,
@@ -161,7 +123,7 @@ describe("Test Component", () => {
           ClipboardModule,
           MatExpansionModule,
           MatDialogModule,
-          ChartsModule,
+          NgChartsModule,
         ],
       }).compileComponents();
     })
@@ -196,15 +158,17 @@ describe("Test Component", () => {
   });
 
   it("should resume test", () => {
-    spyOn(ConductService.prototype, "getAnswer").and.callFake(() => {
-      return observableOf(FakeResumeData);
-    });
+    spyOn(ConductService.prototype, "getAnswer").and.callFake(() =>
+      observableOf(FakeResumeData)
+    );
     spyOn(TestComponent.prototype, "navigateToQuestionIndex").and.callFake(
       () => {
         return;
       }
     );
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.resumeTest();
     expect(testComponent.isInitializing).toBe(false);
   });
@@ -218,18 +182,18 @@ describe("Test Component", () => {
         return;
       }
     );
-    spyOn(ConductService.prototype, "setElapsedTime").and.callFake(() => {
-      return observableOf("OK");
-    });
+    spyOn(ConductService.prototype, "setElapsedTime").and.callFake(() =>
+      observableOf(100)
+    );
 
     testComponent.resumeTest();
     expect(testComponent.isInitializing).toBe(false);
   });
 
   it("should get Test bundle", () => {
-    spyOn(ConductService.prototype, "getTestBundle").and.callFake(() => {
-      return observableOf(FakeBundleData);
-    });
+    spyOn(ConductService.prototype, "getTestBundle").and.callFake(() =>
+      observableOf(FakeBundleData)
+    );
 
     testComponent.getTestBundle("");
     expect(testComponent.testQuestions.length).toBe(2);

@@ -22,7 +22,7 @@ export class ConductService {
    * @param magicString-It will contain test link
    * @param testAttendee-This model object contain test attendee credential which are first name, last name, email, roll number, contact number.
    */
-  registerTestAttendee(magicString: any, testAttendee: any) {
+  registerTestAttendee(magicString: string, testAttendee: TestAttendee) {
     return this.httpService.post<TestAttendee>(
       this.testConductUrl + magicString + "/register",
       testAttendee
@@ -41,7 +41,7 @@ export class ConductService {
 
   getTestBundle(link: string, testTypePreview: boolean) {
     return this.httpService.get<TestBundleModel>(
-      this.testConductUrl + "testbundle/" + link + "/" + testTypePreview
+      `${this.testConductUrl}testbundle/${link}/${String(testTypePreview)}`
     );
   }
 
@@ -49,7 +49,7 @@ export class ConductService {
    *Get list of Questions
    */
   getQuestions(id: number) {
-    return this.httpService.get(this.testConductUrl + "testquestion/" + id);
+    return this.httpService.get(`${this.testConductUrl}testquestion/${id}`);
   }
 
   /**
@@ -58,7 +58,7 @@ export class ConductService {
    */
   getTestByLink(link: string, testTypePreview: boolean) {
     return this.httpService.get(
-      this.testConductUrl + "testbylink/" + link + "/" + testTypePreview
+      `${this.testConductUrl}testbylink/${link}/${String(testTypePreview)}`
     );
   }
 
@@ -68,7 +68,7 @@ export class ConductService {
    */
   getTestAttendeeByTestId(testId: number, isTestTypePreview: boolean) {
     return this.httpService.get<TestAttendee>(
-      this.testConductUrl + "attendee/" + testId + "/" + isTestTypePreview
+      `${this.testConductUrl}attendee/${testId}/${String(isTestTypePreview)}`
     );
   }
 
@@ -78,7 +78,7 @@ export class ConductService {
    */
   addAnswer(attendeeId: number, testAnswer: TestAnswer) {
     return this.httpService.put(
-      this.testConductUrl + "answer/" + attendeeId,
+      `${this.testConductUrl}answer/${attendeeId}`,
       testAnswer
     );
   }
@@ -89,7 +89,7 @@ export class ConductService {
    */
   getAnswer(attendeeId: number) {
     return this.httpService.get<TestAnswer[]>(
-      this.testConductUrl + "answer/" + attendeeId
+      `${this.testConductUrl}answer/${attendeeId}`
     );
   }
 
@@ -99,7 +99,7 @@ export class ConductService {
    */
   setElapsedTime(attendeeId: number, seconds: number) {
     return this.httpService.put(
-      this.testConductUrl + "elapsetime/" + attendeeId,
+      `${this.testConductUrl}elapsetime/${attendeeId}`,
       seconds
     );
   }
@@ -110,7 +110,7 @@ export class ConductService {
    */
   getElapsedTime(attendeeId: number) {
     return this.httpService.get<number>(
-      this.testConductUrl + "elapsetime/" + attendeeId
+      `${this.testConductUrl}elapsetime/${attendeeId}`
     );
   }
 
@@ -121,7 +121,7 @@ export class ConductService {
    */
   setTestStatus(attendeeId: number, testStatus: TestStatus) {
     return this.httpService.put(
-      this.testConductUrl + "teststatus/" + attendeeId,
+      `${this.testConductUrl}teststatus/${attendeeId}`,
       testStatus
     );
   }
@@ -133,7 +133,7 @@ export class ConductService {
    */
   getTestStatus(attendeeId: number) {
     return this.httpService.get(
-      this.testConductUrl + "teststatus/" + attendeeId
+      `${this.testConductUrl}teststatus/${attendeeId}`
     );
   }
 
@@ -148,13 +148,9 @@ export class ConductService {
     isTestResume: boolean
   ) {
     return this.httpService.get<TestLogs>(
-      this.testConductUrl +
-        "testlogs/" +
-        attendeeId +
-        "/" +
-        isCloseWindow +
-        "/" +
-        isTestResume
+      `${this.testConductUrl}testlogs/${attendeeId}/${String(
+        isCloseWindow
+      )}/${String(isTestResume)}`
     );
   }
 
@@ -170,7 +166,7 @@ export class ConductService {
 
   execute(attendeeId: number, runOnlyDefault: boolean, testAnswer: TestAnswer) {
     return this.httpService.post<CodeResponse>(
-      this.testConductUrl + "code/" + runOnlyDefault + "/" + attendeeId,
+      `${this.testConductUrl}code/${String(runOnlyDefault)}/${attendeeId}`,
       testAnswer
     );
   }
@@ -192,7 +188,9 @@ export class ConductService {
    */
   setAttendeeBrowserToleranceValue(attendeeId: number, focusLostCount: number) {
     return this.httpService.get<number>(
-      this.testConductUrl + attendeeId + "/" + focusLostCount + "/setTolerance"
+      `${this.testConductUrl + String(attendeeId)}/${String(
+        focusLostCount
+      )}/setTolerance`
     );
   }
 

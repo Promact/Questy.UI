@@ -1,4 +1,6 @@
-﻿export const FakeTest = {
+﻿import { Code } from "app/conduct/code.model";
+
+export const FakeTest = {
   id: 2002,
   createdDateTime: "2017-10-04T11:21:01.054085",
   testName: "Hello",
@@ -126,7 +128,7 @@ export const FakeResumeData = [
   {
     questionId: 100,
     optionChoice: [1, 2],
-    code: "",
+    code: {} as Code,
     questionStatus: 1,
     isAnswered: true,
   },
