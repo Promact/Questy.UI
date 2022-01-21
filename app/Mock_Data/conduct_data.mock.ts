@@ -1,8 +1,13 @@
 ﻿import { Code } from "app/conduct/code.model";
+import { Report } from "app/reports/report.model";
+import { TestAttendee } from "app/reports/testattendee.model";
+import { TestConduct } from "app/reports/testConduct.model";
+import { TestLogs } from "app/reports/testlogs.model";
+import { Test, TestQuestion } from "app/tests/tests.model";
 
-export const FakeTest = {
+export const FakeTest: Test = {
   id: 2002,
-  createdDateTime: "2017-10-04T11:21:01.054085",
+  createdDateTime: new Date("2017-10-04T11:21:01.054085"),
   testName: "Hello",
   link: "hjxJ4cQ2fI",
   browserTolerance: 1,
@@ -24,21 +29,28 @@ export const FakeTest = {
   numberOfTestAttendees: 18,
   numberOfTestSections: 1,
   numberOfTestQuestions: 3,
-  createdByUserId: "654cc152-b54c-49a2-b9d6-89ba9140e545",
+  testCopiedNumber: 0,
+  isEditTestEnabled: true,
+  isQuestionMissing: false,
 };
 
-export const FakeAttendee = {
+export const FakeAttendee: TestAttendee = {
   id: 1,
   email: "fakeattendee@fakesite.fakenet",
   firstName: "fake",
   lastName: "u",
   contactNumber: "0000000000",
   rollNumber: "FAKE-0",
-  attendeeBrowserToleranceCount: 0,
+  TestId: 2002,
+  createdDateTime: "2017-10-04T11:21:01.054085",
+  test: FakeTest,
+  report: {} as Report,
+  testLogs: {} as TestLogs,
+  testConduct: [] as TestConduct[],
 };
 
 // Don't add any new question here until you have modified unit test
-export const FakeTestQuestions = [
+export const FakeTestQuestions: TestQuestion[] = [
   {
     question: {
       question: {
@@ -48,7 +60,7 @@ export const FakeTestQuestions = [
         difficultyLevel: 0,
         categoryID: 6,
         isSelect: false,
-      },
+      } as QuestionDisplay,
       singleMultipleAnswerQuestion: null,
       codeSnippetQuestion: {
         checkCodeComplexity: true,

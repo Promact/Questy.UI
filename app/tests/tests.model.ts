@@ -12,32 +12,32 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class Test {
-  id: number;
-  testName: string;
-  link: string;
-  startDate: Date | string;
-  endDate: Date | string;
-  duration: number;
-  warningTime: number;
-  focusLostTime: number;
-  warningMessage: string;
-  correctMarks: string;
-  incorrectMarks: string;
-  browserTolerance: number;
-  createdDateTime: Date;
-  questionOrder: TestOrder;
-  optionOrder: TestOrder;
-  allowTestResume: AllowTestResume;
-  categoryAcList: Category[] = [];
+  id!: number;
+  testName!: string;
+  link!: string;
+  startDate!: Date | string;
+  endDate!: Date | string;
+  duration!: number;
+  warningTime!: number;
+  focusLostTime!: number;
+  warningMessage!: string;
+  correctMarks!: number;
+  incorrectMarks!: number;
+  browserTolerance!: number;
+  createdDateTime!: Date;
+  questionOrder!: TestOrder;
+  optionOrder!: TestOrder;
+  allowTestResume!: AllowTestResume;
+  categoryAcList: Category[] | null | undefined = [];
   testIpAddress: TestIPAddress[] = [];
-  isEditTestEnabled: boolean;
-  isQuestionMissing: boolean;
+  isEditTestEnabled!: boolean;
+  isQuestionMissing!: boolean;
   public isPaused: boolean;
   public isLaunched: boolean;
-  numberOfTestAttendees: number;
-  numberOfTestSections: number;
-  numberOfTestQuestions: number;
-  testCopiedNumber: number;
+  numberOfTestAttendees!: number;
+  numberOfTestSections!: number;
+  numberOfTestQuestions!: number;
+  testCopiedNumber!: number;
 
   constructor() {
     this.isLaunched = false;
@@ -46,32 +46,32 @@ export class Test {
 }
 
 export class TestCategory {
-  public id: number;
-  public categoryId: number;
-  public testId: number;
-  public isSelect: boolean;
+  public id!: number;
+  public categoryId!: number;
+  public testId!: number;
+  public isSelect!: boolean;
 }
 
 export class TestQuestion {
-  public id: number;
-  public testId: number;
-  public questionId: number;
-  public isSelect: boolean;
-  public question: QuestionDisplay;
-  public questionStatus: QuestionStatus;
-  public answerStatus: AnswerStatus;
+  public id!: number;
+  public testId!: number;
+  public questionId!: number;
+  public isSelect!: boolean;
+  public question!: QuestionDisplay;
+  public questionStatus!: QuestionStatus;
+  public answerStatus!: AnswerStatus;
   public codeSnippetQuestionTestCasesDetails: CodeSnippetTestCasesDetails[];
   public testCodeSolutionDetails: TestCodeSolutionDetails;
-  public language: ProgrammingLanguage;
-  public numberOfSuccessfulAttemptsByAttendee: number;
-  public totalNumberOfAttemptsMadeByAttendee: number;
-  public scoreOfCodeSnippetQuestion: string;
-  public compilationStatus: string;
-  public codeSolution: string;
-  public codeToDisplay: string;
-  public isCodeSolutionDetailsVisible: boolean;
-  public isCodeSnippetTestCaseDetailsVisible: boolean;
-  public isCompilationStatusVisible: boolean;
+  public language!: ProgrammingLanguage;
+  public numberOfSuccessfulAttemptsByAttendee!: number;
+  public totalNumberOfAttemptsMadeByAttendee!: number;
+  public scoreOfCodeSnippetQuestion!: string;
+  public compilationStatus!: string;
+  public codeSolution!: string;
+  public codeToDisplay!: string;
+  public isCodeSolutionDetailsVisible!: boolean;
+  public isCodeSnippetTestCaseDetailsVisible!: boolean;
+  public isCompilationStatusVisible!: boolean;
 
   constructor() {
     this.codeSnippetQuestionTestCasesDetails =
@@ -81,9 +81,9 @@ export class TestQuestion {
 }
 
 export class TestQuestionAC {
-  public id: number;
+  public id!: number;
 
-  public categoryID: number;
+  public categoryID!: number;
 
-  public isSelect: boolean;
+  public isSelect!: boolean;
 }
