@@ -331,8 +331,8 @@ export class TestComponent implements OnInit {
    * Gets the TestStatus of Attendee
    * @param attendeeId: Id of Attendee
    */
-  getTestStatus() {
-    this.conductService.getTestStatus(this.testAttendee.id).subscribe({
+  getTestStatus(id = this.testAttendee.id) {
+    this.conductService.getTestStatus(id).subscribe({
       next: async (response) => {
         const testStatus = response;
         if (testStatus !== TestStatus.allCandidates) {

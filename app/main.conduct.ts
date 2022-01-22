@@ -6,4 +6,4 @@ import { environment } from "./environments/environment";
 if (environment.production) {
   enableProdMode();
 }
-platformBrowserDynamic().bootstrapModule(ConductModule);
+void platformBrowserDynamic().bootstrapModule(ConductModule);

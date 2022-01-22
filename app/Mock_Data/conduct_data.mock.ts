@@ -4,6 +4,7 @@ import { TestAttendee } from "app/conduct/test_attendee.model";
 import { Test } from "app/tests/tests.model";
 import { TestQuestions } from "app/conduct/test_conduct.model";
 import { Category } from "app/questions/category.model";
+import { TestLogs } from "app/reports/testlogs.model";
 
 export const FakeTest: Test = {
   id: 2002,
@@ -106,7 +107,7 @@ export const FakeTestQuestions: TestQuestions[] = [
   },
 ];
 
-export const FakeTestLogs = {
+export const FakeTestLogs: TestLogs = {
   visitTestLink: new Date(
     "Wed Oct 11 2017 06:53:13 GMT+0530 (India Standard Time)"
   ),
@@ -123,6 +124,12 @@ export const FakeTestLogs = {
     "Wed Oct 11 2017 06:57:04 GMT+0530 (India Standard Time)"
   ),
   awayFromTestWindow: new Date(
+    "Wed Oct 11 2017 07:00:31 GMT+0530 (India Standard Time)"
+  ),
+  disconnectedFromServer: new Date(
+    "Wed Oct 11 2017 07:00:31 GMT+0530 (India Standard Time)"
+  ),
+  closeWindowWithoutFinishingTest: new Date(
     "Wed Oct 11 2017 07:00:31 GMT+0530 (India Standard Time)"
   ),
 };

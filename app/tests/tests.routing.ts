@@ -6,7 +6,6 @@ import { TestSettingsComponent } from "./test-settings/test-settings.component";
 import { TestSectionsComponent } from "./test-sections/test-sections.component";
 import { TestQuestionsComponent } from "./test-questions/test-questions.component";
 import { TestViewComponent } from "./test-view/test-view.component";
-import { TestComponent } from "../conduct/test/test.component";
 import { TestPreviewComponent } from "./test-preview/test-preview.compponent";
 import { PageNotFoundComponent } from "../page-not-found/page-not-found.component";
 

@@ -1,9 +1,14 @@
-import { throwError as observableThrowError, of as observableOf } from "rxjs";
+/* eslint-disable @typescript-eslint/no-empty-function */
+import {
+  throwError as observableThrowError,
+  of as observableOf,
+  Subscription,
+} from "rxjs";
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 import { BrowserModule } from "@angular/platform-browser";
 import { FormsModule } from "@angular/forms";
 import { BrowserDynamicTestingModule } from "@angular/platform-browser-dynamic/testing";
-import { RouterModule, Router } from "@angular/router";
+import { RouterModule } from "@angular/router";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpService } from "../../core/http.service";
 import { APP_BASE_HREF } from "@angular/common";
@@ -19,8 +24,6 @@ import "brace/theme/eclipse";
 import "brace/theme/solarized_light";
 import "brace/mode/java";
 import "brace/mode/c_cpp";
-import screenfull from "screenfull";
-declare let alea: any;
 import { TestService } from "../../tests/tests.service";
 import { PageNotFoundComponent } from "../../page-not-found/page-not-found.component";
 import { TestComponent } from "./test.component";
@@ -39,37 +42,18 @@ import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { HttpClientModule } from "@angular/common/http";
-import { TestQuestion } from "app/tests/tests.model";
 import { TestQuestions } from "../test_conduct.model";
 import { TestStatus } from "../teststatus.enum";
-
-class MockRouter {
-  navigate() {
-    return true;
-  }
-
-  isActive() {
-    return true;
-  }
-
-  navigateByUrl(url: string) {
-    return url;
-  }
-}
+import { SingleMultipleAnswerQuestionOption } from "../../questions/single-multiple-answer-question-option.model";
+import { Test } from "app/tests/tests.model";
 
 class MockWindow {
-  location: {
-    href: "";
-  };
+  public location: Location = { href: "" } as Location;
 }
 
 describe("Test Component", () => {
   let testComponent: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
-
-  let urls: any[];
-  let router: Router;
-  let module: NodeModule;
 
   class MockDialog {
     open() {
@@ -155,6 +139,7 @@ describe("Test Component", () => {
 
   it("should get the elapsed time", () => {
     testComponent.getElapsedTime();
+
     expect(testComponent.isTestReady).toBe(true);
   });
 
@@ -171,6 +156,7 @@ describe("Test Component", () => {
       JSON.stringify(FakeTestQuestions)
     ) as TestQuestions[];
     testComponent.resumeTest();
+
     expect(testComponent.isInitializing).toBe(false);
   });
 
@@ -188,6 +174,7 @@ describe("Test Component", () => {
     );
 
     testComponent.resumeTest();
+
     expect(testComponent.isInitializing).toBe(false);
   });
 
@@ -197,6 +184,7 @@ describe("Test Component", () => {
     );
 
     testComponent.getTestBundle("");
+
     expect(testComponent.testQuestions.length).toBe(2);
     expect(testComponent.test.link).toBe("hjxJ4cQ2fI");
   });
@@ -210,125 +198,165 @@ describe("Test Component", () => {
     });
 
     testComponent.getTestStatus(1);
-    expect(testComponent.resumeTest).toHaveBeenCalled();
+
+    expect(testComponent.resumeTest).toHaveBeenCalledWith();
   });
 
   it("should add answer", () => {
-    spyOn(ConductService.prototype, "addAnswer").and.callFake(() => {
-      return observableOf("");
-    });
+    spyOn(ConductService.prototype, "addAnswer").and.callFake(() =>
+      observableOf()
+    );
     spyOn(TestComponent.prototype, "markAsAnswered").and.callFake(() => {
       return;
     });
 
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.testTypePreview = false;
     testComponent.addAnswer(testComponent.testQuestions[0]);
+
     expect(testComponent.isTestReady).toBe(true);
 
     testComponent.addAnswer(testComponent.testQuestions[1]);
+
     expect(testComponent.isTestReady).toBe(true);
 
-    testComponent.testQuestions[1].question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption[0].isAnswer =
-      true;
+    const smaOption = testComponent.testQuestions[1].question
+      .singleMultipleAnswerQuestion
+      ?.singleMultipleAnswerQuestionOption[0] as SingleMultipleAnswerQuestionOption;
+    smaOption.isAnswer = true;
     testComponent.addAnswer(testComponent.testQuestions[1]);
+
     expect(testComponent.isTestReady).toBe(true);
   });
 
   it("should mark question for review", () => {
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.markAsReview(0);
+
     expect(testComponent.testQuestions[0].questionStatus).toBe(
       QuestionStatus.review
     );
   });
 
   it("should mark question for review part 2", () => {
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.questionStatus = QuestionStatus.review;
     testComponent.markAsReview(0);
+
     expect(testComponent.testQuestions[0].questionStatus).toBe(
       QuestionStatus.selected
     );
   });
 
   it("should mark question for review part 3", () => {
-    spyOn(ConductService.prototype, "addAnswer").and.callFake(() => {
-      return observableOf("");
-    });
+    spyOn(ConductService.prototype, "addAnswer").and.callFake(() =>
+      observableOf()
+    );
 
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.questionStatus = QuestionStatus.review;
     testComponent.addAnswer(testComponent.testQuestions[0]);
     testComponent.testAnswers[0].code.codeResponse.message = "res";
     testComponent.markAsReview(0);
+
     expect(testComponent.testQuestions[0].questionStatus).toBe(
       QuestionStatus.selected
     );
   });
 
   it("should mark question as answered", () => {
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.markAsAnswered(0);
+
     expect(testComponent.testQuestions[0].questionStatus).toBe(
       QuestionStatus.answered
     );
   });
 
   it("should clear response", () => {
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.clearResponse(0);
+
     expect(testComponent.codeAnswer).toContain("public static void main"); // Java
   });
 
   it("should select option (Single Option Type)", () => {
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.selectOption(1, 0, true);
+
     expect(
       testComponent.testQuestions[1].question.singleMultipleAnswerQuestion
-        .singleMultipleAnswerQuestionOption[0].isAnswer
+        ?.singleMultipleAnswerQuestionOption[0].isAnswer
     ).toBeTruthy();
   });
 
   it("should select option (Multiple Option Type)", () => {
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.selectOption(1, 0, false);
+
     expect(
       testComponent.testQuestions[1].question.singleMultipleAnswerQuestion
-        .singleMultipleAnswerQuestionOption[0].isAnswer
+        ?.singleMultipleAnswerQuestionOption[0].isAnswer
     ).toBeTruthy();
   });
 
   it("should select option (Multiple Option Type) part 2", () => {
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
-    testComponent.testQuestions[1].question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption[0].isAnswer =
-      true;
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
+    const smaQuestionOption = testComponent.testQuestions[1].question
+      .singleMultipleAnswerQuestion
+      ?.singleMultipleAnswerQuestionOption[0] as SingleMultipleAnswerQuestionOption;
+    smaQuestionOption.isAnswer = true;
     testComponent.selectOption(1, 0, false);
+
     expect(
       testComponent.testQuestions[1].question.singleMultipleAnswerQuestion
-        .singleMultipleAnswerQuestionOption[0].isAnswer
+        ?.singleMultipleAnswerQuestionOption[0].isAnswer
     ).toBeFalsy();
   });
 
   it("should navigate to other question", () => {
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
     testComponent.questionIndex = -1;
     testComponent.navigateToQuestionIndex(-1);
     testComponent.navigateToQuestionIndex(0);
     testComponent.navigateToQuestionIndex(1);
-    expect(testComponent.isTestReady).toBeTruthy;
+
+    expect(testComponent.isTestReady).toBeTruthy();
 
     testComponent.navigateToQuestionIndex(0);
-    expect(testComponent.isTestReady).toBeTruthy;
+
+    expect(testComponent.isTestReady).toBeTruthy();
 
     testComponent.questionIndex = 0;
     testComponent.navigateToQuestionIndex(0);
-    expect(testComponent.isTestReady).toBeTruthy;
+
+    expect(testComponent.isTestReady).toBeTruthy();
 
     testComponent.questionIndex = 0;
     testComponent.questionStatus = QuestionStatus.review;
     testComponent.navigateToQuestionIndex(1);
-    expect(testComponent.isTestReady).toBeTruthy;
+
+    expect(testComponent.isTestReady).toBeTruthy();
   });
 
   it("should get question status", () => {
@@ -336,95 +364,112 @@ describe("Test Component", () => {
     const ReturnedClass = testComponent.getQuestionStatus(
       QuestionStatus.answered
     );
+
     expect(ReturnedClass).toBe("answered cursor-not-allowed");
   });
 
-  it("should run support functions", () => {
-    spyOn(TestComponent.prototype, "getClockInterval").and.callFake(() => {
-      return;
-    });
+  it(
+    "should run support functions",
+    waitForAsync(async () => {
+      spyOn(TestComponent.prototype, "getClockInterval").and.callFake(() => {
+        return new Subscription();
+      });
 
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+      testComponent.testQuestions = JSON.parse(
+        JSON.stringify(FakeTestQuestions)
+      ) as TestQuestions[];
 
-    testComponent.questionIndex = 1;
-    const isLastQuestion = testComponent.isLastQuestion();
-    expect(isLastQuestion).toBeTruthy();
+      testComponent.questionIndex = 1;
+      const isLastQuestion = testComponent.isLastQuestion();
 
-    testComponent.ifOnline();
-    expect(testComponent.isTestReady).toBeFalsy();
+      expect(isLastQuestion).toBeTruthy();
 
-    testComponent.goOnline();
-    expect(testComponent.getClockInterval).toHaveBeenCalled();
+      testComponent.ifOnline();
 
-    testComponent.openProgramGuide();
+      expect(testComponent.isTestReady).toBeFalsy();
 
-    testComponent.onChange("abcd");
-    expect(testComponent.codeAnswer).toBe("abcd");
-  });
+      await testComponent.goOnline();
+
+      expect(testComponent.getClockInterval).toHaveBeenCalledWith();
+
+      testComponent.openProgramGuide();
+
+      testComponent.onChange("abcd");
+
+      expect(testComponent.codeAnswer).toBe("abcd");
+    })
+  );
 
   it("should count down", () => {
     spyOn(ConductService.prototype, "setElapsedTime").and.callFake(() => {
-      return observableOf("OK");
+      return observableOf();
     });
-    spyOn(
-      ConductService.prototype,
-      "setAttendeeBrowserToleranceValue"
-    ).and.callFake(() => {
-      return observableOf(1);
-    });
+    spyOn(ConductService.prototype, "setAttendeeBrowserToleranceValue")
+      .withArgs(10, 20)
+      .and.callFake(() => observableOf(1));
     spyOn(TestComponent.prototype, "addAnswer").and.callFake(() => {
       return;
     });
-    spyOn(ConductService.prototype, "addTestLogs").and.callFake(() => {
-      return observableOf(FakeTestLogs);
-    });
+    spyOn(ConductService.prototype, "addTestLogs").and.callFake(() =>
+      observableOf(FakeTestLogs)
+    );
     spyOn(ConductService.prototype, "setTestStatus").and.callFake(() => {
       return observableOf(1);
     });
 
-    testComponent.test = JSON.parse(JSON.stringify(FakeTest));
+    testComponent.test = JSON.parse(JSON.stringify(FakeTest)) as Test;
     testComponent.questionIndex = 0;
     testComponent.questionStatus = QuestionStatus.answered;
-    testComponent.testQuestions = JSON.parse(JSON.stringify(FakeTestQuestions));
+    testComponent.testQuestions = JSON.parse(
+      JSON.stringify(FakeTestQuestions)
+    ) as TestQuestions[];
 
     // Hack: Calling private method
-    testComponent["countDown"]();
+    void testComponent["countDown"]();
+
     expect(
       ConductService.prototype.setAttendeeBrowserToleranceValue
-    ).toHaveBeenCalled();
+    ).toHaveBeenCalledWith(10, 20);
   });
 
   it("should change editor language", () => {
-    spyOn(ConductService.prototype, "addAnswer").and.callFake(() => {
-      return observableOf("");
-    });
+    spyOn(ConductService.prototype, "addAnswer").and.callFake(() =>
+      observableOf()
+    );
 
-    fixture.whenStable().then(() => {
+    void fixture.whenStable().then(() => {
       testComponent.questionIndex = 0;
       testComponent.testQuestions = JSON.parse(
         JSON.stringify(FakeTestQuestions)
-      );
+      ) as TestQuestions[];
       testComponent.addAnswer(testComponent.testQuestions[0]);
       testComponent.testAnswers[0].code.language = "c";
       testComponent.changeLanguage("c");
+
       expect(testComponent.editor._mode).toBe("c");
     });
   });
 
-  it("should change editor language part 2", () => {
-    fixture.whenStable().then(() => {
+  it(
+    "should change editor language part 2",
+    waitForAsync(async () => {
+      await fixture.whenStable();
       testComponent.selectLanguage = "cpp";
       testComponent.changeLanguage("cpp");
-      expect(testComponent.editor._mode).toBe("cpp");
-    });
-  });
 
-  it("should change editor theme", () => {
-    fixture.whenStable().then(() => {
+      expect(testComponent.editor._mode).toBe("cpp");
+    })
+  );
+
+  it(
+    "should change editor theme",
+    waitForAsync(async () => {
+      await fixture.whenStable();
       testComponent.changeTheme("eclipse");
+
       expect(testComponent.editor._theme).toBe("eclipse");
-    });
-  });
+    })
+  );
 
   it("should save test logs", () => {
     spyOn(ConductService.prototype, "addTestLogs").and.callFake(() => {

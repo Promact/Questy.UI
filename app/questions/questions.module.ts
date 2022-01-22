@@ -11,8 +11,8 @@ import { SingleMultipleAnswerQuestionComponent } from "./questions-single-multip
 import { QuestionsProgrammingComponent } from "./questions-programming/questions-programming.component";
 import { QuestionsService } from "./questions.service";
 import { CategoryService } from "./categories.service";
-import { InfiniteScrollModule } from "angular2-infinite-scroll";
-import { TinymceModule } from "angular2-tinymce";
+import { InfiniteScrollModule } from "ngx-infinite-scroll";
+import { EditorModule } from "@tinymce/tinymce-angular";
 import { MockRouteService } from "./questions-single-multiple-answer/mock-route.service";
 
 @NgModule({
@@ -20,12 +20,13 @@ import { MockRouteService } from "./questions-single-multiple-answer/mock-route.
     SharedModule,
     questionsRouting,
     InfiniteScrollModule,
-    TinymceModule.withConfig({
-      entity_encoding: "raw",
-      element_format: "html",
-      forced_root_block: "",
-      browser_spellcheck: true,
-    }),
+    EditorModule,
+    // EditorModule.withConfig({
+    //   entity_encoding: "raw",
+    //   element_format: "html",
+    //   forced_root_block: "",
+    //   browser_spellcheck: true,
+    // }),
   ],
   declarations: [
     QuestionsComponent,

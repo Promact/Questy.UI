@@ -8,7 +8,7 @@ import { TestService } from "./tests/tests.service";
 })
 export class AppComponent {
   name = "Angular";
-  isPageTestPreview: boolean | undefined;
+  isPageTestPreview!: boolean;
   disableHeader: boolean | undefined;
 
   constructor(private testService: TestService) {

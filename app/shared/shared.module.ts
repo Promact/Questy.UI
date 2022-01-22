@@ -1,37 +1,38 @@
 ﻿import { NgModule } from "@angular/core";
 import { SharedComponentsModule } from "./shared-components.module";
-import { MaterialModule } from "@angular/material";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterModule } from "@angular/router";
-import { Md2AccordionModule, Md2DataTableModule } from "md2";
-import { CKEditorModule } from "ng2-ckeditor";
-import { ChartsModule } from "ng2-charts";
-import { PopoverModule } from "ngx-popover";
+import { MatExpansionModule } from "@angular/material/expansion";
+import { MatTableModule } from "@angular/material/table";
+import { MatMenu } from "@angular/material/menu";
+import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
+import { NgChartsModule } from "ng2-charts";
+//import { PopoverModule } from "ngx-popover";
 import { ClipboardModule } from "ngx-clipboard";
 import { SelectTextAreaDirective } from "../tests/directive";
+import { CommonModule } from "@angular/common";
 
 @NgModule({
   imports: [
     SharedComponentsModule,
     BrowserAnimationsModule,
-    MaterialModule,
     RouterModule,
-    Md2AccordionModule,
-    Md2DataTableModule,
+    MatExpansionModule,
+    MatTableModule,
+    MatMenu,
     CKEditorModule,
-    PopoverModule,
-    ChartsModule,
+    NgChartsModule,
     ClipboardModule,
+    CommonModule,
   ],
   declarations: [SelectTextAreaDirective],
   exports: [
     SharedComponentsModule,
-    MaterialModule,
-    Md2AccordionModule,
-    Md2DataTableModule,
+    MatExpansionModule,
+    MatTableModule,
+    MatMenu,
     CKEditorModule,
-    ChartsModule,
-    PopoverModule,
+    NgChartsModule,
     ClipboardModule,
     SelectTextAreaDirective,
   ],

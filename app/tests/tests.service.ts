@@ -1,14 +1,13 @@
 import { Injectable } from "@angular/core";
 import { HttpService } from "../core/http.service";
-import { Test, TestQuestionAC } from "./tests.model";
-import { QuestionBase } from "../questions/question";
-import { BehaviorSubject, Subject } from "rxjs";
+import { Test, TestCategory, TestQuestionAC } from "./tests.model";
+import { Subject } from "rxjs";
 
 @Injectable()
 export class TestService {
   private testApiUrl = "api/tests";
   private testNameApiUrl = "api/tests/isUnique";
-  public isTestPreviewIsCalled = new Subject<any>();
+  public isTestPreviewIsCalled = new Subject<boolean>();
   constructor(private httpService: HttpService) {}
 
   /**
@@ -23,7 +22,7 @@ export class TestService {
    * @param url
    * @param test
    */
-  addTests(test: any) {
+  addTests(test: Test) {
     return this.httpService.post(this.testApiUrl, test);
   }
 
@@ -32,9 +31,7 @@ export class TestService {
    * @param testName is name of the test
    */
   IsTestNameUnique(testName: string, id: number) {
-    return this.httpService.get(
-      this.testNameApiUrl + "/" + testName + "/" + id
-    );
+    return this.httpService.get(`${this.testNameApiUrl}/${testName}/${id}`);
   }
 
   /**
@@ -43,10 +40,7 @@ export class TestService {
    * @param body is used as an object for the Model Test
    */
   updateTestById(id: number, body: Test) {
-    return this.httpService.put(
-      this.testApiUrl + "/" + id + "/" + "settings",
-      body
-    );
+    return this.httpService.put(`${this.testApiUrl}/${id}/settings`, body);
   }
 
   /**
@@ -56,7 +50,7 @@ export class TestService {
    */
   updateTestPauseResume(id: number, isPause: boolean) {
     return this.httpService.get(
-      this.testApiUrl + "/isPausedResume/" + id + "/" + isPause
+      `${this.testApiUrl}/isPausedResume/${id}/${String(isPause)}`
     );
   }
   /**
@@ -64,7 +58,7 @@ export class TestService {
    * @param id
    */
   deleteTestipAddress(id: number) {
-    return this.httpService.delete(this.testApiUrl + "/deleteIp/" + id);
+    return this.httpService.delete(`${this.testApiUrl}/deleteIp/${id}`);
   }
 
   /**
@@ -73,7 +67,7 @@ export class TestService {
    * @param body is used as an object for the Model Test
    */
   updateTestName(id: number, body: Test) {
-    return this.httpService.put(this.testApiUrl + "/" + id, body);
+    return this.httpService.put(`${this.testApiUrl}/${id}`, body);
   }
 
   /**
@@ -81,7 +75,7 @@ export class TestService {
    * @param testId: type number and has the id of the test to be deleted
    */
   deleteTest(testId: number) {
-    return this.httpService.delete(this.testApiUrl + "/" + testId);
+    return this.httpService.delete(`${this.testApiUrl}/${testId}`);
   }
 
   /**
@@ -89,14 +83,12 @@ export class TestService {
    * @param testId: type number and has the id of the test to be deleted
    */
   isTestAttendeeExist(testId: number) {
-    return this.httpService.get(
-      this.testApiUrl + "/" + testId + "/testAttendee"
-    );
+    return this.httpService.get(`${this.testApiUrl}/${testId}/testAttendee`);
   }
 
-  addTestCategories(testId: number, testCategory: any) {
+  addTestCategories(testId: number, testCategory: TestCategory) {
     return this.httpService.post(
-      this.testApiUrl + "/" + "addTestCategories/" + testId,
+      `${this.testApiUrl}/addTestCategories/${testId}`,
       testCategory
     );
   }
@@ -105,7 +97,7 @@ export class TestService {
    * deletes the deselected category from TestCategory
    * @param testCategory
    */
-  removeDeselectedCategory(testCategory: any) {
+  removeDeselectedCategory(testCategory: TestCategory) {
     return this.httpService.post(
       this.testApiUrl + "/" + "deselectCategory",
       testCategory
@@ -119,13 +111,7 @@ export class TestService {
    */
   deselectCategory(categoryId: number, testId: number) {
     return this.httpService.get(
-      this.testApiUrl +
-        "/" +
-        "deselectCategory" +
-        "/" +
-        categoryId +
-        "/" +
-        testId
+      `${this.testApiUrl}/deselectCategory/${categoryId}/${testId}`
     );
   }
 
@@ -136,7 +122,7 @@ export class TestService {
    */
   getQuestions(testId: number, categoryId: number) {
     return this.httpService.get(
-      this.testApiUrl + "/questions/" + testId + "/" + categoryId
+      `${this.testApiUrl}/questions/${testId}/${categoryId}`
     );
   }
 
@@ -147,7 +133,7 @@ export class TestService {
    */
   addTestQuestions(selectedQuestions: TestQuestionAC[], testId: number) {
     return this.httpService.post(
-      this.testApiUrl + "/questions/" + testId,
+      `${this.testApiUrl}/questions/${testId}`,
       selectedQuestions
     );
   }
@@ -157,7 +143,7 @@ export class TestService {
    * @param id is passed to identify that particular "Test"
    */
   getTestById(id: number) {
-    return this.httpService.get(this.testApiUrl + "/" + id);
+    return this.httpService.get(`${this.testApiUrl}/${id}`);
   }
 
   /**
@@ -167,7 +153,7 @@ export class TestService {
    */
   duplicateTest(testId: number, test: Test) {
     return this.httpService.post(
-      this.testApiUrl + "/" + testId + "/duplicateTest",
+      `${this.testApiUrl}/${testId}/duplicateTest`,
       test
     );
   }
