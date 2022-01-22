@@ -12,7 +12,7 @@ export class CategoryService {
    *API to get all the categories
    */
   getAllCategories() {
-    return this.httpService.get(this.categoriesApiUrl);
+    return this.httpService.get<Category[]>(this.categoriesApiUrl);
   }
 
   /**
@@ -20,7 +20,7 @@ export class CategoryService {
    * @param category: Object of type Category
    */
   addCategory(category: Category) {
-    return this.httpService.post(this.categoriesApiUrl, category);
+    return this.httpService.post<Category>(this.categoriesApiUrl, category);
   }
 
   /**

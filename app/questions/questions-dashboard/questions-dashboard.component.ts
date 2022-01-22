@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ViewChild } from "@angular/core";
 import { Location } from "@angular/common";
-import { MdDialog } from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import { AddCategoryDialogComponent } from "./add-category-dialog.component";
 import { DeleteCategoryDialogComponent } from "./delete-category-dialog.component";
 import { DeleteQuestionDialogComponent } from "./delete-question-dialog.component";
@@ -37,25 +37,25 @@ export class QuestionsDashboardComponent implements OnInit {
   optionName: string[];
   selectedDifficulty: DifficultyLevel;
   matchString: string;
-  isAllQuestionsSelected: boolean;
-  loader: boolean;
+  isAllQuestionsSelected!: boolean;
+  loader!: boolean;
   numberOfQuestions: QuestionCount;
   isAllQuestionsHaveCome: boolean;
   id: number;
   difficultyLevel: string;
   categroyId: number;
-  isCategoryPresent: boolean;
+  isCategoryPresent!: boolean;
   showName: string;
-  selectedCategoryName: string;
-  SelectedDifficultyLevel: string;
-  selectedCategoryId: number;
+  selectedCategoryName!: string;
+  SelectedDifficultyLevel!: string;
+  selectedCategoryId!: number;
   isSelected: boolean;
   isAllQuestionsSectionSelected: boolean;
-  searchText: string;
+  searchText!: string;
 
   constructor(
     private questionsService: QuestionsService,
-    public dialog: MdDialog,
+    public dialog: MatDialog,
     private categoryService: CategoryService,
     private router: Router,
     private route: ActivatedRoute,
@@ -489,7 +489,7 @@ export class QuestionsDashboardComponent implements OnInit {
   updateCategoryDialog(category: Category) {
     const categoryToUpdate = this.categoryArray.find(
       (x) => x.id === category.id
-    );
+    ) as Category;
     const updateDialogRef = this.dialog.open(UpdateCategoryDialogComponent, {
       disableClose: true,
       hasBackdrop: true,

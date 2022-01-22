@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, Input } from "@angular/core";
-import { MdSnackBar } from "@angular/material";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { CategoryService } from "../categories.service";
 import { Category } from "../category.model";
 import { QuestionBase } from "../question";
@@ -17,28 +17,28 @@ import { MockRouteService } from "./mock-route.service";
   templateUrl: "questions-single-multiple-answer.html",
 })
 export class SingleMultipleAnswerQuestionComponent implements OnInit {
-  indexOfOptionSelected: number;
+  indexOfOptionSelected: number | null | undefined;
   categoryName: string;
-  optionIndex: number;
-  questionId: number;
+  optionIndex!: number;
+  questionId!: number;
   difficultyLevelSelected: string;
-  noOfOptionShown: number;
+  noOfOptionShown: number | null | undefined;
   isClose: boolean;
-  isQuestionEmpty: boolean;
-  isSingleAnswerQuestion: boolean;
-  isEditQuestion: boolean;
+  isQuestionEmpty!: boolean;
+  isSingleAnswerQuestion!: boolean;
+  isEditQuestion!: boolean;
   isduplicateQuestion: boolean;
-  isNoOfOptionOverLimit: boolean;
+  isNoOfOptionOverLimit!: boolean;
   categoryArray: Category[];
   difficultyLevel: string[];
   singleMultipleAnswerQuestion: QuestionBase;
   isTwoOptionSame: boolean;
   editor;
-  selectedCategoryName: string;
-  selectedDifficultyLevel: string;
+  selectedCategoryName!: string;
+  selectedDifficultyLevel!: string;
   isCategorySelected: boolean;
   isDifficultyLevelSelected: boolean;
-  loader: boolean;
+  loader!: boolean;
 
   private successMessage = "Question saved successfully.";
   private failedMessage = "Question failed to save.";
@@ -47,7 +47,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
     private categoryService: CategoryService,
     private questionService: QuestionsService,
     private router: Router,
-    public snackBar: MdSnackBar,
+    public snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private mockRouteService: MockRouteService
   ) {
@@ -62,9 +62,9 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
     this.singleMultipleAnswerQuestion = new QuestionBase();
     this.difficultyLevel = ["Easy", "Medium", "Hard"];
     for (let i = 0; i < this.noOfOptionShown; i++) {
-      const option = new SingleMultipleAnswerQuestionOption();
+      const option = {} as SingleMultipleAnswerQuestionOption;
       option.id = this.findMaxId() + 1;
-      this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.push(
+      this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.push(
         option
       );
     }
@@ -97,20 +97,20 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
   getQuestionById(id: number) {
     this.questionService
       .getQuestionById(id)
-      .subscribe((response: QuestionBase) => {
+      .subscribe((response) => {
         this.singleMultipleAnswerQuestion = response;
         this.getCategoryName();
         this.loader = false;
         this.difficultyLevelSelected =
           DifficultyLevel[
-            this.singleMultipleAnswerQuestion.question.difficultyLevel
+          this.singleMultipleAnswerQuestion.question.difficultyLevel
           ];
         this.indexOfOptionSelected =
-          this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.findIndex(
+          this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.findIndex(
             (x) => x.isAnswer === true
           );
         this.noOfOptionShown =
-          this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.length;
+          this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.length;
         this.isClose = this.noOfOptionShown === 2;
         if (this.noOfOptionShown === 10) {
           this.isNoOfOptionOverLimit = true;
@@ -123,16 +123,16 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
    */
   private findMaxId() {
     return this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion
-      .singleMultipleAnswerQuestionOption.length === 0
+      ?.singleMultipleAnswerQuestionOption.length === 0
       ? 0
       : Math.max.apply(
-          Math,
-          this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.map(
-            function (o) {
-              return o.id;
-            }
-          )
-        );
+        Math,
+        this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.map(
+          function (o) {
+            return o.id;
+          }
+        )
+      );
   }
 
   /**
@@ -178,22 +178,24 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
    * Remove option from display page
    */
   removeOption(optionIndex: number) {
-    this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.splice(
+    this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.splice(
       optionIndex,
       1
     );
-    this.noOfOptionShown--;
-    if (this.noOfOptionShown === 2) {
-      this.isClose = true;
-    }
+    if (this.noOfOptionShown !== undefined && this.noOfOptionShown !== null && this.indexOfOptionSelected !== undefined && this.indexOfOptionSelected !== null) {
+      this.noOfOptionShown--;
+      if (this.noOfOptionShown === 2) {
+        this.isClose = true;
+      }
 
-    if (+this.indexOfOptionSelected > optionIndex) {
-      this.indexOfOptionSelected--;
-    } else if (+this.indexOfOptionSelected === optionIndex) {
-      this.indexOfOptionSelected = null;
-    }
-    if (this.noOfOptionShown === 9) {
-      this.isNoOfOptionOverLimit = false;
+      if (+this.indexOfOptionSelected > optionIndex) {
+        this.indexOfOptionSelected--;
+      } else if (+this.indexOfOptionSelected === optionIndex) {
+        this.indexOfOptionSelected = null;
+      }
+      if (this.noOfOptionShown === 9) {
+        this.isNoOfOptionOverLimit = false;
+      }
     }
   }
 
@@ -201,11 +203,12 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
    * Add option on display page
    */
   addOption(optionIndex: number) {
+    if(this.noOfOptionShown !== undefined && this.noOfOptionShown !== null)
     this.noOfOptionShown++;
     this.isClose = this.noOfOptionShown === 2;
-    const newOption = new SingleMultipleAnswerQuestionOption();
+    const newOption = {} as SingleMultipleAnswerQuestionOption;
     newOption.id = this.findMaxId() + 1;
-    this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.push(
+    this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.push(
       newOption
     );
     if (this.noOfOptionShown === 10) {
@@ -335,12 +338,12 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
     }
     (this.isEditQuestion
       ? this.questionService.updateSingleMultipleAnswerQuestion(
-          this.questionId,
-          singleMultipleAnswerQuestion
-        )
+        this.questionId,
+        singleMultipleAnswerQuestion
+      )
       : this.questionService.addSingleMultipleAnswerQuestion(
-          singleMultipleAnswerQuestion
-        )
+        singleMultipleAnswerQuestion
+      )
     ).subscribe(
       (response) => {
         this.snackBar.open(this.successMessage, "Dismiss", { duration: 3000 });

@@ -1,7 +1,8 @@
 ﻿import { Component } from "@angular/core";
 import { Category } from "../category.model";
 import { CategoryService } from "../categories.service";
-import { MdDialogRef, MdSnackBar } from "@angular/material";
+import { MatDialogRef } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { QuestionsDashboardComponent } from "./questions-dashboard.component";
 
 @Component({
@@ -14,15 +15,15 @@ export class AddCategoryDialogComponent {
   private successMessage: string;
 
   isCategoryNameExist: boolean;
-  errorMessage: string;
+  errorMessage!: string;
   category: Category;
-  responseObject: Category;
+  responseObject!: Category;
   isButtonClicked: boolean;
 
   constructor(
     private categoryService: CategoryService,
-    private dialogRef: MdDialogRef<AddCategoryDialogComponent>,
-    public snackBar: MdSnackBar
+    private dialogRef: MatDialogRef<AddCategoryDialogComponent>,
+    public snackBar: MatSnackBar
   ) {
     this.isCategoryNameExist = false;
     this.category = new Category();
@@ -47,18 +48,19 @@ export class AddCategoryDialogComponent {
     this.isButtonClicked = true;
     category.categoryName = category.categoryName.trim();
     if (category.categoryName) {
-      this.categoryService.addCategory(category).subscribe(
-        (result) => {
+      this.categoryService.addCategory(category).subscribe({
+        next: (result) => {
           this.responseObject = result;
           this.dialogRef.close(this.responseObject);
           this.openSnackBar(this.successMessage);
         },
-        (err) => {
+        error: (err) => {
           this.isCategoryNameExist = true;
           this.response = err.json();
           this.errorMessage = this.response["error"];
           this.isButtonClicked = false;
         }
+      }
       );
     }
   }

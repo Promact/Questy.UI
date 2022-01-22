@@ -60,13 +60,13 @@
                         </div>
                         <div class="form-group display-inline-block mb30 mr20">
                             <label>Code Language</label>
-                            <select name="languages" class="form-control small-width" [(ngModel)]="selectLanguage" (change)="changeLanguage($event.target.value)" [ngModelOptions]="{standalone:true}">
+                            <select title="languages"  name="languages" class="form-control small-width" [(ngModel)]="selectLanguage" (change)="changeLanguage($event.target.value)" [ngModelOptions]="{standalone:true}">
                                 <option *ngFor="let lang of languageMode" [value]="lang">{{lang}}</option>
                             </select>
                         </div>
                         <div class="form-group display-inline-block mb30">
                             <label>Editor Theme</label>
-                            <select name="theme" class="form-control small-width" [(ngModel)]="selectedTheme" (change)="changeTheme($event.target.value)" [ngModelOptions]="{standalone:true}">
+                            <select title="theme" name="theme" class="form-control small-width" [(ngModel)]="selectedTheme" (change)="changeTheme($event.target.value)" [ngModelOptions]="{standalone:true}">
                                 <option *ngFor="let theme of themes" [value]="theme">{{theme}}</option>
                             </select>
                         </div>
@@ -81,22 +81,22 @@
                         <button type="button" class="btn btn-default" value="submit" (click)="runCode(!showCustomInput)">Run</button>
                         <button type="button" class="btn btn-primary" value="run" (click)="showCustomInput = false; runCode(false);">Submit</button><br />
                         <div class="custom-input">
-                            <md-checkbox [(ngModel)]="showCustomInput"> Run against custom input</md-checkbox>
-                            <textarea rows="4" *ngIf="showCustomInput" [(ngModel)]="customInput"></textarea>
+                            <mat-checkbox [(ngModel)]="showCustomInput"> Run against custom input</mat-checkbox>
+                            <textarea title="customOutput" rows="4" *ngIf="showCustomInput" [(ngModel)]="customInput"></textarea>
                         </div>
-                        <pre [ngClass]="getColorCode()" *ngIf="!codeResponse.errorOccurred && codeResponse.message && showResult">{{codeResponse.message}} <img *ngIf="isCodeProcessing" src="../images/dual-ring.gif" /></pre>
+                        <pre [ngClass]="getColorCode()" *ngIf="!codeResponse.errorOccurred && codeResponse.message && showResult">{{codeResponse.message}} <img title="codeprocess" *ngIf="isCodeProcessing" src="../images/dual-ring.gif" /></pre>
                         <pre [ngClass]="getColorCode()" *ngIf="!codeResponse.errorOccurred && codeResponse.output && showResult">{{codeResponse.output}}</pre>
                         <pre [ngClass]="getColorCode()" *ngIf="codeResponse.errorOccurred && codeResponse.error && showResult">{{codeResponse.error}}</pre>
                     </div>
                     <div class="display-table-cell ans-area ptb20 pl15" *ngIf="isQuestionSingleChoice && !isQuestionCodeSnippetType">
-                        <md-radio-group e2e="single-que-ans-radio-grp">
-                            <md-radio-button *ngFor="let option of options;let i = index" value="{{option.id}}" name="option.option_{{i}}" (change)="selectOption(questionIndex,i,true)" [checked]="option.isAnswer">{{option.option}}</md-radio-button>
-                        </md-radio-group>
+                        <mat-radio-group e2e="single-que-ans-radio-grp">
+                            <mat-radio-button *ngFor="let option of options;let i = index" value="{{option.id}}" name="option.option_{{i}}" (change)="selectOption(questionIndex,i,true)" [checked]="option.isAnswer">{{option.option}}</mat-radio-button>
+                        </mat-radio-group>
                     </div>
                     <div e2e="multiple-ans-list" class="display-table-cell ans-area ptb20 pl15" *ngIf="!isQuestionSingleChoice && !isQuestionCodeSnippetType">
-                        <md-checkbox *ngFor="let option of options; let i = index" (change)="selectOption(questionIndex,i)" [checked]="option.isAnswer">
+                        <mat-checkbox *ngFor="let option of options; let i = index" (change)="selectOption(questionIndex,i)" [checked]="option.isAnswer">
                             {{option.option}}
-                        </md-checkbox>
+                        </mat-checkbox>
                         <p e2e="muliple-ans-msg" class="theme-text h7">Note: This question can have more than one answer.</p>
                     </div>
                 </div>

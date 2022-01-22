@@ -4,6 +4,7 @@ import { Question } from "./question.model";
 import { QuestionBase } from "./question";
 import { QuestionDisplay } from "../questions/question-display";
 import { DifficultyLevel } from "../questions/enum-difficultylevel";
+import { QuestionCount } from "./numberOfQuestion";
 
 @Injectable()
 export class QuestionsService {
@@ -42,16 +43,8 @@ export class QuestionsService {
     difficultyLevel: string,
     searchQuestion: string
   ) {
-    return this.httpService.get(
-      this.questionsApiUrl +
-        "/" +
-        id +
-        "/" +
-        categoryId +
-        "/" +
-        difficultyLevel +
-        "/" +
-        searchQuestion
+    return this.httpService.get<QuestionDisplay[]>(
+      `${this.questionsApiUrl}/${id}/${categoryId}/${difficultyLevel}/${searchQuestion}`
     );
   }
 
@@ -75,7 +68,7 @@ export class QuestionsService {
    * @param id: Id of the Question
    */
   getQuestionById(id: number) {
-    return this.httpService.get(this.questionsApiUrl + "/" + id);
+    return this.httpService.get<QuestionBase>(`${this.questionsApiUrl}/${id}`);
   }
 
   /**
@@ -83,7 +76,7 @@ export class QuestionsService {
    * @param id: Id to delete Question
    */
   deleteQuestion(id: number) {
-    return this.httpService.delete(this.questionsApiUrl + "/" + id);
+    return this.httpService.delete(`${this.questionsApiUrl}/${id}`);
   }
 
   /**
@@ -101,12 +94,8 @@ export class QuestionsService {
    * @param searchQuestion: Question that needs to be searched
    */
   countTheQuestion(categoryId: number, searchQuestion: string) {
-    return this.httpService.get(
-      this.questionsApiUrl +
-        "/numberOfQuestions/" +
-        categoryId +
-        "/" +
-        searchQuestion
+    return this.httpService.get<QuestionCount>(
+      `${this.questionsApiUrl}/numberOfQuestions/${categoryId}/${searchQuestion}`
     );
   }
 }
