@@ -6,9 +6,9 @@
 })
 export class TestEndComponent implements OnInit {
   ngOnInit() {
-    history.pushState(null, null, null);
-    window.addEventListener("popstate", (event) => {
-      history.pushState(null, null, null);
+    history.pushState(null, "", null);
+    window.addEventListener("popstate", () => {
+      history.pushState(null, "", null);
     });
   }
 }

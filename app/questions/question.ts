@@ -4,8 +4,8 @@ import { CodeSnippetQuestion } from "./code.snippet.model";
 
 export class QuestionBase {
   question: Question;
-  singleMultipleAnswerQuestion: SingleMultipleAnswerQuestion;
-  codeSnippetQuestion: CodeSnippetQuestion;
+  singleMultipleAnswerQuestion: SingleMultipleAnswerQuestion | null;
+  codeSnippetQuestion: CodeSnippetQuestion | null;
 
   constructor() {
     this.question = new Question();

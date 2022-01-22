@@ -2,7 +2,7 @@
 
 export interface Code {
   source: string;
-  input: string;
+  input: string | null;
   language: string;
   codeResponse: CodeResponse;
 }

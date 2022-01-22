@@ -1,6 +1,6 @@
-﻿export class SingleMultipleAnswerQuestionOption {
+﻿export interface SingleMultipleAnswerQuestionOption {
   id: number;
-  option = "";
+  option: string;
   isAnswer: boolean;
   singleMultipleAnswerQuestionId: number;
   isTwoOptionsSame: boolean;

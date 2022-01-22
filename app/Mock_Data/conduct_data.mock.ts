@@ -1,9 +1,9 @@
 ﻿import { Code } from "app/conduct/code.model";
-import { Report } from "app/reports/report.model";
-import { TestAttendee } from "app/reports/testattendee.model";
-import { TestConduct } from "app/reports/testConduct.model";
-import { TestLogs } from "app/reports/testlogs.model";
-import { Test, TestQuestion } from "app/tests/tests.model";
+import { TestBundleModel } from "app/conduct/test_bundle_model";
+import { TestAttendee } from "app/conduct/test_attendee.model";
+import { Test } from "app/tests/tests.model";
+import { TestQuestions } from "app/conduct/test_conduct.model";
+import { Category } from "app/questions/category.model";
 
 export const FakeTest: Test = {
   id: 2002,
@@ -41,16 +41,11 @@ export const FakeAttendee: TestAttendee = {
   lastName: "u",
   contactNumber: "0000000000",
   rollNumber: "FAKE-0",
-  TestId: 2002,
-  createdDateTime: "2017-10-04T11:21:01.054085",
-  test: FakeTest,
-  report: {} as Report,
-  testLogs: {} as TestLogs,
-  testConduct: [] as TestConduct[],
+  attendeeBrowserToleranceCount: 5,
 };
 
 // Don't add any new question here until you have modified unit test
-export const FakeTestQuestions: TestQuestion[] = [
+export const FakeTestQuestions: TestQuestions[] = [
   {
     question: {
       question: {
@@ -60,7 +55,8 @@ export const FakeTestQuestions: TestQuestion[] = [
         difficultyLevel: 0,
         categoryID: 6,
         isSelect: false,
-      } as QuestionDisplay,
+        category: {} as Category,
+      },
       singleMultipleAnswerQuestion: null,
       codeSnippetQuestion: {
         checkCodeComplexity: true,
@@ -83,6 +79,7 @@ export const FakeTestQuestions: TestQuestion[] = [
         difficultyLevel: 0,
         categoryID: 6,
         isSelect: false,
+        category: {} as Category,
       },
       singleMultipleAnswerQuestion: {
         id: 1000,
@@ -92,14 +89,14 @@ export const FakeTestQuestions: TestQuestion[] = [
             option: "a",
             isAnswer: false,
             singleMultipleAnswerQuestionId: 1000,
-            isTwoOptionsSame: "false",
+            isTwoOptionsSame: false,
           },
           {
             id: 11,
             option: "b",
             isAnswer: false,
             singleMultipleAnswerQuestionId: 1000,
-            isTwoOptionsSame: "false",
+            isTwoOptionsSame: false,
           },
         ],
       },
@@ -146,7 +143,7 @@ export const FakeResumeData = [
   },
 ];
 
-export const FakeBundleData = {
+export const FakeBundleData: TestBundleModel = {
   test: FakeTest,
   testAttendee: FakeAttendee,
   testQuestions: FakeTestQuestions,

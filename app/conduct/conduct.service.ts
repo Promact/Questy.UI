@@ -132,7 +132,7 @@ export class ConductService {
    * @param testStatus: TestStatus object
    */
   getTestStatus(attendeeId: number) {
-    return this.httpService.get<Observable<TestStatus>>(
+    return this.httpService.get<TestStatus>(
       `${this.testConductUrl}teststatus/${attendeeId}`
     );
   }

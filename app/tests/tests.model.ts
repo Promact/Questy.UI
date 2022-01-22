@@ -1,6 +1,5 @@
 import { TestOrder } from "./enum-testorder";
 import { Category } from "../questions/category.model";
-import { BrowserTolerance } from "./enum-browsertolerance";
 import { AllowTestResume } from "./enum-allowtestresume";
 import { QuestionStatus, AnswerStatus } from "../conduct/question_status.enum";
 import { QuestionDisplay } from "../questions/question-display";

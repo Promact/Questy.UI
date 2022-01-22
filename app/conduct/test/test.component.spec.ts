@@ -41,6 +41,7 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { HttpClientModule } from "@angular/common/http";
 import { TestQuestion } from "app/tests/tests.model";
 import { TestQuestions } from "../test_conduct.model";
+import { TestStatus } from "../teststatus.enum";
 
 class MockRouter {
   navigate() {
@@ -201,9 +202,9 @@ describe("Test Component", () => {
   });
 
   it("should get Test status", () => {
-    spyOn(ConductService.prototype, "getTestStatus").and.callFake(() => {
-      return observableOf(0);
-    });
+    spyOn(ConductService.prototype, "getTestStatus").and.callFake(() =>
+      observableOf(TestStatus.allCandidates)
+    );
     spyOn(TestComponent.prototype, "resumeTest").and.callFake(() => {
       return observableOf();
     });

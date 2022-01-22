@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { interval as observableInterval, Subscription } from "rxjs";
 import { Component, OnInit, ViewChild, Input } from "@angular/core";
 import { Location } from "@angular/common";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog } from "@angular/material/dialog";
 import { Test } from "../../tests/tests.model";
@@ -15,7 +16,7 @@ import { TestAttendee } from "../test_attendee.model";
 import { TestAnswer } from "../test_answer.model";
 import { TestStatus } from "../teststatus.enum";
 import { TestsProgrammingGuideDialogComponent } from "./tests-programming-guide-dialog.component";
-import { AceEditorComponent } from "ng2-ace-editor";
+import { AceEditorComponent } from "ngx-ace-editor-wrapper";
 import "brace";
 import "brace/theme/cobalt";
 import "brace/theme/monokai";
@@ -26,19 +27,21 @@ import "brace/mode/c_cpp";
 import { TestLogs } from "../../reports/testlogs.model";
 import { AllowTestResume } from "../../tests/enum-allowtestresume";
 import { CodeResponse } from "../code.response.model";
-import * as screenfull from "screenfull";
-declare let alea: any;
+import screenfull from "screenfull";
 import { TestService } from "../../tests/tests.service";
 import { ConnectionService } from "../../core/connection.service";
 import { TestBundleModel } from "../test_bundle_model";
+import * as _ from "lodash";
 
 @Component({
   selector: "test",
   templateUrl: "test.html",
 })
 export class TestComponent implements OnInit {
-  @ViewChild("editor") editor: AceEditorComponent;
-  @Input() testLink: string;
+  @ViewChild("editor")
+  editor!: AceEditorComponent;
+  @Input()
+  testLink!: string;
   timeString: string;
   test: Test;
   testBundle: TestBundleModel;
@@ -47,40 +50,40 @@ export class TestComponent implements OnInit {
   selectedMode: string;
   languageMode: string[];
   testQuestions: TestQuestions[];
-  questionDetail: string;
+  questionDetail!: string;
   options: SingleMultipleAnswerQuestionOption[];
   isTestReady: boolean;
   questionIndex: number;
   questionStatus: QuestionStatus;
-  isQuestionSingleChoice: boolean;
-  checkedOption: string;
+  isQuestionSingleChoice!: boolean;
+  checkedOption!: string;
   testAttendee: TestAttendee;
   testAnswers: TestAnswer[];
   isQuestionCodeSnippetType: boolean;
   themes: string[];
   codeAnswer: string;
   selectedTheme: string;
-  testLogs: TestLogs;
+  testLogs!: TestLogs;
   codeResponse: CodeResponse;
   showResult: boolean;
-  isCloseWindow: boolean;
+  isCloseWindow!: boolean;
   timeWarning: boolean;
   testEnded: boolean;
   isCodeProcessing: boolean;
-  routeForTestEnd: any;
-  istestEnd: boolean;
+  routeForTestEnd!: ActivatedRoute | string;
+  istestEnd!: boolean;
   url: string;
   isInitializing: boolean;
-  isConnectionLoss: boolean;
-  isConnectionRetrieved: boolean;
-  clearTime: any;
+  isConnectionLoss!: boolean;
+  isConnectionRetrieved!: boolean;
+  clearTime!: NodeJS.Timeout;
   customInput: string;
   showCustomInput: boolean;
   count: number;
 
   private seconds: number;
-  private focusLost: number;
-  private resumable: AllowTestResume;
+  private focusLost!: number;
+  private resumable!: AllowTestResume;
 
   private WARNING_TIME = 300;
   private WARNING_MSG = "Hurry up!";
@@ -95,7 +98,7 @@ export class TestComponent implements OnInit {
   // Temporary solution for setting coding language on resume
   private CODING_LANGUAGES: string[] = ["Java", "Cpp", "C"];
   private defaultSnackBarDuration = 3000;
-  private clockIntervalListener: Subscription;
+  private clockIntervalListener!: Subscription;
 
   constructor(
     private router: Router,
@@ -119,7 +122,7 @@ export class TestComponent implements OnInit {
     this.options = new Array<SingleMultipleAnswerQuestionOption>();
     this.questionStatus = QuestionStatus.unanswered;
     this.questionIndex = -1;
-    this.testAttendee = new TestAttendee();
+    this.testAttendee = {} as TestAttendee;
     this.testAnswers = new Array<TestAnswer>();
     this.isQuestionCodeSnippetType = false;
     this.selectLanguage = "Java";
@@ -154,9 +157,9 @@ export class TestComponent implements OnInit {
         url.indexOf("/conduct/") + 9,
         url.indexOf("/test")
       );
-      history.pushState(null, null, null);
+      history.pushState(null, "", null);
       window.addEventListener("popstate", function () {
-        history.pushState(null, null, null);
+        history.pushState(null, "", null);
       });
     } else {
       this.testLink = link;
@@ -169,8 +172,8 @@ export class TestComponent implements OnInit {
 
     this.conductService
       .getTestBundle(this.testLink, this.testTypePreview)
-      .subscribe(
-        (response) => {
+      .subscribe({
+        next: (response) => {
           this.testBundle = response;
           this.test = this.testBundle.test;
           this.testQuestions = this.testBundle.testQuestions;
@@ -190,17 +193,16 @@ export class TestComponent implements OnInit {
             this.shuffleOption();
           }
 
-          window.onbeforeunload = (ev) => {
+          window.onbeforeunload = (ev: BeforeUnloadEvent) => {
             this.isCloseWindow = true;
             this.saveTestLogs();
             this.connectionService.stopConnection();
 
             // Below code snippet will execute if the user cancels the dailog {ref: https://stackoverflow.com/a/4651049/9083810}
-            const self = this;
-            setTimeout(function () {
-              setTimeout(function () {
-                self.connectionService.startConnection(() => {
-                  self.connectionService.registerAttendee(self.testAttendee.id);
+            setTimeout(() => {
+              setTimeout(() => {
+                this.connectionService.startConnection(() => {
+                  this.connectionService.registerAttendee(this.testAttendee.id);
                 });
               }, 100);
             }, 1);
@@ -219,10 +221,10 @@ export class TestComponent implements OnInit {
           this.connectionService.registerAttendee(this.testAttendee.id);
           this.clockIntervalListener = this.getClockInterval();
         },
-        () => {
+        error: () => {
           window.location.href = window.location.origin + "/pageNotFound";
-        }
-      );
+        },
+      });
   }
 
   /**
@@ -259,15 +261,23 @@ export class TestComponent implements OnInit {
           x.questionId ===
           this.testQuestions[this.questionIndex].question.question.id
       );
-      const answeredLanguage: string = isNaN(+codingAnswer.code.language)
-        ? codingAnswer.code.language
-        : this.CODING_LANGUAGES[codingAnswer.code.language];
-      if (answeredLanguage.toLowerCase() === codeLanguage)
-        this.codeAnswer = codingAnswer.code.source;
-    }
+      if (
+        codingAnswer !== undefined &&
+        codingAnswer !== null &&
+        codingAnswer.code !== undefined &&
+        codingAnswer.code !== null
+      ) {
+        const answeredLanguage = _.isInteger(codingAnswer.code.language)
+          ? codingAnswer.code.language
+          : (this.CODING_LANGUAGES[codingAnswer.code.language] as string);
+        if (answeredLanguage.toLowerCase() === codeLanguage) {
+          this.codeAnswer = codingAnswer.code.source;
+        }
+      }
 
-    if (codeLanguage.toLowerCase() === "c") codeLanguage = "c_cpp";
-    this.editor.setMode(language);
+      if (codeLanguage.toLowerCase() === "c") codeLanguage = "c_cpp";
+      this.editor.setMode(language);
+    }
   }
   /**
    * changes the pre-defined text for the editor
@@ -313,7 +323,7 @@ export class TestComponent implements OnInit {
 
   getClockInterval() {
     return observableInterval(1000).subscribe(() => {
-      this.countDown();
+      void this.countDown();
     });
   }
 
@@ -322,14 +332,14 @@ export class TestComponent implements OnInit {
    * @param attendeeId: Id of Attendee
    */
   getTestStatus() {
-    this.conductService.getTestStatus(this.testAttendee.id).subscribe(
-      (response) => {
+    this.conductService.getTestStatus(this.testAttendee.id).subscribe({
+      next: async (response) => {
         const testStatus = response;
         if (testStatus !== TestStatus.allCandidates) {
           // Close the window if Test is already completed
-          this.routeForTestEnd = "conduct/" + this.testLink;
-          this.router.navigate(["/test-end"], {
-            relativeTo: this.routeForTestEnd,
+          this.routeForTestEnd = `conduct/${this.testLink}`;
+          await this.router.navigate(["/test-end"], {
+            relativeTo: this.routeForTestEnd as unknown as ActivatedRoute,
             replaceUrl: true,
           });
         }
@@ -343,7 +353,9 @@ export class TestComponent implements OnInit {
         });
 
         window.addEventListener("offline", () => {
-          screenfull.exit();
+          void (async () => {
+            await screenfull.exit();
+          })();
           this.isTestReady = false;
           setTimeout(() => {
             this.isTestReady = true;
@@ -355,16 +367,16 @@ export class TestComponent implements OnInit {
           if (this.clockIntervalListener)
             this.clockIntervalListener.unsubscribe();
         });
-        window.addEventListener("blur", (event) => {
+        window.addEventListener("blur", () => {
           this.clearTime = setTimeout(() => {
             if (this.test.browserTolerance !== 0 && !this.istestEnd)
-              this.windowFocusLost();
+              void (async () => await this.windowFocusLost())();
           }, this.test.focusLostTime * 1000);
         });
         window.addEventListener("focus", () => {
           clearTimeout(this.clearTime);
         });
-        window.addEventListener("keydown", (event) => {
+        window.addEventListener("keydown", (event: KeyboardEvent) => {
           if (event.ctrlKey) {
             if (
               event.keyCode === 83 ||
@@ -384,10 +396,10 @@ export class TestComponent implements OnInit {
         });
         this.resumeTest();
       },
-      () => {
+      error: () => {
         this.navigateToQuestionIndex(0);
-      }
-    );
+      },
+    });
   }
   ifOnline() {
     this.isConnectionLoss = false;
@@ -400,8 +412,8 @@ export class TestComponent implements OnInit {
     }, 3000);
   }
 
-  goOnline() {
-    document.documentElement.requestFullscreen();
+  async goOnline() {
+    await document.documentElement.requestFullscreen();
     this.isConnectionRetrieved = false;
     this.clockIntervalListener = this.getClockInterval();
   }
@@ -413,21 +425,22 @@ export class TestComponent implements OnInit {
     this.isTestReady = false;
     this.conductService.getAnswer(this.testAttendee.id).subscribe(
       (response) => {
-        debugger;
         this.testAnswers = response;
-
-        this.testQuestions.forEach((x) => {
-          const answer = this.testAnswers.find(
-            (y) => y.questionId === x.question.question.id
+        _.forEach(this.testQuestions, (question: TestQuestions) => {
+          const answer = _.find(
+            this.testAnswers,
+            (ans) => ans.questionId === question.question.question.id
           );
           if (answer) {
-            x.questionStatus = answer.questionStatus;
-            answer.optionChoice.forEach(
-              (y) =>
-                (x.question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.find(
-                  (z) => z.id === y
-                ).isAnswer = true)
-            );
+            question.questionStatus = answer.questionStatus;
+            _.forEach(answer.optionChoice, (opt) => {
+              const selectedChoice = _.find(
+                question.question.singleMultipleAnswerQuestion
+                  ?.singleMultipleAnswerQuestionOption,
+                (choice) => choice.id === opt
+              ) as SingleMultipleAnswerQuestionOption;
+              selectedChoice.isAnswer = true;
+            });
           }
         });
 
@@ -484,10 +497,9 @@ export class TestComponent implements OnInit {
       QuestionType.codeSnippetQuestion;
 
     if (!this.isQuestionCodeSnippetType) {
-      this.options =
-        this.testQuestions[
-          index
-        ].question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption;
+      this.options = this.testQuestions[index].question
+        .singleMultipleAnswerQuestion
+        ?.singleMultipleAnswerQuestionOption as SingleMultipleAnswerQuestionOption[];
       // Sets boolean if question is single choice
       this.isQuestionSingleChoice =
         this.testQuestions[index].question.question.questionType ===
@@ -533,13 +545,13 @@ export class TestComponent implements OnInit {
       const codingAnswer = this.testAnswers.find(
         (x) => x.questionId === this.testQuestions[index].question.question.id
       );
-      this.languageMode =
-        this.testQuestions[index].question.codeSnippetQuestion.languageList;
+      this.languageMode = this.testQuestions[index].question.codeSnippetQuestion
+        ?.languageList as string[];
       if (codingAnswer !== undefined) {
         this.codeAnswer = codingAnswer.code.source;
         this.selectLanguage = isNaN(+codingAnswer.code.language)
           ? codingAnswer.code.language
-          : this.CODING_LANGUAGES[codingAnswer.code.language];
+          : (this.CODING_LANGUAGES[codingAnswer.code.language] as string);
         this.codeResponse = codingAnswer.code.codeResponse;
         this.showResult = true;
       } else {
@@ -586,8 +598,8 @@ export class TestComponent implements OnInit {
 
       this.conductService
         .execute(this.testAttendee.id, runOnlyDefault, solution)
-        .subscribe(
-          (res) => {
+        .subscribe({
+          next: (res) => {
             this.codeResponse = res;
 
             if (
@@ -607,11 +619,11 @@ export class TestComponent implements OnInit {
             this.testAnswers.push(solution);
             this.isCodeProcessing = false;
           },
-          () => {
+          error: () => {
             this.codeResponse.message = "Oops! Server error has occured.";
             this.isCodeProcessing = false;
-          }
-        );
+          },
+        });
     }
   }
 
@@ -619,7 +631,7 @@ export class TestComponent implements OnInit {
    * Call API to add Answer to the Database
    * @param testQuestion: TestQuestion object
    */
-  addAnswer(testQuestion: TestQuestions, _callback?: any) {
+  addAnswer(testQuestion: TestQuestions, _callback?: () => void) {
     // Remove previous question's answer from the array
     const index = this.testAnswers.findIndex(
       (x) => x.questionId === testQuestion.question.question.id
@@ -634,14 +646,14 @@ export class TestComponent implements OnInit {
       testQuestion.question.question.questionType !==
       QuestionType.codeSnippetQuestion
     ) {
-      testQuestion.question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.forEach(
+      testQuestion.question.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.forEach(
         (x) => {
           if (x.isAnswer) testAnswer.optionChoice.push(x.id);
         }
       );
 
       if (
-        testQuestion.question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.some(
+        testQuestion.question.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.some(
           (x) => x.isAnswer
         ) &&
         this.questionStatus !== QuestionStatus.review
@@ -765,7 +777,7 @@ export class TestComponent implements OnInit {
     } else
       this.testQuestions[
         index
-      ].question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.forEach(
+      ].question.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.forEach(
         (x) => (x.isAnswer = false)
       );
     // Leave the reviewed question
@@ -786,24 +798,24 @@ export class TestComponent implements OnInit {
   ) {
     if (isSingleChoice) {
       this.clearResponse(questionIndex);
-      this.testQuestions[
-        questionIndex
-      ].question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption[
+      const smaOption = this.testQuestions[questionIndex].question
+        .singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption[
         optionIndex
-      ].isAnswer = true;
+      ] as SingleMultipleAnswerQuestionOption;
+      smaOption.isAnswer = true;
     } else {
       const checked =
         this.testQuestions[questionIndex].question.singleMultipleAnswerQuestion
-          .singleMultipleAnswerQuestionOption[optionIndex].isAnswer;
-      this.testQuestions[
-        questionIndex
-      ].question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption[
+          ?.singleMultipleAnswerQuestionOption[optionIndex].isAnswer;
+      const smaOption = this.testQuestions[questionIndex].question
+        .singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption[
         optionIndex
-      ].isAnswer = !checked;
+      ] as SingleMultipleAnswerQuestionOption;
+      smaOption.isAnswer = !checked;
       if (
         !this.testQuestions[
           questionIndex
-        ].question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.some(
+        ].question.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.some(
           (x) => x.isAnswer
         )
       ) {
@@ -832,8 +844,8 @@ export class TestComponent implements OnInit {
   /**
    * Called when end test button is clicked
    */
-  endTestButtonClicked() {
-    this.endTest(TestStatus.completedTest);
+  async endTestButtonClicked() {
+    await this.endTest(TestStatus.completedTest);
   }
 
   isLastQuestion() {
@@ -871,49 +883,35 @@ export class TestComponent implements OnInit {
    * Shuffle testQuestions
    */
   private shuffleQuestion() {
-    this.testQuestions = this.shuffleArray(this.testQuestions);
+    this.testQuestions = _.shuffle(this.testQuestions);
   }
 
   /**
    * Shuffle options
    */
   private shuffleOption() {
-    this.testQuestions.forEach((x) => {
-      if (x.question.question.questionType !== QuestionType.codeSnippetQuestion)
+    _.forEach(this.testQuestions, (x) => {
+      if (
+        x !== null &&
+        x.question !== null &&
+        x.question.singleMultipleAnswerQuestion !== null
+      ) {
         x.question.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption =
-          this.shuffleArray(
+          _.shuffle(
             x.question.singleMultipleAnswerQuestion
-              .singleMultipleAnswerQuestionOption
+              ?.singleMultipleAnswerQuestionOption
           );
+      }
     });
-  }
-
-  private shuffleArray(arrayToShuffle: any[]) {
-    const max = arrayToShuffle.length - 1;
-    const prng = new alea(
-      this.testAttendee.email.toLowerCase() +
-        this.testAttendee.rollNumber.toLowerCase()
-    );
-    for (let i = 0; i < max; i++) {
-      const pickIndex = Math.floor(prng() * max);
-
-      // swap options
-      [arrayToShuffle[i], arrayToShuffle[pickIndex]] = [
-        arrayToShuffle[pickIndex],
-        arrayToShuffle[i],
-      ];
-    }
-
-    return arrayToShuffle;
   }
 
   /**
    * Increments focus lost counter and shows warning message
    * @param event: Focus event
    */
-  public windowFocusLost() {
+  public async windowFocusLost() {
     this.focusLost += 1;
-    let message: string;
+    let message = "";
     const duration = 0;
 
     if (this.focusLost <= this.test.browserTolerance) {
@@ -923,16 +921,16 @@ export class TestComponent implements OnInit {
     if (this.focusLost > this.test.browserTolerance) {
       this.conductService
         .addTestLogs(this.testAttendee.id, false, false)
-        .subscribe((response: any) => {
+        .subscribe((response) => {
           this.testLogs = response;
         });
 
-      this.endTest(TestStatus.blockedTest);
+      await this.endTest(TestStatus.blockedTest);
     } else if (this.focusLost <= this.test.browserTolerance) {
-      this.openSnackBar(message, duration);
+      await this.openSnackBar(message, duration);
       this.conductService
         .addTestLogs(this.testAttendee.id, false, false)
-        .subscribe((response: any) => {
+        .subscribe((response) => {
           this.testLogs = response;
         });
     }
@@ -958,25 +956,25 @@ export class TestComponent implements OnInit {
   /**
    * Counts down time
    */
-  private countDown() {
+  private async countDown() {
     this.seconds = this.seconds > 0 ? this.seconds - 1 : 0;
     this.timeString = this.secToTimeString(this.seconds);
 
     if (this.seconds <= this.WARNING_TIME && !this.timeWarning) {
       this.timeWarning = true;
-      this.openSnackBar(this.WARNING_MSG);
+      await this.openSnackBar(this.WARNING_MSG);
     }
 
     if (this.seconds <= 0) {
       this.isTestReady = false;
-      this.endTest(TestStatus.expiredTest);
+      await this.endTest(TestStatus.expiredTest);
     }
   }
 
   /**
    * Updates time on the server
    */
-  private setElapsedTime(_callback?: any) {
+  private setElapsedTime(_callback?: () => void) {
     const timeElapsed = this.test.duration * 60 - this.seconds;
     this.conductService
       .setElapsedTime(this.testAttendee.id, timeElapsed)
@@ -989,10 +987,10 @@ export class TestComponent implements OnInit {
    * Ends test and route to test-end page
    * @param testStatus: TestStatus object
    */
-  private endTest(testStatus: TestStatus) {
+  private async endTest(testStatus: TestStatus) {
     if (this.testTypePreview) {
       this.testService.isTestPreviewIsCalled.next(false);
-      if (screenfull.isFullscreen) screenfull.toggle();
+      if (screenfull.isFullscreen) await screenfull.toggle();
       this.location.back();
     }
 
@@ -1023,12 +1021,12 @@ export class TestComponent implements OnInit {
       this.addAnswer(this.testQuestions[this.questionIndex], () => {
         this.isTestReady = false;
         this.setElapsedTime(() => {
-          this.closeWindow(testStatus);
+          void this.closeWindow(testStatus);
         });
       });
     } else {
       this.setElapsedTime(() => {
-        this.closeWindow(testStatus);
+        void this.closeWindow(testStatus);
       });
     }
   }
@@ -1036,7 +1034,7 @@ export class TestComponent implements OnInit {
   /**
    * Closes window
    */
-  private closeWindow(testStatus: TestStatus) {
+  private async closeWindow(testStatus: TestStatus) {
     if (this.resumable === AllowTestResume.Supervised) {
       this.conductService
         .setTestStatus(this.testAttendee.id, testStatus)
@@ -1048,7 +1046,7 @@ export class TestComponent implements OnInit {
               this.test.id
             );
             this.testEnded = true;
-            this.router.navigate(["test-summary"], { replaceUrl: true });
+            void this.router.navigate(["test-summary"], { replaceUrl: true });
           }
         });
     } else if (
@@ -1056,7 +1054,7 @@ export class TestComponent implements OnInit {
       testStatus !== TestStatus.blockedTest &&
       testStatus !== TestStatus.expiredTest
     )
-      this.router.navigate(["test-summary"], { replaceUrl: true });
+      await this.router.navigate(["test-summary"], { replaceUrl: true });
     else if (
       (this.resumable === AllowTestResume.Unsupervised &&
         testStatus === TestStatus.blockedTest) ||
@@ -1066,7 +1064,7 @@ export class TestComponent implements OnInit {
         .setTestStatus(this.testAttendee.id, testStatus)
         .subscribe(() => {
           this.testEnded = true;
-          this.router.navigate(["test-summary"], { replaceUrl: true });
+          void this.router.navigate(["test-summary"], { replaceUrl: true });
         });
     }
   }
@@ -1078,7 +1076,7 @@ export class TestComponent implements OnInit {
    * @param enableRouting: enable routing after snack bar dismissed
    * @param routeTo: routing path
    */
-  private openSnackBar(
+  private async openSnackBar(
     message: string,
     duration: number = this.defaultSnackBarDuration,
     enableRouting = false,
@@ -1088,7 +1086,7 @@ export class TestComponent implements OnInit {
       duration: duration,
     });
     if (enableRouting) {
-      this.router.navigate(routeTo);
+      await this.router.navigate(routeTo);
     }
   }
 }
