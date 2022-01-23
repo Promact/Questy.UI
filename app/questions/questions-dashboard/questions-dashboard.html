@@ -20,11 +20,11 @@
                     <li class="h5" (click)="getAllQuestions()" [ngClass]="{'active' : selectedCategory.categoryName === undefined ||isAllQuestionsSectionSelected}" *ngIf="isCategoryPresent">All Questions</li>
                     <li *ngFor="let category of categoryArray" class="clearfix h5" [ngClass]="isCategorySelected(category)">
                         <span title="{{category.categoryName}}" (click)="categoryWiseFilter(category.id,category.categoryName,difficultyLevel)">{{category.categoryName}}</span>
-                        <em class="material-icons pull-right" [mdMenuTriggerFor]="categoryMenu">more_vert</em>
-                        <md-menu #categoryMenu="mdMenu" [overlapTrigger]="false" xPosition="before">
-                            <button md-menu-item (click)="updateCategoryDialog(category)">Update</button>
-                            <button md-menu-item (click)="deleteCategoryDialog(category)">Delete</button>
-                        </md-menu>
+                        <em class="material-icons pull-right" [matMenuTriggerFor]="categoryMenu">more_vert</em>
+                        <mat-menu #categoryMenu="matMenu" [overlapTrigger]="false" xPosition="before">
+                            <button mat-menu-item (click)="updateCategoryDialog(category)">Update</button>
+                            <button mat-menu-item (click)="deleteCategoryDialog(category)">Delete</button>
+                        </mat-menu>
                     </li>
                 </ul>
             </div>
@@ -34,19 +34,19 @@
                     <h2 >{{showName}}</h2>
                 </div>
                 <div class="block-subtitle clearfix" *ngIf="isCategoryPresent">
-                    <button type="button" class="btn-link h5 hidden-md hidden-lg" [mdMenuTriggerFor]="questionMenu"><em class="material-icons">add</em> Add New Question</button>
+                    <button type="button" class="btn-link h5 hidden-mat hidden-lg" [matMenuTriggerFor]="questionMenu"><em class="material-icons">add</em> Add New Question</button>
                     <ul class="difficulty-levels pull-left">
                         <li [ngClass]="{active : selectedDifficulty === DifficultyLevel['All']}" (click)="difficultyWiseSearch('All')" class="h5">Total ({{easy+medium+hard}})</li>
                         <li [ngClass]="{active : selectedDifficulty === DifficultyLevel['Easy']}" (click)="difficultyWiseSearch('Easy')" class="h5">Easy ({{easy}})</li>
                         <li [ngClass]="{active : selectedDifficulty === DifficultyLevel['Medium']}" (click)="difficultyWiseSearch('Medium')" class="h5">Medium ({{medium}})</li>
                         <li [ngClass]="{active: selectedDifficulty === DifficultyLevel['Hard']}" (click)="difficultyWiseSearch('Hard')" class="h5">Hard ({{hard}})</li>
                     </ul>
-                    <button type="button" class="btn-link h5 hidden-sm hidden-xs pull-right" [mdMenuTriggerFor]="questionMenu"><em class="material-icons">add</em> Add New Question</button>
-                    <md-menu #questionMenu="mdMenu" [overlapTrigger]="false" xPosition="before">
-                        <a md-menu-item (click)="selectSelectionAndDifficultyType('single-answer')"><em class="material-icons">radio_button_checked</em> Single Answer</a>
-                        <a md-menu-item (click)="selectSelectionAndDifficultyType('multiple-answer')"><em class="material-icons">check_box</em> Multiple Answer</a>
-                        <a md-menu-item (click)="selectSelectionAndDifficultyType('programming')"><em class="material-icons">code</em> Programming</a>
-                    </md-menu>
+                    <button type="button" class="btn-link h5 hidden-sm hidden-xs pull-right" [matMenuTriggerFor]="questionMenu"><em class="material-icons">add</em> Add New Question</button>
+                    <mat-menu #questionMenu="matMenu" [overlapTrigger]="false" xPosition="before">
+                        <a mat-menu-item (click)="selectSelectionAndDifficultyType('single-answer')"><em class="material-icons">radio_button_checked</em> Single Answer</a>
+                        <a mat-menu-item (click)="selectSelectionAndDifficultyType('multiple-answer')"><em class="material-icons">check_box</em> Multiple Answer</a>
+                        <a mat-menu-item (click)="selectSelectionAndDifficultyType('programming')"><em class="material-icons">code</em> Programming</a>
+                    </mat-menu>
                 </div>
                 <div class="questions-area" infinite-scroll
                      [infiniteScrollDistance]="2"
@@ -70,12 +70,12 @@
                                     <p class="tags">{{DifficultyLevel[question.difficultyLevel]}}</p>
                                 </div>
                             </div>
-                            <em class="material-icons pull-right" [mdMenuTriggerFor]="quesMoreMenu">more_vert</em>
-                            <md-menu #quesMoreMenu="mdMenu" [overlapTrigger]="false" xPosition="before">
-                                <button md-menu-item (click)="editQuestion(question)">Edit</button>
-                                <button md-menu-item (click)="deleteQuestionDialog(question)">Delete</button>
-                                <button md-menu-item (click)="duplicateQuestion(question)">Duplicate</button>
-                            </md-menu>
+                            <em class="material-icons pull-right" [matMenuTriggerFor]="quesMoreMenu">more_vert</em>
+                            <mat-menu #quesMoreMenu="matMenu" [overlapTrigger]="false" xPosition="before">
+                                <button mat-menu-item (click)="editQuestion(question)">Edit</button>
+                                <button mat-menu-item (click)="deleteQuestionDialog(question)">Delete</button>
+                                <button mat-menu-item (click)="duplicateQuestion(question)">Duplicate</button>
+                            </mat-menu>
                         </div>
                     </ng-container>
                 </div>

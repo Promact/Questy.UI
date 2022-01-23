@@ -1,5 +1,6 @@
 ﻿import { Injectable } from "@angular/core";
 import { HttpService } from "../core/http.service";
+import { ServiceResponse } from "./setup.model";
 
 @Injectable()
 export class SetupService {
@@ -30,6 +31,6 @@ export class SetupService {
    * @param model
    */
   createUser(model: any) {
-    return this.httpService.post(this.createUserUrl, model);
+    return this.httpService.post<ServiceResponse>(this.createUserUrl, model);
   }
 }

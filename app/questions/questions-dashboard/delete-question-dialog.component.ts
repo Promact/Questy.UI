@@ -1,7 +1,8 @@
 ﻿import { Component } from "@angular/core";
 import { Question } from "../question.model";
 import { QuestionsService } from "../questions.service";
-import { MdDialogRef, MdSnackBar } from "@angular/material";
+import { MatDialogRef } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   moduleId: module.id,
@@ -9,16 +10,16 @@ import { MdDialogRef, MdSnackBar } from "@angular/material";
   templateUrl: "delete-question-dialog.html",
 })
 export class DeleteQuestionDialogComponent {
-  private response: JSON;
+  private response!: JSON;
 
   successMessage: string;
   errorMessage: string;
-  question: Question;
+  question!: Question;
 
   constructor(
     private questionService: QuestionsService,
-    private dialogRef: MdDialogRef<DeleteQuestionDialogComponent>,
-    public snackBar: MdSnackBar
+    private dialogRef: MatDialogRef<DeleteQuestionDialogComponent>,
+    public snackBar: MatSnackBar
   ) {
     this.successMessage = "Question deleted successfully.";
     this.errorMessage = "Something went wrong. Question can not be deleted.";
@@ -40,12 +41,12 @@ export class DeleteQuestionDialogComponent {
    * @param question:Question object
    */
   deleteQuestion(question: Question) {
-    this.questionService.deleteQuestion(question.id).subscribe(
-      (response) => {
+    this.questionService.deleteQuestion(question.id).subscribe({
+      next: (response) => {
         this.dialogRef.close(question);
         this.openSnackBar(this.successMessage);
       },
-      (err) => {
+      error: (err) => {
         if (err.status === 400) {
           this.response = err.json();
           this.errorMessage = this.response["error"][0];
@@ -55,6 +56,6 @@ export class DeleteQuestionDialogComponent {
         this.dialogRef.close(null);
         this.openSnackBar(this.errorMessage);
       }
-    );
+    });
   }
 }

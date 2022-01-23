@@ -1,24 +1,21 @@
-﻿import { Component, OnInit, ViewChild } from "@angular/core";
+﻿import { Component, OnInit } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import { ReportService } from "../report.service";
-import { Router, ActivatedRoute } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { TestAttendee } from "../testAttendee";
 import { TestStatus } from "../enum-test-state";
 import { Test } from "../../tests/tests.model";
-import { ConductService } from "../../conduct/conduct.service";
 import { TestInstructions } from "../../conduct/testInstructions.model";
 import { ReportQuestionsCount } from "./reportquestionscount";
 import { TestAttendeeRank } from "./testattendeerank";
-import { AllowTestResume } from "../../tests/enum-allowtestresume";
 import { TestLogs } from "../testlogs.model";
-import { MdSnackBar, MdSnackBarRef } from "@angular/material";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { Report } from "../report.model";
 import { ConnectionService } from "../../core/connection.service";
-
-// import * as jsPDF from 'jspdf';
-declare let jsPDF: any;
-import * as ExcelJS from "exceljs/dist/exceljs.min";
-declare let saveAs: any;
+import jsPDF from "jspdf";
+import ExcelJS from "exceljs/dist/es5";
+import * as _ from "lodash";
+import 'jspdf-autotable';
 
 @Component({
   moduleId: module.id,
@@ -27,15 +24,15 @@ declare let saveAs: any;
 })
 export class TestReportComponent implements OnInit {
   routeForIndividualTestReport: any;
-  showSearchInput: boolean;
+  showSearchInput!: boolean;
   searchString: string;
   testAttendeeArray: TestAttendee[];
   attendeeArray: TestAttendee[];
   sortedAttendeeArray: TestAttendee[];
-  testId: number;
-  starredCandidateArray: string[];
+  testId!: number;
+  starredCandidateArray!: string[];
   testCompletionStatus: string;
-  count: number;
+  count!: number;
   selectedTestStatus: TestStatus;
   headerStarStatus: string;
   rowStarStatus: string;
@@ -48,13 +45,13 @@ export class TestReportComponent implements OnInit {
   isAnyCandidateExist: boolean;
   checkedAllCandidate: boolean;
   isAnyCandidateSelected: boolean;
-  testFinishStatus: string;
-  domain: string;
-  reportLink: string;
+  testFinishStatus!: string;
+  domain!: string;
+  reportLink!: string;
   maxScore: number;
-  averageTestScore: number;
-  averageTimeTaken: number;
-  averageCorrectAttempt: number;
+  averageTestScore!: number;
+  averageTimeTaken!: number;
+  averageCorrectAttempt!: number;
   totalNoOfTestQuestions: number;
   maxDuration: number;
   testInstruction: TestInstructions;
@@ -62,18 +59,18 @@ export class TestReportComponent implements OnInit {
   reportQuestionDetails: ReportQuestionsCount[];
   testAttendeeRank: TestAttendeeRank[];
   testLogs: TestLogs[] = [];
-  isAnyTestResume: boolean;
-  showGenerateReportButton: boolean;
-  isGeneratingReport: boolean;
-  testTime: string;
-  maxDurationOfTest: string;
-  allCount: number;
+  isAnyTestResume!: boolean;
+  showGenerateReportButton!: boolean;
+  isGeneratingReport!: boolean;
+  testTime!: string;
+  maxDurationOfTest!: string;
+  allCount!: number;
   completedTestCount: number;
   expiredTestCount: number;
   blockedTestCount: number;
   unfinishedTestCount: number;
   starredCandidateCount: number;
-  noCandidateFound: boolean;
+  noCandidateFound!: boolean;
   attendees: TestAttendee[] = [];
   testAttendeeSignalR: TestAttendee;
   estimatedTime: string;
@@ -81,13 +78,11 @@ export class TestReportComponent implements OnInit {
   hasTestEnded: boolean;
 
   constructor(
-    private reportService: ReportService,
-    private route: ActivatedRoute,
-    private conductService: ConductService,
-    private router: Router,
-    private snackbarRef: MdSnackBar,
-    private connectionService: ConnectionService,
-    private datePipe: DatePipe
+    private readonly reportService: ReportService,
+    private readonly route: ActivatedRoute,
+    private readonly snackbarRef: MatSnackBar,
+    private readonly connectionService: ConnectionService,
+    private readonly datePipe: DatePipe
   ) {
     this.testAttendeeArray = new Array<TestAttendee>();
     this.attendeeArray = new Array<TestAttendee>();
@@ -192,7 +187,7 @@ export class TestReportComponent implements OnInit {
           : ["star", true];
     });
     this.connectionService.recievedAttendeeId.subscribe((attendeeId) => {
-      const attendee = this.testAttendeeArray.find((x) => x.id === attendeeId);
+      const attendee = this.testAttendeeArray.find((x) => x.id === attendeeId) as TestAttendee;
       attendee.report.isTestPausedUnWillingly = true;
       this.testAttendeeArray.splice(
         this.testAttendeeArray.findIndex((x) => x.id === attendeeId),
@@ -203,12 +198,6 @@ export class TestReportComponent implements OnInit {
     });
     this.connectionService.recievedEstimatedEndTime.subscribe(
       (estimatedTime) => {
-        const options = {
-          weekday: "short",
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        };
 
         const expectedEndDate = new Date(estimatedTime + "Z"); // 'Z' is for telling this method that the time is in UTC!!!
         const currentDate = new Date();
@@ -273,7 +262,7 @@ export class TestReportComponent implements OnInit {
           this.searchString,
           this.selectedTestStatus
         )
-        .subscribe((response) => {
+        .subscribe(() => {
           this.testAttendeeArray.forEach((k) => (k.starredCandidate = status));
           [this.headerStarStatus, this.isAllCandidateStarred] = status
             ? ["star", true]
@@ -292,10 +281,9 @@ export class TestReportComponent implements OnInit {
   setStarredCandidate(testAttendee: TestAttendee) {
     this.reportService
       .setStarredCandidate(testAttendee.id)
-      .subscribe((response) => {
-        this.testAttendeeArray.find(
-          (x) => x.id === testAttendee.id
-        ).starredCandidate = !testAttendee.starredCandidate;
+      .subscribe(() => {
+        const starredCandidate = _.find(this.testAttendeeArray, (ta) => ta.id === testAttendee.id) as TestAttendee;
+        starredCandidate.starredCandidate = !testAttendee.starredCandidate;
         [this.headerStarStatus, this.isAllCandidateStarred] =
           this.testAttendeeArray.some((x) => !x.starredCandidate)
             ? ["star_border", false]
@@ -514,7 +502,7 @@ export class TestReportComponent implements OnInit {
           score: x.report.totalMarksScored,
           percentage: x.report.percentage,
         };
-        reports.push(report);
+        reports.push(report as never);
       }
     });
     const columns = [
@@ -525,6 +513,7 @@ export class TestReportComponent implements OnInit {
       { title: "Percentage", dataKey: "percentage" },
     ];
     const doc = new jsPDF("p", "pt");
+    
     doc.autoTable(columns, reports, {
       styles: {
         pageBreak: "auto",
@@ -644,7 +633,6 @@ export class TestReportComponent implements OnInit {
         const testDate = this.datePipe.transform(x.createdDateTime, "fullDate");
         const datetime = new Date(x.createdDateTime);
         this.calculateLocalTime(datetime);
-        const attendeeId = x.id;
         this.testTakerDetails(x.report.testStatus, this.testId, x.id);
         const testTakers = {
           rollNo: x.rollNumber,
@@ -694,7 +682,7 @@ export class TestReportComponent implements OnInit {
           this.totalNoOfTestQuestions = y.totalTestQuestions;
         });
         const totalMarks =
-          this.totalNoOfTestQuestions * parseInt(this.test.correctMarks);
+          this.totalNoOfTestQuestions * parseInt(String(this.test.correctMarks));
         workSheet1.addRow({
           rollNo: testTakers.rollNo,
           name: testTakers.name,
@@ -893,7 +881,7 @@ export class TestReportComponent implements OnInit {
       this.reportService.generateReport(attendeeIdList).subscribe((res) => {
         this.testAttendeeArray.forEach((o, i, a) => {
           if (res.some((x) => x.id === a[i].id)) {
-            a[i] = res.find((x) => x.id === a[i].id);
+            a[i] = res.find((x) => x.id === a[i].id) as TestAttendee;
           }
           if (!isSomeChecked) {
             a[i].generatingReport = false;
@@ -978,3 +966,7 @@ export class TestReportComponent implements OnInit {
     return count;
   }
 }
+function saveAs(blob: Blob, arg1: string) {
+  throw new Error("Function not implemented.");
+}
+

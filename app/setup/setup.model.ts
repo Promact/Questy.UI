@@ -1,8 +1,8 @@
-﻿export class ConnectionString {
+﻿export interface ConnectionString {
   value: string;
 }
 
-export class EmailSettings {
+export interface EmailSettings {
   server: string;
   port: number;
   userName: string;
@@ -10,20 +10,20 @@ export class EmailSettings {
   connectionSecurityOption: string;
 }
 
-export class RegistrationFields {
+export interface RegistrationFields {
   name: string;
   email: string;
   password: string;
   confirmPassword: string;
 }
 
-export class BasicSetup {
+export interface BasicSetup {
   connectionString: ConnectionString;
   registrationFields: RegistrationFields;
   emailSettings: EmailSettings;
 }
 
-export class ServiceResponse {
+export interface ServiceResponse {
   isSuccess: boolean;
   exceptionMessage: string;
 }

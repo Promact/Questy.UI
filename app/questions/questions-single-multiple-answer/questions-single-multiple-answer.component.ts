@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CategoryService } from "../categories.service";
 import { Category } from "../category.model";
@@ -6,9 +6,7 @@ import { QuestionBase } from "../question";
 import { Router, ActivatedRoute } from "@angular/router";
 import { QuestionsService } from "../questions.service";
 import { DifficultyLevel } from "../enum-difficultylevel";
-import { Question } from "../../questions/question.model";
 import { SingleMultipleAnswerQuestionOption } from "../single-multiple-answer-question-option.model";
-import { QuestionType } from "../enum-questiontype";
 import { MockRouteService } from "./mock-route.service";
 
 @Component({
@@ -139,8 +137,8 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
    * Return category list
    */
   getAllCategories() {
-    this.categoryService.getAllCategories().subscribe(
-      (CategoriesList) => {
+    this.categoryService.getAllCategories().subscribe({
+      next:(CategoriesList) => {
         this.categoryArray = CategoriesList;
         if (
           this.selectedCategoryName === undefined &&
@@ -155,12 +153,12 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
         );
         this.loader = false;
       },
-      (err) => {
+      error: (err) => {
         this.snackBar.open("Failed to load category.", "Dismiss", {
           duration: 3000,
         });
       }
-    );
+    });
   }
 
   /**
@@ -202,7 +200,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
   /**
    * Add option on display page
    */
-  addOption(optionIndex: number) {
+  addOption() {
     if(this.noOfOptionShown !== undefined && this.noOfOptionShown !== null)
     this.noOfOptionShown++;
     this.isClose = this.noOfOptionShown === 2;
@@ -218,7 +216,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
 
   isTwoOptionsSame(optionName: string, optionIndex: number) {
     this.isTwoOptionSame = false;
-    if (optionName.trim() !== "") {
+    if (optionName.trim() !== "" && this.noOfOptionShown !== undefined && this.noOfOptionShown !== null) {
       for (let i = 0; i < this.noOfOptionShown; i++) {
         if (i !== optionIndex)
           this.isTwoOptionSame =
@@ -327,7 +325,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
         (x) => (x.isAnswer = false)
       );
       singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption[
-        this.indexOfOptionSelected
+        this.indexOfOptionSelected as number
       ].isAnswer = true;
     }
     if (this.isduplicateQuestion) {
@@ -376,7 +374,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
       this.categoryName = categoryName;
       this.difficultyLevelSelected = difficultyLevel;
       this.singleMultipleAnswerQuestion.question.categoryID =
-        this.categoryArray.find((x) => x.categoryName === this.categoryName).id;
+      (this.categoryArray.find((x) => x.categoryName === this.categoryName) as Category).id;
     } else if (categoryName === "AllCategory" && difficultyLevel !== "All") {
       this.isCategorySelected = false;
       this.isDifficultyLevelSelected = true;
@@ -386,7 +384,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
       this.isDifficultyLevelSelected = false;
       this.categoryName = categoryName;
       this.singleMultipleAnswerQuestion.question.categoryID =
-        this.categoryArray.find((x) => x.categoryName === this.categoryName).id;
+        (this.categoryArray.find((x) => x.categoryName === this.categoryName) as Category).id;
     }
   }
 }

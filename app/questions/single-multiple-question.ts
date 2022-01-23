@@ -4,7 +4,7 @@ import { Category } from "./category.model";
 import { SingleMultipleAnswerQuestionOption } from "./single-multiple-answer-question-option.model";
 
 export class SingleMultipleAnswerQuestion {
-  id: number;
+  id!: number;
   singleMultipleAnswerQuestionOption: Array<SingleMultipleAnswerQuestionOption>;
 
   constructor() {

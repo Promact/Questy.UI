@@ -15,12 +15,12 @@ export class SetupComponent {
   emailSettings: EmailSettings = new EmailSettings();
   connectionString: ConnectionString = new ConnectionString();
   registrationFields: RegistrationFields = new RegistrationFields();
-  confirmPasswordValid: boolean;
+  confirmPasswordValid!: boolean;
   stepOneErrorMessage = false;
   stepTwoErrorMessage = false;
   stepThreeErrorMessage = false;
-  loader: boolean;
-  exceptionMessage: string;
+  loader!: boolean;
+  exceptionMessage!: string;
 
   constructor(private setupService: SetupService) {
     this.emailSettings.connectionSecurityOption = "None";
@@ -32,17 +32,17 @@ export class SetupComponent {
    */
   validateConnectionString(setup: any) {
     this.loader = true;
-    this.setupService.validateConnectionString(this.connectionString).subscribe(
-      (response) => {
+    this.setupService.validateConnectionString(this.connectionString).subscribe({
+      next:(response) => {
         if (response === true) setup.next();
         else this.stepOneErrorMessage = true;
         this.loader = false;
       },
-      (err) => {
+      error:(err) => {
         this.stepOneErrorMessage = true;
         this.loader = false;
       }
-    );
+    });
   }
 
   /**
@@ -82,8 +82,8 @@ export class SetupComponent {
     this.basicSetup.emailSettings = this.emailSettings;
     this.basicSetup.connectionString = this.connectionString;
     this.basicSetup.registrationFields = this.registrationFields;
-    this.setupService.createUser(this.basicSetup).subscribe(
-      (serviceResponse: ServiceResponse) => {
+    this.setupService.createUser(this.basicSetup).subscribe({
+      next: (serviceResponse: ServiceResponse) => {
         if (serviceResponse.isSuccess === true) {
           setup.complete();
           this.navigateToLogin();
@@ -93,11 +93,11 @@ export class SetupComponent {
         }
         this.loader = false;
       },
-      (err) => {
+      error: (err) => {
         this.stepThreeErrorMessage = true;
         this.loader = false;
       }
-    );
+    });
   }
 
   /**

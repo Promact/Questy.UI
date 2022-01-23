@@ -8,11 +8,11 @@
       <div class="spinner">
       </div>
     </div>
-    <form #codeSnippetForm="ngForm" *ngIf="(isCategoryReady && isLanguageReady)" (ngSubmit)="addCodingQuestion(codeSnippetForm.valid)" onsubmit="saveBtn.disabled = true; return true;">
+    <form #codeSnippetForm="ngForm" *ngIf="(isCategoryReady && isLanguageReady)" (ngSubmit)="addCodingQuestion(codeSnippetForm?.valid)" onsubmit="saveBtn.disabled = true; return true;">
       <div class="form-fields">
           <div class="form-group">
               <label>Section</label><em class="danger-text h4">*</em>
-              <select class="form-control width-percent-60" id="categorySelect" (change)="selectCategory($event.target.value)" [(ngModel)]="selectedCategory" required name="categorySelect" #categorySelect="ngModel">
+              <select title="categorySelect" class="form-control width-percent-60" id="categorySelect" (change)="selectCategory($event.target.value)" [(ngModel)]="selectedCategory" required name="categorySelect" #categorySelect="ngModel">
                   <option [disabled]="categorySelect.dirty || isQuestionEdited || isQuestionDuplicated || isCategorySelected" default value="AllCategory">Please select a Category</option>
                   <option *ngFor="let category of categoryList">{{category.categoryName}}</option>
               </select>
@@ -26,7 +26,7 @@
           </div>
         <div class="form-group">
           <label>Difficulty Level</label>
-          <select class="form-control small-width" name="difficulty" [(ngModel)]="selectedDifficulty" (change)="selectDifficulty($event.target.value)">
+          <select title="difficulty" class="form-control small-width" name="difficulty" [(ngModel)]="selectedDifficulty" (change)="selectDifficulty($event.target.value)">
             <option default>Easy</option>
             <option>Medium</option>
             <option>Hard</option>
@@ -54,28 +54,28 @@
         </div>
         <div class="form-group">
           <label>Code Languages</label><em class="danger-text h4">*</em>
-          <md-chip-list class="form-control width-percent-60" (click)="autocomplete.focus()">
-            <md-chip *ngFor="let selectedLanguage of selectedLanguageList">{{selectedLanguage}}<i class="material-icons" (click)="removeLanguage(selectedLanguage)">close</i></md-chip>
-            <md-input-container>
-              <input mdInput placeholder="Code Languages" [mdAutocomplete]="code" #autocomplete ngModel name="languageInput" #languageInput="ngModel">
-            </md-input-container>
-            <md-autocomplete #code="mdAutocomplete">
-              <md-option *ngFor="let language of codingLanguageList" (click)="selectLanguage(language)">{{language}}</md-option>
-            </md-autocomplete>
-          </md-chip-list>
+          <mat-chip-list class="form-control width-percent-60" (click)="autocomplete.focus()">
+            <mat-basic-chip *ngFor="let selectedLanguage of selectedLanguageList">{{selectedLanguage}}<i class="material-icons" (click)="removeLanguage(selectedLanguage)">close</i></mat-basic-chip>
+            <mat-form-field>
+              <input matInput placeholder="Code Languages" [matAutocomplete]="code" #autocomplete ngModel name="languageInput" #languageInput="ngModel">
+            </mat-form-field>
+            <mat-autocomplete #code="matAutocomplete">
+              <mat-option *ngFor="let language of codingLanguageList" (click)="selectLanguage(language)">{{language}}</mat-option>
+            </mat-autocomplete>
+          </mat-chip-list>
           <div class="errors-container">
-            <div *ngIf="nolanguageSelected && languageInput.touched">
+            <div *ngIf="nolanguageSelected && languageInput?.touched">
               <span class="error-msg">Please select atleast one programming language</span>
             </div>
           </div>
         </div>
         <div class="form-group">
           <label>Score Settings</label>
-          <md-checkbox [checked]="questionModel.codeSnippetQuestion.checkCodeComplexity" (change)="questionModel.codeSnippetQuestion.checkCodeComplexity = !questionModel.codeSnippetQuestion.checkCodeComplexity">Check code complexity</md-checkbox>
-          <md-checkbox [checked]="questionModel.codeSnippetQuestion.checkTimeComplexity" (change)="questionModel.codeSnippetQuestion.checkTimeComplexity = !questionModel.codeSnippetQuestion.checkTimeComplexity">Check time complexity</md-checkbox>
-          <md-checkbox [checked]="questionModel.codeSnippetQuestion.runBasicTestCase" (change)="questionModel.codeSnippetQuestion.runBasicTestCase = !questionModel.codeSnippetQuestion.runBasicTestCase">Run basic test cases</md-checkbox>
-          <md-checkbox [checked]="questionModel.codeSnippetQuestion.runCornerTestCase" (change)="questionModel.codeSnippetQuestion.runCornerTestCase = !questionModel.codeSnippetQuestion.runCornerTestCase">Run corner test cases</md-checkbox>
-          <md-checkbox [checked]="questionModel.codeSnippetQuestion.runNecessaryTestCase" (change)="questionModel.codeSnippetQuestion.runNecessaryTestCase = !questionModel.codeSnippetQuestion.runNecessaryTestCase">Run necessary test cases</md-checkbox>
+          <mat-checkbox [checked]="questionModel.codeSnippetQuestion.checkCodeComplexity" (change)="questionModel.codeSnippetQuestion.checkCodeComplexity = !questionModel.codeSnippetQuestion.checkCodeComplexity">Check code complexity</mat-checkbox>
+          <mat-checkbox [checked]="questionModel.codeSnippetQuestion.checkTimeComplexity" (change)="questionModel.codeSnippetQuestion.checkTimeComplexity = !questionModel.codeSnippetQuestion.checkTimeComplexity">Check time complexity</mat-checkbox>
+          <mat-checkbox [checked]="questionModel.codeSnippetQuestion.runBasicTestCase" (change)="questionModel.codeSnippetQuestion.runBasicTestCase = !questionModel.codeSnippetQuestion.runBasicTestCase">Run basic test cases</mat-checkbox>
+          <mat-checkbox [checked]="questionModel.codeSnippetQuestion.runCornerTestCase" (change)="questionModel.codeSnippetQuestion.runCornerTestCase = !questionModel.codeSnippetQuestion.runCornerTestCase">Run corner test cases</mat-checkbox>
+          <mat-checkbox [checked]="questionModel.codeSnippetQuestion.runNecessaryTestCase" (change)="questionModel.codeSnippetQuestion.runNecessaryTestCase = !questionModel.codeSnippetQuestion.runNecessaryTestCase">Run necessary test cases</mat-checkbox>
           <div class="errors-container"></div>
         </div>
         <div class="form-group">
@@ -83,9 +83,9 @@
           <br />
           <button type="button" class="btn btn-primary" [hidden]="formControlModel.showTestCase" (click)="formControlModel.showTestCase=true;addTestCases()">Add Test Case</button>
           <br />
-          <md2-accordion *ngFor="let testCase of testCases;let i = index">
-            <md2-accordion-tab class="collapsible-block" [hidden]="!formControlModel.showTestCase" [active]="!isQuestionEdited">
-              <md2-accordion-header class="collapsible-header clearfix">
+          <mat-accordion *ngFor="let testCase of testCases;let i = index">
+            <mat-expansion-panel class="collapsible-block" [hidden]="!formControlModel.showTestCase" [expanded]="!isQuestionEdited">
+              <mat-expansion-panel-header class="collapsible-header clearfix">
                 <div class="title-info h2 pull-left">
                   <span>Type: {{getTestCaseString(testCase.testCaseType)}}</span>
                   <span>Title: {{testCase.testCaseTitle}}</span>
@@ -95,11 +95,11 @@
                   <span class="delete-option h7" (click)="removeTestCases(i)"><em class="material-icons">delete</em> <span>Delete</span></span>
                   <span class="collapsible-icon"><em class="material-icons add-icon">add</em><em class="material-icons remove-icon">remove</em></span>
                 </div>
-              </md2-accordion-header>
+              </mat-expansion-panel-header>
               <div class="collapsible-body">
                 <div class="form-group">
                   <label>Test Case Title</label><em class="danger-text h4">*</em>
-                  <input type="text" [(ngModel)]="testCase.testCaseTitle" class="form-control width-percent-60" (focusout)="testCase.testCaseTitle = trimString(testCase.testCaseTitle)" required name="title_{{testCase.id}}" #title="ngModel" />
+                  <input title="testCaseTitle" type="text" [(ngModel)]="testCase.testCaseTitle" class="form-control width-percent-60" (focusout)="testCase.testCaseTitle = trimString(testCase.testCaseTitle)" required name="title_{{testCase.id}}" #title="ngModel" />
                   <div class="errors-container">
                     <div *ngIf="title.errors && (title.dirty || title.touched)">
                       <p class="error-msg">Test Case Title is required</p>
@@ -108,7 +108,7 @@
                 </div>
                 <div class="form-group">
                   <label>Test Case Description</label><em class="danger-text h4">*</em>
-                  <textarea [(ngModel)]="testCase.testCaseDescription" class="form-control width-percent-60" rows="3" (focusout)="testCase.testCaseDescription = trimString(testCase.testCaseDescription)" required name="description_{{testCase.id}}" #description="ngModel"></textarea>
+                  <textarea title="testCaseDescription" [(ngModel)]="testCase.testCaseDescription" class="form-control width-percent-60" rows="3" (focusout)="testCase.testCaseDescription = trimString(testCase.testCaseDescription)" required name="description_{{testCase.id}}" #description="ngModel"></textarea>
                   <div class="errors-container">
                     <div *ngIf="description.errors && (description.dirty || description.touched)">
                       <p class="error-msg">Test Case Description is required</p>
@@ -117,7 +117,7 @@
                 </div>
                 <div class="form-group">
                   <label>Test Case Type</label>
-                  <select class="form-control width-percent-60" (change)="validateTestCase(testCase, $event)" [(ngModel)]="testCase.testCaseType" required name="type_{{testCase.id}}" #type="ngModel">
+                  <select title="testCaseType" class="form-control width-percent-60" (change)="validateTestCase(testCase, $event)" [(ngModel)]="testCase.testCaseType" required name="type_{{testCase.id}}" #type="ngModel">
                     <option value="0">Default</option>
                     <option value="1">Basic</option>
                     <option value="2">Necessary</option>
@@ -141,7 +141,7 @@
                 </div>
                 <div class="form-group">
                   <label>Test Case Input Values</label><em class="danger-text h4">*</em>
-                  <textarea [(ngModel)]="testCase.testCaseInput" class="form-control width-percent-60" rows="3" (focusout)="testCase.testCaseInput = trimString(testCase.testCaseInput)" required name="input_{{testCase.id}}" #input="ngModel"></textarea>
+                  <textarea title="testCaseInput" [(ngModel)]="testCase.testCaseInput" class="form-control width-percent-60" rows="3" (focusout)="testCase.testCaseInput = trimString(testCase.testCaseInput)" required name="input_{{testCase.id}}" #input="ngModel"></textarea>
                   <div class="errors-container">
                     <div *ngIf="input.errors && (input.dirty || input.touched)">
                       <p class="error-msg">Test Case Input is required</p>
@@ -150,7 +150,7 @@
                 </div>
                 <div class="form-group">
                   <label>Test Case Expected Values</label><em class="danger-text h4">*</em>
-                  <textarea [(ngModel)]="testCase.testCaseOutput" class="form-control width-percent-60" rows="3" (focusout)="testCase.testCaseOutput = trimString(testCase.testCaseOutput)" required name="output_{{testCase.id}}" #output="ngModel"></textarea>
+                  <textarea title="testCaseOutput" [(ngModel)]="testCase.testCaseOutput" class="form-control width-percent-60" rows="3" (focusout)="testCase.testCaseOutput = trimString(testCase.testCaseOutput)" required name="output_{{testCase.id}}" #output="ngModel"></textarea>
                   <div class="errors-container">
                     <div *ngIf="output.errors && (output.dirty || output.touched)">
                       <p class="error-msg">Test Case Output is required</p>
@@ -158,8 +158,8 @@
                   </div>
                 </div>
               </div>
-            </md2-accordion-tab>
-          </md2-accordion>
+            </mat-expansion-panel> 
+          </mat-accordion>          
           <button type="button" class="add-testcase-btn h2" [hidden]="!formControlModel.showTestCase" (click)="formControlModel.showNewTestCase=true;addTestCases()">Add New Test Case</button>
           <div class="errors-container" *ngIf="!isDefaultTestCaseAdded">
               <span class="error-msg">Add one or more default test case(s)</span>
@@ -168,7 +168,7 @@
       </div>
       <div class="actions-area">
         <button type="button" class="btn" (click)="cancelButtonClicked()">Cancel</button>
-        <button type="submit" class="btn btn-primary" [disabled]="!validateSelectedCategory() || !codeSnippetForm.valid || nolanguageSelected > 0 || !this.isDefaultTestCaseAdded" id="saveBtn">Save</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!validateSelectedCategory() || !codeSnippetForm.valid || nolanguageSelected || !this.isDefaultTestCaseAdded" id="saveBtn">Save</button>
       </div>
     </form>
   </div>

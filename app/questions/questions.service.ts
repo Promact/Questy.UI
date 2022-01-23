@@ -1,9 +1,7 @@
 ﻿import { Injectable } from "@angular/core";
 import { HttpService } from "../core/http.service";
-import { Question } from "./question.model";
 import { QuestionBase } from "./question";
 import { QuestionDisplay } from "../questions/question-display";
-import { DifficultyLevel } from "../questions/enum-difficultylevel";
 import { QuestionCount } from "./numberOfQuestion";
 
 @Injectable()
@@ -52,7 +50,7 @@ export class QuestionsService {
    * gets list of coding languages
    */
   getCodingLanguage() {
-    return this.httpService.get(this.questionsApiUrl + "/codinglanguage");
+    return this.httpService.get<string[]>(`${this.questionsApiUrl}/codinglanguage`);
   }
 
   /**
@@ -85,7 +83,7 @@ export class QuestionsService {
    * @param question: QuestionBase class object
    */
   updateQuestionById(id: number, question: QuestionBase) {
-    return this.httpService.put(this.questionsApiUrl + "/" + id, question);
+    return this.httpService.put(`${this.questionsApiUrl}/${id}`, question);
   }
 
   /**

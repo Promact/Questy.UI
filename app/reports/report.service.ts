@@ -1,7 +1,8 @@
 ﻿import { Injectable } from "@angular/core";
+import { Test } from "app/tests/tests.model";
 import { HttpService } from "../core/http.service";
-import { TestReportComponent } from "../reports/test-report/test-report.component";
 import { Report } from "./report.model";
+import { ReportQuestionsCount } from "./test-report/reportquestionscount";
 import { TestAttendee } from "./testAttendee";
 
 @Injectable()
@@ -15,8 +16,8 @@ export class ReportService {
    * @param testId: Id of the test
    */
   getTestName(testId: number) {
-    return this.httpService.get(
-      this.reportsApiUrl + "/testName" + "/" + testId
+    return this.httpService.get<Test>(
+      `${this.reportsApiUrl}/testName/${testId}`
     );
   }
 
@@ -25,7 +26,7 @@ export class ReportService {
    * @param testId: Id of the test
    */
   getAllTestAttendees(testId: number) {
-    return this.httpService.get(this.reportsApiUrl + "/" + testId);
+    return this.httpService.get<TestAttendee[]>(`${this.reportsApiUrl}/${testId}`);
   }
 
   /**
@@ -34,7 +35,7 @@ export class ReportService {
    */
   setStarredCandidate(attendeeId: number) {
     return this.httpService.post(
-      this.reportsApiUrl + "/star" + "/" + attendeeId,
+      `${this.reportsApiUrl}/star/${attendeeId}`,
       attendeeId
     );
   }
@@ -104,8 +105,8 @@ export class ReportService {
    * @param testId: testId Id of the test
    */
   getAllAttendeeMarksDetails(testId: number) {
-    return this.httpService.get(
-      this.reportsApiUrl + "/" + testId + "/allAttendeeMarksDeatils"
+    return this.httpService.get<ReportQuestionsCount[]>(
+      `${this.reportsApiUrl}/${testId}/allAttendeeMarksDeatils`
     );
   }
 
@@ -198,8 +199,8 @@ export class ReportService {
   }
 
   generateReport(attendeeIdList: number[]) {
-    return this.httpService.post(
-      this.reportsApiUrl + "/generateReport",
+    return this.httpService.post<TestAttendee[]>(
+      `${this.reportsApiUrl}/generateReport`,
       attendeeIdList
     );
   }

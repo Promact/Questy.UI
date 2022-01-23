@@ -1,6 +1,6 @@
 ﻿import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { FormWizardModule } from "angular2-wizard-fix";
+import { FormWizardModule } from "@ever-co/angular2-wizard";
 import { SetupComponent } from "./setup.component";
 import { SharedModule } from "../shared/shared.module";
 import { CoreModule } from "../core/core.module";

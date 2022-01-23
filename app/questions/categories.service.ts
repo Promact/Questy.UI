@@ -1,6 +1,5 @@
 ﻿import { Injectable } from "@angular/core";
 import { HttpService } from "../core/http.service";
-import { QuestionsDashboardComponent } from "./questions-dashboard/questions-dashboard.component";
 import { Category } from "./category.model";
 
 @Injectable()
@@ -29,7 +28,7 @@ export class CategoryService {
    * @param category: Object of type Category
    */
   updateCategory(id: number, category: Category) {
-    return this.httpService.put(this.categoriesApiUrl + "/" + id, category);
+    return this.httpService.put(`${this.categoriesApiUrl}/${id}`, category);
   }
 
   /**
@@ -37,6 +36,6 @@ export class CategoryService {
    * @param categoryId: Id of the category
    */
   deleteCategory(id: number) {
-    return this.httpService.delete(this.categoriesApiUrl + "/" + id);
+    return this.httpService.delete<Category>(`${this.categoriesApiUrl}/${id}`);
   }
 }

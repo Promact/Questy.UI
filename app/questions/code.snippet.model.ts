@@ -1,11 +1,11 @@
 ﻿import { CodeSnippetQuestionsTestCases } from "../questions/code-snippet-questions-test-cases.model";
 
 export class CodeSnippetQuestion {
-  checkCodeComplexity: boolean;
-  checkTimeComplexity: boolean;
-  runBasicTestCase: boolean;
-  runCornerTestCase: boolean;
-  runNecessaryTestCase: boolean;
+  checkCodeComplexity!: boolean;
+  checkTimeComplexity!: boolean;
+  runBasicTestCase!: boolean;
+  runCornerTestCase!: boolean;
+  runNecessaryTestCase!: boolean;
   languageList: string[];
   codeSnippetQuestionTestCases: CodeSnippetQuestionsTestCases[];
 

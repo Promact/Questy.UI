@@ -1,10 +1,10 @@
 ﻿import { Question } from "./question.model";
 import { QuestionBase } from "./question";
 
-export class Category {
+export interface Category {
   id: number;
   categoryName: string;
-  questionList: QuestionBase[] = [];
+  questionList: QuestionBase[];
   isAccordionOpen: boolean;
   isAlreadyClicked: boolean;
   selectAll: boolean;

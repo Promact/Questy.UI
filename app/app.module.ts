@@ -8,7 +8,6 @@ import { QuestionsModule } from "./questions/questions.module";
 import { TestsModule } from "./tests/tests.module";
 import { ProfileModule } from "./profile/profile.module";
 import { ReportsModule } from "./reports/reports.module";
-import { MatMenu } from "@angular/material/menu";
 
 @NgModule({
   bootstrap: [AppComponent],
@@ -20,11 +19,9 @@ import { MatMenu } from "@angular/material/menu";
     QuestionsModule,
     TestsModule,
     ProfileModule,
-    ReportsModule,
-    MatMenu,
+    ReportsModule,    
   ],
   providers: [],
-  declarations: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  declarations: [AppComponent],  
 })
 export class AppModule {}

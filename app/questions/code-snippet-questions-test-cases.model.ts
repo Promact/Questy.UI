@@ -1,6 +1,6 @@
 ﻿import { TestCaseType } from "../questions/enum-test-case-type";
 
-export class CodeSnippetQuestionsTestCases {
+export interface CodeSnippetQuestionsTestCases {
   id: number;
   testCaseTitle: string;
   testCaseDescription: string;

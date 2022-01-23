@@ -4,11 +4,13 @@ import { CategoryService } from "../categories.service";
 import { Category } from "../category.model";
 import { QuestionBase } from "../question";
 import { DifficultyLevel } from "../enum-difficultylevel";
-import { MdSnackBar } from "@angular/material";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router, ActivatedRoute } from "@angular/router";
 import { CodeSnippetQuestionsTestCases } from "../../questions/code-snippet-questions-test-cases.model";
 import { TestCaseType } from "../enum-test-case-type";
 import { QuestionType } from "../enum-questiontype";
+import * as _ from "lodash";
+import { Code } from "app/conduct/code.model";
 
 @Component({
   moduleId: module.id,
@@ -28,20 +30,21 @@ export class QuestionsProgrammingComponent implements OnInit {
   nolanguageSelected: boolean;
   isCategoryReady: boolean;
   isLanguageReady: boolean;
-  isFormSubmitted: boolean;
+  isFormSubmitted!: boolean;
   isQuestionEdited: boolean;
   isQuestionDuplicated: boolean;
   isDefaultTestCaseAdded: boolean;
   isCkeditorDirtly: boolean;
-  code: any;
+  code!: Code;
   testCases: CodeSnippetQuestionsTestCases[];
-  isCategorySelected: boolean;
-  selectedCategoryName: string;
-  selectedDifficultyLevel: string;
+  isCategorySelected!: boolean;
+  selectedCategoryName!: string;
+  selectedDifficultyLevel!: string;
   // To enable enum testCaseType in template
-  testCaseType: TestCaseType;
-  questionId: number;
-  loader: boolean;
+  // To enable enum testCaseType in template
+  testCaseType!: TestCaseType;
+  questionId!: number;
+  loader!: boolean;
   categorySelect: any;
 
   private successMessage = "Question saved successfully.";
@@ -51,7 +54,7 @@ export class QuestionsProgrammingComponent implements OnInit {
   constructor(
     private questionsService: QuestionsService,
     private categoryService: CategoryService,
-    private snackBar: MdSnackBar,
+    private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -71,6 +74,7 @@ export class QuestionsProgrammingComponent implements OnInit {
     this.isDefaultTestCaseAdded = false;
     this.isQuestionEmpty = true;
     this.isCkeditorDirtly = false;
+    this.categoryList = new Array<Category>();
   }
 
   ngOnInit() {
@@ -125,7 +129,7 @@ export class QuestionsProgrammingComponent implements OnInit {
         this.selectedDifficulty =
           DifficultyLevel[this.questionModel.question.difficultyLevel];
         this.testCases =
-          this.questionModel.codeSnippetQuestion.codeSnippetQuestionTestCases;
+          this.questionModel.codeSnippetQuestion?.codeSnippetQuestionTestCases as CodeSnippetQuestionsTestCases[];
         this.isDefaultTestCaseAdded = this.testCases.some(
           (testcase) => +testcase.testCaseType === TestCaseType.Default
         );
@@ -206,7 +210,7 @@ export class QuestionsProgrammingComponent implements OnInit {
       this.codingLanguageList.sort();
 
       if (this.isQuestionEdited || this.isQuestionDuplicated) {
-        this.questionModel.codeSnippetQuestion.languageList.forEach((x) => {
+        this.questionModel.codeSnippetQuestion?.languageList.forEach((x) => {
           this.selectLanguage(x);
         });
       }
@@ -234,9 +238,7 @@ export class QuestionsProgrammingComponent implements OnInit {
       );
       // If question is being editted then set the category
       if (this.isQuestionEdited || this.isQuestionDuplicated)
-        this.selectedCategory = this.categoryList.find(
-          (x) => x.id === this.questionModel.question.categoryID
-        ).categoryName;
+        this.selectedCategory = _.find(this.categoryList, (category) => category.id === this.questionModel.question.categoryID)?.categoryName as string;
       this.loader = false;
       this.isCategoryReady = true;
     });
@@ -285,9 +287,11 @@ export class QuestionsProgrammingComponent implements OnInit {
    * @param category : category to be added
    */
   selectCategory(category: string) {
-    this.questionModel.question.categoryID = this.categoryList.find(
-      (x) => x.categoryName === category
-    ).id;
+    this.categoryList = this.categoryList.filter((x) => x.categoryName !== category);
+    this.selectedCategory = category;
+    if (this.categoryList !== undefined && this.categoryList !== null && category !== undefined && category !== null) {
+      this.questionModel.question.categoryID = (_.find(this.categoryList, (cat) => cat.categoryName === category) as Category).id;   
+    } 
   }
 
   /**
@@ -331,7 +335,7 @@ export class QuestionsProgrammingComponent implements OnInit {
     }
   }
 
-  private validateTestCase(
+  public validateTestCase(
     testCase: CodeSnippetQuestionsTestCases,
     $event: any
   ) {
@@ -360,8 +364,7 @@ export class QuestionsProgrammingComponent implements OnInit {
         this.testCases.forEach((x) => (x.id = 0));
         this.questionModel.question.id = 0;
       }
-      this.questionModel.codeSnippetQuestion.codeSnippetQuestionTestCases =
-        this.testCases;
+      this.questionModel.codeSnippetQuestion.codeSnippetQuestionTestCases = this.testCases;
       this.questionModel.codeSnippetQuestion.languageList = [];
       this.selectedLanguageList.forEach((language) => {
         this.questionModel.codeSnippetQuestion.languageList.push(language);
@@ -410,9 +413,9 @@ export class QuestionsProgrammingComponent implements OnInit {
       this.selectedDifficulty = difficultyLevel;
       this.questionModel.question.difficultyLevel =
         DifficultyLevel[this.selectedDifficulty];
-      this.questionModel.question.categoryID = this.categoryList.find(
+      this.questionModel.question.categoryID = (this.categoryList.find(
         (x) => x.categoryName === this.selectedCategory
-      ).id;
+      ) as Category).id;
     } else if (categoryName === "AllCategory" && difficultyLevel !== "All") {
       this.isCategorySelected = false;
       this.selectedDifficulty = difficultyLevel;
@@ -420,9 +423,9 @@ export class QuestionsProgrammingComponent implements OnInit {
         DifficultyLevel[this.selectedDifficulty];
     } else if (categoryName !== "AllCategory" && difficultyLevel === "All") {
       this.isCategorySelected = true;
-      this.questionModel.question.categoryID = this.categoryList.find(
+      this.questionModel.question.categoryID = (this.categoryList.find(
         (x) => x.categoryName === this.selectedCategory
-      ).id;
+      ) as Category).id;
     }
   }
 
@@ -439,7 +442,7 @@ export class QuestionsProgrammingComponent implements OnInit {
 }
 
 class FormControlModel {
-  showTestCase: boolean;
-  collapseTestCase: boolean;
-  showNewTestCase: boolean;
+  showTestCase!: boolean;
+  collapseTestCase!: boolean;
+  showNewTestCase!: boolean;
 }
