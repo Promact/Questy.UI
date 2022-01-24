@@ -13,10 +13,11 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Report } from "../report.model";
 import { ConnectionService } from "../../core/connection.service";
 import jsPDF from "jspdf";
-import ExcelJS from "exceljs/dist/es5";
-import * as _ from "lodash-es";
-import { applyPlugin } from "jspdf-autotable";
+import { Workbook } from "exceljs";
+import { find } from "lodash-es";
+import autoTable from "jspdf-autotable";
 import { MatTableDataSource } from "@angular/material/table";
+import { saveAs } from "file-saver";
 
 @Component({
   moduleId: module.id,
@@ -24,7 +25,7 @@ import { MatTableDataSource } from "@angular/material/table";
   templateUrl: "test-report.html",
 })
 export class TestReportComponent implements OnInit {
-  routeForIndividualTestReport: any;
+  routeForIndividualTestReport: unknown;
   showSearchInput!: boolean;
   searchString: string;
   testAttendeeArray: TestAttendee[];
@@ -205,7 +206,7 @@ export class TestReportComponent implements OnInit {
     });
     this.connectionService.recievedEstimatedEndTime.subscribe(
       (estimatedTime) => {
-        const expectedEndDate = new Date(estimatedTime + "Z"); // 'Z' is for telling this method that the time is in UTC!!!
+        const expectedEndDate = new Date(`${String(estimatedTime)}Z`); // 'Z' is for telling this method that the time is in UTC!!!
         const currentDate = new Date();
 
         this.estimatedTime =
@@ -286,7 +287,7 @@ export class TestReportComponent implements OnInit {
    */
   setStarredCandidate(testAttendee: TestAttendee) {
     this.reportService.setStarredCandidate(testAttendee.id).subscribe(() => {
-      const starredCandidate = _.find(
+      const starredCandidate = find(
         this.testAttendeeArray,
         (ta) => ta.id === testAttendee.id
       ) as TestAttendee;
@@ -372,11 +373,7 @@ export class TestReportComponent implements OnInit {
    * Initiates filtering of candidates
    */
   filterList() {
-    this.filter(
-      this.selectedTestStatus,
-      this.searchString,
-      this.showStarCandidates
-    );
+    this.filter(this.selectedTestStatus, this.searchString);
     [this.headerStarStatus, this.isAllCandidateStarred] =
       this.testAttendeeArray.some((x) => !x.starredCandidate) ||
       this.testAttendeeArray.length === 0
@@ -390,11 +387,7 @@ export class TestReportComponent implements OnInit {
    * @param selectedTestStatus Status selected for filtering
    * @param searchString String that to be searched
    */
-  filter(
-    selectedTestStatus: TestStatus,
-    searchString: string,
-    showStarCandidates: boolean
-  ) {
+  filter(selectedTestStatus: TestStatus, searchString: string) {
     const tempAttendeeArray: TestAttendee[] = [];
     searchString = searchString.toLowerCase();
     this.testAttendeeArray = [];
@@ -519,16 +512,15 @@ export class TestReportComponent implements OnInit {
       { title: "Score", dataKey: "score" },
       { title: "Percentage", dataKey: "percentage" },
     ];
-    applyPlugin(jsPDF);
     const doc = new jsPDF("p", "pt");
-    doc.autoTable(columns, reports, {
-      styles: {
-        pageBreak: "auto",
-        tableWidth: "auto",
-      },
+    autoTable(doc, {
+      columns: columns,
+      body: reports,
+      pageBreak: "auto",
+      tableWidth: "auto",
       margin: { top: 50 },
       theme: "grid",
-      addPageContent: function () {
+      didDrawPage: () => {
         doc.text(testName, 40, 30);
       },
     });
@@ -545,22 +537,22 @@ export class TestReportComponent implements OnInit {
    */
   getExcelDetails() {
     this.loader = true;
-    this.reportService
-      .getAllAttendeeMarksDetails(this.testId)
-      .subscribe((res) => {
+    this.reportService.getAllAttendeeMarksDetails(this.testId).subscribe({
+      next: async (res) => {
         this.reportQuestionDetails = res;
         this.loader = false;
-        this.downloadTestReportExcel();
-      });
+        await this.downloadTestReportExcel();
+      },
+    });
   }
 
   /**
    * Download test score report in excel format
    */
-  downloadTestReportExcel() {
+  async downloadTestReportExcel() {
     const testName = this.test.testName;
     const space = " ";
-    const workBook = new ExcelJS.Workbook();
+    const workBook = new Workbook();
     workBook.views = [
       {
         x: 0,
@@ -569,6 +561,7 @@ export class TestReportComponent implements OnInit {
         height: 20000,
         firstSheet: 0,
         visibility: "visible",
+        activeTab: 1,
       },
     ];
     const workSheet1 = workBook.addWorksheet("Test-Takers", {
@@ -665,11 +658,9 @@ export class TestReportComponent implements OnInit {
         });
         this.reportQuestionDetails.filter((y) => {
           if (y.testAttendeeId === x.id) {
-            const timeTaken =
-              Math.trunc(testReport.timetaken / 60) +
-              " mins " +
-              Math.trunc(Math.floor(testReport.timetaken % 60)) +
-              " secs ";
+            const timeTaken = `${Math.trunc(
+              testReport.timetaken / 60
+            )} mins ${Math.trunc(Math.floor(testReport.timetaken % 60))} secs `;
             workSheet3.addRow({
               rollNo: testReport.rollNo,
               name: testReport.name,
@@ -714,12 +705,12 @@ export class TestReportComponent implements OnInit {
       avgTotalTime: this.averageTimeTaken,
       avgCorrectAttempts: this.averageCorrectAttempt,
     });
-    workBook.xlsx.writeBuffer(workBook).then(function (buffer: any) {
-      const blob = new Blob([buffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64",
-      });
-      saveAs(blob, testName + "_Detailed_Report.xlsx");
+    const buffer = await workBook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64",
     });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    saveAs(blob, `${testName}_Detailed_Report.xlsx`);
     this.checkedAllCandidate = false;
     this.testAttendeeArray.forEach((x) => {
       x.checkedCandidate = false;
@@ -742,7 +733,7 @@ export class TestReportComponent implements OnInit {
       localHours += hours;
       localMinutes = minutes;
     }
-    this.testTime = localHours + " : " + localMinutes;
+    this.testTime = `${localHours} : ${localMinutes}`;
   }
 
   /**
@@ -787,13 +778,7 @@ export class TestReportComponent implements OnInit {
       case 3:
         this.testFinishStatus = "Blocked";
     }
-    this.reportLink =
-      "    " +
-      this.domain +
-      "/reports/test/" +
-      testID +
-      "/individual-report/" +
-      testAttendeeId;
+    this.reportLink = `${this.domain}/reports/test/${testID}/individual-report/${testAttendeeId}`;
   }
 
   /**
@@ -809,11 +794,9 @@ export class TestReportComponent implements OnInit {
       totalScoreOfAllAttendees += x.report.totalMarksScored;
       if (this.maxDuration < x.report.timeTakenByAttendee) {
         this.maxDuration = x.report.timeTakenByAttendee;
-        this.maxDurationOfTest =
-          Math.trunc(this.maxDuration / 60) +
-          " mins " +
-          Math.trunc(Math.floor(this.maxDuration % 60)) +
-          " secs ";
+        this.maxDurationOfTest = `${Math.trunc(
+          this.maxDuration / 60
+        )} mins ${Math.trunc(Math.floor(this.maxDuration % 60))} secs `;
       }
       totalCorrectAttemptByAllAttendees = x.report.totalCorrectAttempts;
     });
@@ -850,7 +833,7 @@ export class TestReportComponent implements OnInit {
    * @param $event: is of type Event and is used to call stopPropagation()
    * @param search: is of type any
    */
-  selectTextArea($event: any, search: any) {
+  selectTextArea($event: MouseEvent, search: HTMLInputElement) {
     $event.stopPropagation();
     setTimeout(() => {
       search.select();
@@ -973,7 +956,4 @@ export class TestReportComponent implements OnInit {
 
     return count;
   }
-}
-function saveAs(blob: Blob, arg1: string) {
-  throw new Error("Function not implemented.");
 }

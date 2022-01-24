@@ -1,7 +1,12 @@
 ﻿import { Injectable } from "@angular/core";
 import { ApplicationUser } from "app/profile/profile.model";
 import { HttpService } from "../core/http.service";
-import { EmailSettings, ServiceResponse } from "./setup.model";
+import {
+  BasicSetup,
+  ConnectionString,
+  EmailSettings,
+  ServiceResponse,
+} from "./setup.model";
 
 @Injectable()
 export class SetupService {
@@ -15,7 +20,7 @@ export class SetupService {
    * This method used for validating connection string
    * @param model
    */
-  validateConnectionString(model: string) {
+  validateConnectionString(model: ConnectionString) {
     return this.httpService.post(this.connectionStringUrl, model);
   }
 
@@ -31,7 +36,7 @@ export class SetupService {
    * This method used for Creating user
    * @param model
    */
-  createUser(model: ApplicationUser) {
+  createUser(model: BasicSetup) {
     return this.httpService.post<ServiceResponse>(this.createUserUrl, model);
   }
 }

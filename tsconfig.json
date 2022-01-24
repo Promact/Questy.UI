@@ -12,7 +12,10 @@
     "baseUrl": ".",
     "paths": {
       "core-js/es7/reflect": [ "../node_modules/core-js/proposals/reflect-metadata" ],
-      "core-js/es6/*": [ "../node_modules/core-js/es/*" ]
+      "core-js/es6/*": [ "../node_modules/core-js/es/*" ],
+      "exceljs": [
+        "./node_modules/exceljs/dist/es5/exceljs.browser"
+      ]
     },
     "target": "ES2015",
     "module": "ES2020",

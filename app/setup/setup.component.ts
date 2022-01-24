@@ -5,16 +5,17 @@ import { EmailSettings } from "./setup.model";
 import { BasicSetup } from "./setup.model";
 import { RegistrationFields } from "./setup.model";
 import { ServiceResponse } from "./setup.model";
+import { WizardComponent } from "@ever-co/angular2-wizard";
 @Component({
   moduleId: module.id,
   selector: "setup",
   templateUrl: "setup.html",
 })
 export class SetupComponent {
-  basicSetup: BasicSetup = new BasicSetup();
-  emailSettings: EmailSettings = new EmailSettings();
-  connectionString: ConnectionString = new ConnectionString();
-  registrationFields: RegistrationFields = new RegistrationFields();
+  basicSetup: BasicSetup = {} as BasicSetup;
+  emailSettings: EmailSettings = {} as EmailSettings;
+  connectionString: ConnectionString = {} as ConnectionString;
+  registrationFields: RegistrationFields = {} as RegistrationFields;
   confirmPasswordValid!: boolean;
   stepOneErrorMessage = false;
   stepTwoErrorMessage = false;
@@ -30,7 +31,7 @@ export class SetupComponent {
    * This method used for validating connection string.
    * @param setup: Takes the connection string value
    */
-  validateConnectionString(setup: any) {
+  validateConnectionString(setup: WizardComponent) {
     this.loader = true;
     this.setupService
       .validateConnectionString(this.connectionString)
@@ -40,7 +41,7 @@ export class SetupComponent {
           else this.stepOneErrorMessage = true;
           this.loader = false;
         },
-        error: (err) => {
+        error: () => {
           this.stepOneErrorMessage = true;
           this.loader = false;
         },
@@ -51,19 +52,19 @@ export class SetupComponent {
    * This method used for verifying email Settings
    * @param setup: Takes all the field's values of emailsetting form
    */
-  validateEmailSettings(setup: any) {
+  validateEmailSettings(setup: WizardComponent) {
     this.loader = true;
-    this.setupService.validateEmailSettings(this.emailSettings).subscribe(
-      (response) => {
+    this.setupService.validateEmailSettings(this.emailSettings).subscribe({
+      next: (response) => {
         if (response === true) setup.next();
         else this.stepTwoErrorMessage = true;
         this.loader = false;
       },
-      (err) => {
+      error: () => {
         this.stepTwoErrorMessage = true;
         this.loader = false;
-      }
-    );
+      },
+    });
   }
 
   /**
@@ -79,7 +80,7 @@ export class SetupComponent {
    * This method used for Creating user
    * @param setup: Takes all the field's values of createuser form
    */
-  createUser(setup: any) {
+  createUser(setup: WizardComponent) {
     this.loader = true;
     this.basicSetup.emailSettings = this.emailSettings;
     this.basicSetup.connectionString = this.connectionString;
@@ -95,7 +96,7 @@ export class SetupComponent {
         }
         this.loader = false;
       },
-      error: (err) => {
+      error: () => {
         this.stepThreeErrorMessage = true;
         this.loader = false;
       },
@@ -109,13 +110,13 @@ export class SetupComponent {
     window.location.href = "/login";
   }
 
-  previousStep1(setup: any) {
+  previousStep1(setup: WizardComponent) {
     this.stepOneErrorMessage = false;
     this.stepTwoErrorMessage = false;
     setup.previous();
   }
 
-  previousStep2(setup: any) {
+  previousStep2(setup: WizardComponent) {
     this.stepTwoErrorMessage = false;
     this.stepThreeErrorMessage = false;
     setup.previous();
