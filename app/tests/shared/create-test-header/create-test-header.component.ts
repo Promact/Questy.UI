@@ -1,13 +1,10 @@
-﻿import { Component, OnInit, ViewChild, Input } from "@angular/core";
-import { MdSnackBar } from "@angular/material";
+﻿import { Component, OnInit, Input } from "@angular/core";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { TestService } from "../../tests.service";
 import { ActivatedRoute } from "@angular/router";
 import { Router } from "@angular/router";
-import { FormGroup } from "@angular/forms";
 import { Test } from "../../tests.model";
-import { PopoverModule } from "ngx-popover";
-import { TestPreviewComponent } from "../../test-preview/test-preview.compponent";
-import * as screenfull from "screenfull";
+import screenfull from "screenfull";
 
 @Component({
   moduleId: module.id,
@@ -15,35 +12,35 @@ import * as screenfull from "screenfull";
   templateUrl: "create-test-header.html",
 })
 export class CreateTestHeaderComponent implements OnInit {
-  testId: number;
-  testLink: string;
-  editName: string;
-  testObject: Test;
+  testId!: number;
+  testLink!: string;
+  editName!: string;
+  testObject!: Test;
   testNameUpdatedMessage: string;
   isTestNameExist: boolean;
-  testNameRef: string;
+  testNameRef!: string;
   isLabelVisible: boolean;
-  id: number;
+  id!: number;
   testPreviewPage: boolean;
-  testName: string;
-  editedTestName: string;
-  isWhiteSpaceError: boolean;
-  nameOfTest: string;
+  testName!: string;
+  editedTestName!: string;
+  isWhiteSpaceError!: boolean;
+  nameOfTest!: string;
   @Input("testDetails")
-  public testDetails: Test;
+  public testDetails!: Test;
   @Input("testNameReference")
-  public testNameReference: string;
+  public testNameReference!: string;
   isButtonClicked: boolean;
   tooltipMessage: string;
-  copiedContent: boolean;
+  copiedContent!: boolean;
   @Input()
-  disablePreview: boolean;
+  disablePreview!: boolean;
 
   constructor(
     private testService: TestService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackbarRef: MdSnackBar
+    private snackbarRef: MatSnackBar
   ) {
     this.testNameUpdatedMessage = "Test name has been updated successfully.";
     this.isTestNameExist = false;
@@ -57,7 +54,7 @@ export class CreateTestHeaderComponent implements OnInit {
    * Gets the Id of the Test from the route and fills the Settings saved for the selected Test in their respective fields
    */
   ngOnInit() {
-    this.testId = this.route.snapshot.params["id"];
+    this.testId = this.route.snapshot.params["id"] as number;
   }
 
   /**
@@ -66,7 +63,7 @@ export class CreateTestHeaderComponent implements OnInit {
   getTestLink() {
     const linkOfTest = this.testDetails.link;
     const domain = window.location.origin;
-    this.testLink = domain + "/conduct/" + linkOfTest;
+    this.testLink = `${domain}/conduct/${linkOfTest}`;
   }
 
   /**
@@ -74,7 +71,7 @@ export class CreateTestHeaderComponent implements OnInit {
    * @param message contains the message to be displayed when the snackbar gets opened
    */
   openSnackBar(message: string) {
-    const snackBarRef = this.snackbarRef.open(message, "Dismiss", {
+    this.snackbarRef.open(message, "Dismiss", {
       duration: 4000,
     });
   }
@@ -83,8 +80,8 @@ export class CreateTestHeaderComponent implements OnInit {
    * Selects the Test Name from the text box containing it on focus
    * @param $event is used to select the contents of the target text box
    */
-  selectAllContent($event: any) {
-    $event.target.select();
+  selectAllContent($event: MouseEvent) {
+    ($event.target as HTMLInputElement).select();
   }
 
   /**
@@ -97,11 +94,16 @@ export class CreateTestHeaderComponent implements OnInit {
     }
   }
 
-  changeComponent() {
-    if (screenfull.enabled) {
-      screenfull.toggle();
+  async changeComponent() {
+    if (screenfull.isEnabled) {
+      await screenfull.request();
     }
-    this.router.navigate(["..", "tests", this.testDetails.link, "preview"]);
+    await this.router.navigate([
+      "..",
+      "tests",
+      this.testDetails.link,
+      "preview",
+    ]);
   }
 
   /**
@@ -140,21 +142,21 @@ export class CreateTestHeaderComponent implements OnInit {
           this.isButtonClicked = false;
           if (isTestNameUnique) {
             this.isButtonClicked = true;
-            this.testService.updateTestName(id, testObject).subscribe(
-              (response) => {
+            this.testService.updateTestName(id, testObject).subscribe({
+              next: (response) => {
                 this.isButtonClicked = false;
                 this.testName = response.testName;
                 this.editedTestName = this.testName;
                 this.openSnackBar(this.testNameUpdatedMessage);
                 this.isLabelVisible = true;
               },
-              (errorHandling) => {
+              error: () => {
                 this.isButtonClicked = false;
                 this.openSnackBar(
                   "Something went wrong.Please try again later."
                 );
-              }
-            );
+              },
+            });
           } else {
             this.isTestNameExist = true;
             this.isLabelVisible = false;
@@ -185,7 +187,7 @@ export class CreateTestHeaderComponent implements OnInit {
    * @param $event is of type Event and is used to call stopPropagation()
    * @param testLink contains the link of the test
    */
-  showTooltipMessage($event: Event, testLink: any) {
+  showTooltipMessage($event: MouseEvent, testLink: HTMLInputElement) {
     $event.stopPropagation();
     setTimeout(() => {
       testLink.select();

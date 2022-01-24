@@ -1,15 +1,8 @@
-﻿import { Component, Output, EventEmitter, Inject } from "@angular/core";
-import {
-  MdDialog,
-  MdDialogRef,
-  MD_DIALOG_DATA,
-  MdSnackBar,
-} from "@angular/material";
-import { TestSectionsComponent } from "../test-sections/test-sections.component";
-import { Test, TestCategory, TestQuestion } from "../tests.model";
+﻿import { Component, Inject } from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { TestCategory } from "../tests.model";
 import { TestService } from "../tests.service";
-import { Category } from "../../questions/category.model";
-import { TestDetails } from "../test-details";
 
 @Component({
   moduleId: module.id,
@@ -19,24 +12,24 @@ import { TestDetails } from "../test-details";
 export class DeselectCategoryComponent {
   constructor(
     public testService: TestService,
-    public dialogRef: MdDialogRef<DeselectCategoryComponent>,
-    @Inject(MD_DIALOG_DATA) public data: any,
-    public snackbarRef: MdSnackBar
+    public dialogRef: MatDialogRef<DeselectCategoryComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: TestCategory,
+    public snackbarRef: MatSnackBar
   ) {}
 
   /**
    * When user selects 'Yes' to deselect the category, category is deselected
    */
   yesDeselectCategory() {
-    this.testService.removeDeselectedCategory(this.data).subscribe(
-      (response) => {
+    this.testService.removeDeselectedCategory(this.data).subscribe({
+      next: (response) => {
         this.dialogRef.close(response);
       },
-      (err) => {
+      error: () => {
         this.openSnackbar("Something went wrong.Please try again later.");
         this.dialogRef.close();
-      }
-    );
+      },
+    });
   }
 
   /**

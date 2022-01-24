@@ -26,7 +26,9 @@ export class ReportService {
    * @param testId: Id of the test
    */
   getAllTestAttendees(testId: number) {
-    return this.httpService.get<TestAttendee[]>(`${this.reportsApiUrl}/${testId}`);
+    return this.httpService.get<TestAttendee[]>(
+      `${this.reportsApiUrl}/${testId}`
+    );
   }
 
   /**

@@ -93,27 +93,25 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
    * @param id: Id of the Question
    */
   getQuestionById(id: number) {
-    this.questionService
-      .getQuestionById(id)
-      .subscribe((response) => {
-        this.singleMultipleAnswerQuestion = response;
-        this.getCategoryName();
-        this.loader = false;
-        this.difficultyLevelSelected =
-          DifficultyLevel[
+    this.questionService.getQuestionById(id).subscribe((response) => {
+      this.singleMultipleAnswerQuestion = response;
+      this.getCategoryName();
+      this.loader = false;
+      this.difficultyLevelSelected =
+        DifficultyLevel[
           this.singleMultipleAnswerQuestion.question.difficultyLevel
-          ];
-        this.indexOfOptionSelected =
-          this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.findIndex(
-            (x) => x.isAnswer === true
-          );
-        this.noOfOptionShown =
-          this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.length;
-        this.isClose = this.noOfOptionShown === 2;
-        if (this.noOfOptionShown === 10) {
-          this.isNoOfOptionOverLimit = true;
-        }
-      });
+        ];
+      this.indexOfOptionSelected =
+        this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.findIndex(
+          (x) => x.isAnswer === true
+        );
+      this.noOfOptionShown =
+        this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption.length;
+      this.isClose = this.noOfOptionShown === 2;
+      if (this.noOfOptionShown === 10) {
+        this.isNoOfOptionOverLimit = true;
+      }
+    });
   }
 
   /**
@@ -124,13 +122,13 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
       ?.singleMultipleAnswerQuestionOption.length === 0
       ? 0
       : Math.max.apply(
-        Math,
-        this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.map(
-          function (o) {
-            return o.id;
-          }
-        )
-      );
+          Math,
+          this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.map(
+            function (o) {
+              return o.id;
+            }
+          )
+        );
   }
 
   /**
@@ -138,7 +136,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
    */
   getAllCategories() {
     this.categoryService.getAllCategories().subscribe({
-      next:(CategoriesList) => {
+      next: (CategoriesList) => {
         this.categoryArray = CategoriesList;
         if (
           this.selectedCategoryName === undefined &&
@@ -157,7 +155,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
         this.snackBar.open("Failed to load category.", "Dismiss", {
           duration: 3000,
         });
-      }
+      },
     });
   }
 
@@ -180,7 +178,12 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
       optionIndex,
       1
     );
-    if (this.noOfOptionShown !== undefined && this.noOfOptionShown !== null && this.indexOfOptionSelected !== undefined && this.indexOfOptionSelected !== null) {
+    if (
+      this.noOfOptionShown !== undefined &&
+      this.noOfOptionShown !== null &&
+      this.indexOfOptionSelected !== undefined &&
+      this.indexOfOptionSelected !== null
+    ) {
       this.noOfOptionShown--;
       if (this.noOfOptionShown === 2) {
         this.isClose = true;
@@ -201,8 +204,8 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
    * Add option on display page
    */
   addOption() {
-    if(this.noOfOptionShown !== undefined && this.noOfOptionShown !== null)
-    this.noOfOptionShown++;
+    if (this.noOfOptionShown !== undefined && this.noOfOptionShown !== null)
+      this.noOfOptionShown++;
     this.isClose = this.noOfOptionShown === 2;
     const newOption = {} as SingleMultipleAnswerQuestionOption;
     newOption.id = this.findMaxId() + 1;
@@ -216,7 +219,11 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
 
   isTwoOptionsSame(optionName: string, optionIndex: number) {
     this.isTwoOptionSame = false;
-    if (optionName.trim() !== "" && this.noOfOptionShown !== undefined && this.noOfOptionShown !== null) {
+    if (
+      optionName.trim() !== "" &&
+      this.noOfOptionShown !== undefined &&
+      this.noOfOptionShown !== null
+    ) {
       for (let i = 0; i < this.noOfOptionShown; i++) {
         if (i !== optionIndex)
           this.isTwoOptionSame =
@@ -336,12 +343,12 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
     }
     (this.isEditQuestion
       ? this.questionService.updateSingleMultipleAnswerQuestion(
-        this.questionId,
-        singleMultipleAnswerQuestion
-      )
+          this.questionId,
+          singleMultipleAnswerQuestion
+        )
       : this.questionService.addSingleMultipleAnswerQuestion(
-        singleMultipleAnswerQuestion
-      )
+          singleMultipleAnswerQuestion
+        )
     ).subscribe(
       (response) => {
         this.snackBar.open(this.successMessage, "Dismiss", { duration: 3000 });
@@ -373,8 +380,11 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
       this.isDifficultyLevelSelected = true;
       this.categoryName = categoryName;
       this.difficultyLevelSelected = difficultyLevel;
-      this.singleMultipleAnswerQuestion.question.categoryID =
-      (this.categoryArray.find((x) => x.categoryName === this.categoryName) as Category).id;
+      this.singleMultipleAnswerQuestion.question.categoryID = (
+        this.categoryArray.find(
+          (x) => x.categoryName === this.categoryName
+        ) as Category
+      ).id;
     } else if (categoryName === "AllCategory" && difficultyLevel !== "All") {
       this.isCategorySelected = false;
       this.isDifficultyLevelSelected = true;
@@ -383,8 +393,11 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
       this.isCategorySelected = true;
       this.isDifficultyLevelSelected = false;
       this.categoryName = categoryName;
-      this.singleMultipleAnswerQuestion.question.categoryID =
-        (this.categoryArray.find((x) => x.categoryName === this.categoryName) as Category).id;
+      this.singleMultipleAnswerQuestion.question.categoryID = (
+        this.categoryArray.find(
+          (x) => x.categoryName === this.categoryName
+        ) as Category
+      ).id;
     }
   }
 }

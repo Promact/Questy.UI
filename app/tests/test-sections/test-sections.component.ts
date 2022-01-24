@@ -1,21 +1,13 @@
-﻿import { Component, OnInit, ViewChild, Input } from "@angular/core";
+﻿import { Component, OnInit } from "@angular/core";
 import { TestService } from "../tests.service";
-import {
-  MdDialog,
-  MdSnackBar,
-  MdSnackBarRef,
-  SimpleSnackBar,
-  MdDialogRef,
-  MD_DIALOG_DATA,
-} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute } from "@angular/router";
 import { Router } from "@angular/router";
-import { FormGroup } from "@angular/forms";
 import { DeselectCategoryComponent } from "../test-sections/deselect-category.component";
-import { Question } from "../../questions/question.model";
 import { TestDetails } from "../test-details";
 import { Category } from "../../questions/category.model";
-import { Test, TestCategory, TestQuestion } from "../tests.model";
+import { Test, TestCategory } from "../tests.model";
 
 @Component({
   moduleId: module.id,
@@ -24,23 +16,23 @@ import { Test, TestCategory, TestQuestion } from "../tests.model";
 })
 export class TestSectionsComponent implements OnInit {
   testDetails: Test;
-  testId: number;
+  testId!: number;
   testCategories: Category[];
   testCategoryObj: TestCategory;
-  testDetailsObj: TestDetails;
+  testDetailsObj!: TestDetails;
   loader: boolean;
-  testNameReference: string;
-  isEditTestEnabled: boolean;
+  testNameReference!: string;
+  isEditTestEnabled!: boolean;
   isCategoryExist: boolean;
   disablePreview: boolean;
   testCategoryAC: TestCategory[] = [];
 
   constructor(
-    public dialog: MdDialog,
+    public dialog: MatDialog,
     private testService: TestService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackbarRef: MdSnackBar
+    private snackbarRef: MatSnackBar
   ) {
     this.testCategoryObj = new TestCategory();
     this.testCategories = new Array<Category>();
@@ -55,7 +47,7 @@ export class TestSectionsComponent implements OnInit {
    * Gets the Id of the Test from the route and fills the Settings saved for the selected Test in their respective fields
    */
   ngOnInit() {
-    this.testId = this.route.snapshot.params["id"];
+    this.testId = this.route.snapshot.params["id"] as number;
     this.getTestById(this.testId);
     this.isTestAttendeeExist();
   }
@@ -65,8 +57,8 @@ export class TestSectionsComponent implements OnInit {
    * @param id contains the value of the test Id from the route
    */
   getTestById(id: number) {
-    this.testService.getTestById(id).subscribe(
-      (response) => {
+    this.testService.getTestById(id).subscribe({
+      next: (response) => {
         this.testDetails = response;
         this.testCategories = this.testDetails.categoryAcList.filter(
           (x) => x.questionCount !== 0
@@ -82,12 +74,12 @@ export class TestSectionsComponent implements OnInit {
         this.testNameReference = this.testDetails.testName;
         this.loader = false;
       },
-      (err) => {
+      error: async () => {
         this.loader = false;
         this.openSnackbar("No test found for this id.");
-        this.router.navigate(["/tests"]);
-      }
-    );
+        await this.router.navigate(["/tests"]);
+      },
+    });
   }
 
   /**
@@ -100,8 +92,8 @@ export class TestSectionsComponent implements OnInit {
       else {
         this.testService
           .deselectCategory(category.id, this.testDetails.id)
-          .subscribe(
-            (isQuestionAdded) => {
+          .subscribe({
+            next: (isQuestionAdded) => {
               if (isQuestionAdded) {
                 this.testCategoryObj.testId = this.testId;
                 this.testCategoryObj.categoryId = category.id;
@@ -115,10 +107,10 @@ export class TestSectionsComponent implements OnInit {
                 category.isSelect = false;
               }
             },
-            (err) => {
+            error: () => {
               this.openSnackbar("Something went wrong.Please try again later.");
-            }
-          );
+            },
+          });
       }
     }
   }
@@ -127,7 +119,7 @@ export class TestSectionsComponent implements OnInit {
    * To save the test categories and move further
    * @param isSelectButton whose value will indicate what to do next, if it is false it will save changes to the test and exit to the test dashboard. And if the isSelectButton is true, it will save changes and move to the question selection page.
    */
-  saveCategoryToExitOrMoveNext(isSelectButton: boolean) {
+  async saveCategoryToExitOrMoveNext(isSelectButton: boolean) {
     this.testDetails.categoryAcList.forEach((x) => {
       const testCategory = new TestCategory();
       testCategory.categoryId = x.id;
@@ -138,26 +130,26 @@ export class TestSectionsComponent implements OnInit {
     if (this.isEditTestEnabled) {
       this.testService
         .addTestCategories(this.testDetails.id, this.testCategoryAC)
-        .subscribe(
-          (response) => {
+        .subscribe({
+          next: async (response) => {
             if (response) {
               if (isSelectButton) {
                 this.loader = false;
-                this.router.navigate(["/tests/" + this.testId + "/questions"]);
+                await this.router.navigate([`/tests/${this.testId}/questions`]);
               } else {
                 this.loader = false;
-                this.router.navigate(["/tests"]);
+                await this.router.navigate(["/tests"]);
               }
             }
           },
-          (err) => {
+          error: () => {
             this.loader = false;
             this.openSnackbar("Something went wrong, try again");
-          }
-        );
+          },
+        });
     } else if (isSelectButton)
-      this.router.navigate(["/tests/" + this.testId + "/questions"]);
-    else this.router.navigate(["/tests"]);
+      await this.router.navigate([`/tests/${this.testId}/questions`]);
+    else await this.router.navigate(["/tests"]);
   }
 
   /**

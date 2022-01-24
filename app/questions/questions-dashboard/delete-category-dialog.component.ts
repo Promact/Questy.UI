@@ -40,11 +40,11 @@ export class DeleteCategoryDialogComponent {
    */
   deleteCategory(category: Category) {
     this.categoryService.deleteCategory(category.id).subscribe({
-      next:(response) => {
+      next: (response) => {
         this.dialog.close(category);
         this.openSnackBar(this.successMessage);
       },
-      error:(err) => {
+      error: (err) => {
         if (err.status === 400) {
           this.response = err.json();
           this.errorMessage = this.response["error"][0];
@@ -54,7 +54,7 @@ export class DeleteCategoryDialogComponent {
           this.dialog.close(null);
           this.openSnackBar(this.errorMessage);
         }
-      }
+      },
     });
   }
 }

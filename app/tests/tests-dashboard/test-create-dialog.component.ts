@@ -1,9 +1,9 @@
 ﻿import { Component } from "@angular/core";
 import { Router } from "@angular/router";
-import { MdDialog, MdDialogRef, MdSnackBar } from "@angular/material";
+import { MatDialogRef } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { Test } from "../tests.model";
 import { TestService } from "../tests.service";
-import { TestsDashboardComponent } from "./tests-dashboard.component";
 
 @Component({
   moduleId: module.id,
@@ -11,16 +11,16 @@ import { TestsDashboardComponent } from "./tests-dashboard.component";
   templateUrl: "test-create-dialog.html",
 })
 export class TestCreateDialogComponent {
-  errorMessage: boolean;
+  errorMessage!: boolean;
   test: Test;
-  testNameReference: string;
-  isWhiteSpaceError: boolean;
+  testNameReference!: string;
+  isWhiteSpaceError!: boolean;
   isButtonClicked: boolean;
 
   constructor(
-    public dialogRef: MdDialogRef<TestCreateDialogComponent>,
+    public dialogRef: MatDialogRef<TestCreateDialogComponent>,
     private testService: TestService,
-    private snackbar: MdSnackBar,
+    private snackbar: MatSnackBar,
     public route: Router
   ) {
     this.test = new Test();
@@ -36,31 +36,31 @@ export class TestCreateDialogComponent {
     this.test.testName = testNameRef;
     testNameRef = testNameRef.trim();
     if (testNameRef) {
-      this.testService.IsTestNameUnique(testNameRef, this.test.id).subscribe(
-        (isTestNameUnique) => {
+      this.testService.IsTestNameUnique(testNameRef, this.test.id).subscribe({
+        next: (isTestNameUnique) => {
           this.isButtonClicked = false;
           if (isTestNameUnique) {
             this.isButtonClicked = true;
-            this.testService.addTests(this.test).subscribe(
-              (responses) => {
+            this.testService.addTests(this.test).subscribe({
+              next: async (responses) => {
                 this.isButtonClicked = false;
                 this.dialogRef.close(responses);
-                this.route.navigate(["tests/" + responses.id + "/sections"]);
+                await this.route.navigate([`tests/${responses.id}/sections`]);
               },
-              (errorhandling) => {
+              error: () => {
                 this.isButtonClicked = false;
                 this.openSnackbar(
                   "Something went wrong.Please try again later."
                 );
-              }
-            );
+              },
+            });
           } else this.errorMessage = true;
         },
-        (errorHandling) => {
+        error: () => {
           this.isButtonClicked = false;
           this.openSnackbar("Something went wrong.Please try again later.");
-        }
-      );
+        },
+      });
     } else {
       this.isWhiteSpaceError = true;
       this.testNameReference = this.testNameReference.trim();
@@ -77,7 +77,7 @@ export class TestCreateDialogComponent {
     to display error message in snackbar when any  error is caught from server
     */
   openSnackbar(message: string) {
-    const config = this.snackbar.open(message, "Dismiss", {
+    this.snackbar.open(message, "Dismiss", {
       duration: 4000,
     });
   }

@@ -12,24 +12,24 @@
         </div>
         <div class="blocks-area">
             <div class="row">
-                <div class="col-md-5ths col-sm-4">
+                <div class="col-mat-5ths col-sm-4">
                     <div e2e="create-test-block" class="create-test-block" (click)="createTestDialog()">
                         <em class="material-icons">add</em>
                         <h5>Create New Test</h5>
                     </div>
                 </div>
                 <div *ngFor="let test of tests | filter: searchTest let i=index">
-                    <div class="col-md-5ths col-sm-4">
+                    <div class="col-mat-5ths col-sm-4">
                         <div class="test-block">
                             <div e2e="test-title" class="test-title clearfix">
                                 <h5 class="pull-left" title="{{test.testName}}"><a [routerLink]="[test.id,'view']">{{test.testName}}</a></h5>
-                                <em e2e="test-menu" class="material-icons pull-right" [mdMenuTriggerFor]="testMenu">more_vert</em>
-                                <md-menu #testMenu="mdMenu" [overlapTrigger]="false" xPosition="before">
-                                    <button e2e="edit-btn" md-menu-item [disabled]="!test.isEditTestEnabled" (click)="editTest(test)">Edit</button>
-                                    <button e2e="delete-btn" md-menu-item (click)="deleteTestDialog(test)">Delete</button>
-                                    <button e2e="duplicate-btn" md-menu-item (click)="duplicateTestDialog(test)">Duplicate</button>
-                                    <button e2e="settings-btn" md-menu-item [routerLink]="[test.id,'settings']">Settings</button>
-                                </md-menu>
+                                <em e2e="test-menu" class="material-icons pull-right" [matMenuTriggerFor]="testMenu">more_vert</em>
+                                <mat-menu #testMenu="matMenu" [overlapTrigger]="false" xPosition="before">
+                                    <button e2e="edit-btn" mat-menu-item [disabled]="!test.isEditTestEnabled" (click)="editTest(test)">Edit</button>
+                                    <button e2e="delete-btn" mat-menu-item (click)="deleteTestDialog(test)">Delete</button>
+                                    <button e2e="duplicate-btn" mat-menu-item (click)="duplicateTestDialog(test)">Duplicate</button>
+                                    <button e2e="settings-btn" mat-menu-item [routerLink]="[test.id,'settings']">Settings</button>
+                                </mat-menu>
                             </div>
                             <div class="test-details">
                                 <p class="light-text">{{test.numberOfTestQuestions}} Questions</p>

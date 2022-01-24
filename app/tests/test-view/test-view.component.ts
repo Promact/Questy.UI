@@ -1,20 +1,15 @@
 ﻿import { Component, OnInit } from "@angular/core";
-import { MdDialog } from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import { DeleteTestDialogComponent } from "../tests-dashboard/delete-test-dialog.component";
-import { Question } from "../../questions/question.model";
 import { Category } from "../../questions/category.model";
 import { TestService } from "../tests.service";
 import { Router, ActivatedRoute } from "@angular/router";
-import { MdSnackBar, MdSnackBarConfig } from "@angular/material";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { DifficultyLevel } from "../../questions/enum-difficultylevel";
 import { Test } from "../tests.model";
-import { QuestionBase } from "../../questions/question";
 import { QuestionType } from "../../questions/enum-questiontype";
-import { TestAttendees } from "../../conduct/register/register.model";
 import { DuplicateTestDialogComponent } from "../tests-dashboard/duplicate-test-dialog.component";
-import { IncompleteTestCreationDialogComponent } from "../test-settings/incomplete-test-creation-dialog.component";
-import { PopoverModule } from "ngx-popover";
-import * as screenfull from "screenfull";
+import screenfull from "screenfull";
 
 @Component({
   moduleId: module.id,
@@ -23,28 +18,28 @@ import * as screenfull from "screenfull";
 })
 export class TestViewComponent implements OnInit {
   testDetails: Test;
-  testId: number;
+  testId!: number;
   totalNumberOfQuestions: number[];
   questionType = QuestionType;
   difficultyLevel = DifficultyLevel;
   optionName: string[];
-  isDeleteAllowed: boolean;
+  isDeleteAllowed!: boolean;
   tests: Test[];
-  isEditTestEnabled: boolean;
-  loader: boolean;
-  count: number;
-  copiedContent: boolean;
-  testLink: string;
+  isEditTestEnabled!: boolean;
+  loader!: boolean;
+  count!: number;
+  copiedContent!: boolean;
+  testLink!: string;
   tooltipMessage: string;
   isCategorySelected: boolean;
   disablePreview: boolean;
-  duplicateTestDialogData: DuplicateTestDialogComponent;
-  deleteTestDialogData: DeleteTestDialogComponent;
+  duplicateTestDialogData!: DuplicateTestDialogComponent;
+  deleteTestDialogData!: DeleteTestDialogComponent;
 
   constructor(
-    public dialog: MdDialog,
+    public dialog: MatDialog,
     private testService: TestService,
-    public snackBar: MdSnackBar,
+    public snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -59,7 +54,7 @@ export class TestViewComponent implements OnInit {
 
   ngOnInit() {
     this.loader = true;
-    this.testId = this.route.snapshot.params["id"];
+    this.testId = this.route.snapshot.params["id"] as number;
     this.getTestDetails(this.testId);
     this.getAllTests();
   }
@@ -77,11 +72,11 @@ export class TestViewComponent implements OnInit {
     });
   }
 
-  openNewWindowForPreview() {
-    if (screenfull.enabled) {
-      screenfull.toggle();
+  async openNewWindowForPreview() {
+    if (screenfull.isEnabled) {
+      await screenfull.request();
     }
-    this.router.navigate(["tests/" + this.testDetails.link + "/preview"]);
+    await this.router.navigate([`tests/${this.testDetails.link}/preview`]);
   }
 
   /**
@@ -89,8 +84,8 @@ export class TestViewComponent implements OnInit {
    * @param id contains the value of the Id from the route
    */
   getTestDetails(id: number) {
-    this.testService.getTestById(id).subscribe(
-      (response) => {
+    this.testService.getTestById(id).subscribe({
+      next: (response) => {
         this.testDetails = response;
         this.isCategorySelected = this.testDetails.categoryAcList.some(
           function (x) {
@@ -112,12 +107,12 @@ export class TestViewComponent implements OnInit {
         });
         this.loader = false;
       },
-      (err) => {
+      error: async () => {
         this.loader = false;
         this.openSnackBar("No test found for this id.");
-        this.router.navigate(["/tests"]);
-      }
-    );
+        await this.router.navigate(["/tests"]);
+      },
+    });
   }
 
   /**
@@ -172,8 +167,8 @@ export class TestViewComponent implements OnInit {
   /**
    * Redirects to the Test Settings Page from the Test View Page
    */
-  navigateToTestSettings() {
-    this.router.navigate(["/tests/" + this.testId + "/settings"]);
+  async navigateToTestSettings() {
+    await this.router.navigate([`/tests/${this.testId}/settings`]);
   }
 
   // Open Delete Test Dialog
@@ -208,7 +203,7 @@ export class TestViewComponent implements OnInit {
    * @param test: an object of Test class
    */
   duplicateTestDialog(test: Test) {
-    const newTestObject = JSON.parse(JSON.stringify(test));
+    const newTestObject = JSON.parse(JSON.stringify(test)) as Test;
     this.duplicateTestDialogData = this.dialog.open(
       DuplicateTestDialogComponent,
       { disableClose: true, hasBackdrop: true }
@@ -221,8 +216,7 @@ export class TestViewComponent implements OnInit {
           this.duplicateTestDialogData.testName =
             newTestObject.testName + "_copy";
         else
-          this.duplicateTestDialogData.testName =
-            newTestObject.testName + "_copy" + "_" + this.count;
+          this.duplicateTestDialogData.testName = `${newTestObject.testName}_copy_${this.count}`;
       });
     this.duplicateTestDialogData.testArray = this.tests;
     this.duplicateTestDialogData.testToDuplicate = test;
@@ -234,10 +228,12 @@ export class TestViewComponent implements OnInit {
    */
   editTest(test: Test) {
     // Checks if any candidate has taken the test
-    this.testService.isTestAttendeeExist(test.id).subscribe((res) => {
-      if (!res) {
-        this.router.navigate(["/tests/" + test.id + "/sections"]);
-      }
+    this.testService.isTestAttendeeExist(test.id).subscribe({
+      next: async (res) => {
+        if (!res) {
+          await this.router.navigate([`/tests/${test.id}/sections`]);
+        }
+      },
     });
   }
 
@@ -246,7 +242,7 @@ export class TestViewComponent implements OnInit {
    * @param $event is of type Event and is used to call stopPropagation()
    * @param testLink is the link of the test
    */
-  showTooltipMessage($event: Event, testLink: any) {
+  showTooltipMessage($event: MouseEvent, testLink: HTMLInputElement) {
     $event.stopPropagation();
     setTimeout(() => {
       testLink.select();

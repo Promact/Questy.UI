@@ -55,7 +55,7 @@ export class DeleteQuestionDialogComponent {
         }
         this.dialogRef.close(null);
         this.openSnackBar(this.errorMessage);
-      }
+      },
     });
   }
 }

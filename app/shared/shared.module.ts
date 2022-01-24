@@ -11,8 +11,8 @@ import { NgChartsModule } from "ng2-charts";
 import { ClipboardModule } from "ngx-clipboard";
 import { SelectTextAreaDirective } from "../tests/directive";
 import { CommonModule } from "@angular/common";
-import { MatChipsModule } from '@angular/material/chips';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from "@angular/material/chips";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 @NgModule({
   imports: [
     SharedComponentsModule,

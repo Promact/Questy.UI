@@ -1,9 +1,9 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component } from "@angular/core";
 import { Test } from "../tests.model";
-import { MdDialogRef, MdSnackBar } from "@angular/material";
+import { MatDialogRef } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { TestService } from "../tests.service";
 import { Router } from "@angular/router";
-import { MockRouteService } from "../../questions/questions-single-multiple-answer/mock-route.service";
 
 @Component({
   moduleId: module.id,
@@ -11,19 +11,18 @@ import { MockRouteService } from "../../questions/questions-single-multiple-answ
   templateUrl: "delete-test-dialog.html",
 })
 export class DeleteTestDialogComponent {
-  testToDelete: Test;
+  testToDelete!: Test;
   testArray: Test[] = new Array<Test>();
-  response: any;
-  isDeleteAllowed: boolean;
+  isDeleteAllowed!: boolean;
   errorMessage: string;
   successMessage: string;
 
   constructor(
     private testService: TestService,
-    public dialog: MdDialogRef<any>,
-    public snackBar: MdSnackBar,
-    private router: Router,
-    private mockRouteService: MockRouteService
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public dialog: MatDialogRef<any>,
+    public snackBar: MatSnackBar,
+    private router: Router
   ) {
     this.errorMessage = "Something went wrong.Please try again later.";
     this.successMessage = "The selected test is deleted.";
@@ -33,22 +32,22 @@ export class DeleteTestDialogComponent {
    * Delete the test from the test dashboard page
    */
   deleteTest() {
-    const url = this.mockRouteService.getCurrentUrl(this.router);
-    this.testService.deleteTest(this.testToDelete.id).subscribe(
-      (response) => {
+    const url = this.router.url;
+    this.testService.deleteTest(this.testToDelete.id).subscribe({
+      next: async () => {
         this.testArray.splice(this.testArray.indexOf(this.testToDelete), 1);
         this.dialog.close();
         this.snackBar.open(this.successMessage, "Dismiss", {
           duration: 3000,
         });
-        if (url === "/tests/" + this.testToDelete.id + "/view")
-          this.router.navigate(["/tests"]);
+        if (url === `/tests/${String(this.testToDelete.id)}/view`)
+          await this.router.navigate(["/tests"]);
       },
-      (err) => {
+      error: () => {
         this.snackBar.open(this.errorMessage, "Dismiss", {
           duration: 3000,
         });
-      }
-    );
+      },
+    });
   }
 }

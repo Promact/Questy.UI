@@ -1,10 +1,9 @@
-﻿import { Component, OnInit, ViewChild } from "@angular/core";
-import { MdDialog, MdDialogRef } from "@angular/material";
+﻿import { Component, OnInit } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
 import { DeleteTestDialogComponent } from "./delete-test-dialog.component";
 import { TestService } from "../tests.service";
 import { Test } from "../tests.model";
-import { ActivatedRoute, Router, provideRoutes } from "@angular/router";
-import { TestSettingsComponent } from "../../tests/test-settings/test-settings.component";
+import { Router } from "@angular/router";
 import { TestCreateDialogComponent } from "./test-create-dialog.component";
 import { DuplicateTestDialogComponent } from "./duplicate-test-dialog.component";
 import { QuestionsService } from "../../questions/questions.service";
@@ -15,18 +14,18 @@ import { QuestionsService } from "../../questions/questions.service";
   templateUrl: "tests-dashboard.html",
 })
 export class TestsDashboardComponent implements OnInit {
-  showSearchInput: boolean;
+  showSearchInput!: boolean;
   tests: Test[];
-  searchTest: string;
-  isDeleteAllowed: boolean;
-  loader: boolean;
-  count: number;
-  deleteTestDialogData: DeleteTestDialogComponent;
-  duplicateTestDialogData: DuplicateTestDialogComponent;
+  searchTest!: string;
+  isDeleteAllowed!: boolean;
+  loader!: boolean;
+  count!: number;
+  deleteTestDialogData!: DeleteTestDialogComponent;
+  duplicateTestDialogData!: DuplicateTestDialogComponent;
 
   constructor(
     private questionsService: QuestionsService,
-    public dialog: MdDialog,
+    public dialog: MatDialog,
     private testService: TestService,
     private router: Router
   ) {
@@ -52,7 +51,7 @@ export class TestsDashboardComponent implements OnInit {
       disableClose: true,
       hasBackdrop: true,
     });
-    dialogRef.afterClosed().subscribe((test) => {
+    dialogRef.afterClosed().subscribe((test: Test) => {
       if (test) this.tests.unshift(test);
     });
   }
@@ -81,7 +80,7 @@ export class TestsDashboardComponent implements OnInit {
    */
   duplicateTestDialog(test: Test) {
     test.isPaused = test.isLaunched = false;
-    const newTestObject = JSON.parse(JSON.stringify(test));
+    const newTestObject = JSON.parse(JSON.stringify(test)) as Test;
     this.duplicateTestDialogData = this.dialog.open(
       DuplicateTestDialogComponent,
       { disableClose: true, hasBackdrop: true }
@@ -94,8 +93,7 @@ export class TestsDashboardComponent implements OnInit {
           this.duplicateTestDialogData.testName =
             newTestObject.testName + "_copy";
         else
-          this.duplicateTestDialogData.testName =
-            newTestObject.testName + "_copy" + "_" + this.count;
+          this.duplicateTestDialogData.testName = `${newTestObject.testName}_copy_${this.count}`;
       });
     this.duplicateTestDialogData.testArray = this.tests;
     this.duplicateTestDialogData.testToDuplicate = test;
@@ -116,10 +114,12 @@ export class TestsDashboardComponent implements OnInit {
    */
   editTest(test: Test) {
     // Checks if any candidate has taken the test
-    this.testService.isTestAttendeeExist(test.id).subscribe((res) => {
-      if (!res) {
-        this.router.navigate(["/tests/" + test.id + "/sections"]);
-      }
+    this.testService.isTestAttendeeExist(test.id).subscribe({
+      next: async (res) => {
+        if (!res) {
+          await this.router.navigate([`/tests/${test.id}/sections`]);
+        }
+      },
     });
   }
 
@@ -128,7 +128,7 @@ export class TestsDashboardComponent implements OnInit {
    * @param $event is of type Event and is used to call stopPropagation()
    * @param search is of type any
    */
-  selectTextArea($event: any, search: any) {
+  selectTextArea($event: MouseEvent, search: HTMLInputElement) {
     $event.stopPropagation();
     setTimeout(() => {
       search.select();

@@ -5,7 +5,7 @@ import { Test } from "../tests.model";
   name: "filter",
 })
 export class FilterPipe implements PipeTransform {
-  transform(allTests: Test[], searchedTest: string): any {
+  transform(allTests: Test[], searchedTest: string): Test[] {
     if (!searchedTest || !searchedTest.trim()) return allTests;
     return allTests.filter(function (currentTest: Test) {
       const searchedTestLower = searchedTest.toLowerCase().trim();
