@@ -15,7 +15,7 @@ export class ProfileService {
    * get details of the user
    */
   getUserDetails() {
-    return this.httpService.get(this.profileApiUrl);
+    return this.httpService.get<ApplicationUser>(this.profileApiUrl);
   }
 
   /**
