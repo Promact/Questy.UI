@@ -59,9 +59,8 @@ export class AddCategoryDialogComponent {
           this.response = err.json();
           this.errorMessage = this.response["error"];
           this.isButtonClicked = false;
-        }
-      }
-      );
+        },
+      });
     }
   }
 

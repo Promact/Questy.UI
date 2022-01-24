@@ -14,8 +14,9 @@ import { Report } from "../report.model";
 import { ConnectionService } from "../../core/connection.service";
 import jsPDF from "jspdf";
 import ExcelJS from "exceljs/dist/es5";
-import * as _ from "lodash";
-import 'jspdf-autotable';
+import * as _ from "lodash-es";
+import { applyPlugin } from "jspdf-autotable";
+import { MatTableDataSource } from "@angular/material/table";
 
 @Component({
   moduleId: module.id,
@@ -76,6 +77,7 @@ export class TestReportComponent implements OnInit {
   estimatedTime: string;
   isTestCompleted: boolean;
   hasTestEnded: boolean;
+  testAttandeeDataSource: MatTableDataSource<TestAttendee>;
 
   constructor(
     private readonly reportService: ReportService,
@@ -117,10 +119,13 @@ export class TestReportComponent implements OnInit {
     this.isTestCompleted = false;
     this.estimatedTime = "Getting status...";
     this.hasTestEnded = true;
+    this.testAttandeeDataSource = new MatTableDataSource(
+      this.testAttendeeArray
+    );
   }
 
   ngOnInit() {
-    this.testId = this.route.snapshot.params["id"];
+    this.testId = this.route.snapshot.params["id"] as number;
     this.loader = true;
     this.getTestName();
     this.domain = window.location.origin;
@@ -187,7 +192,9 @@ export class TestReportComponent implements OnInit {
           : ["star", true];
     });
     this.connectionService.recievedAttendeeId.subscribe((attendeeId) => {
-      const attendee = this.testAttendeeArray.find((x) => x.id === attendeeId) as TestAttendee;
+      const attendee = this.testAttendeeArray.find(
+        (x) => x.id === attendeeId
+      ) as TestAttendee;
       attendee.report.isTestPausedUnWillingly = true;
       this.testAttendeeArray.splice(
         this.testAttendeeArray.findIndex((x) => x.id === attendeeId),
@@ -198,7 +205,6 @@ export class TestReportComponent implements OnInit {
     });
     this.connectionService.recievedEstimatedEndTime.subscribe(
       (estimatedTime) => {
-
         const expectedEndDate = new Date(estimatedTime + "Z"); // 'Z' is for telling this method that the time is in UTC!!!
         const currentDate = new Date();
 
@@ -279,18 +285,19 @@ export class TestReportComponent implements OnInit {
    * @param testAttendee: Object of TestAttendee type
    */
   setStarredCandidate(testAttendee: TestAttendee) {
-    this.reportService
-      .setStarredCandidate(testAttendee.id)
-      .subscribe(() => {
-        const starredCandidate = _.find(this.testAttendeeArray, (ta) => ta.id === testAttendee.id) as TestAttendee;
-        starredCandidate.starredCandidate = !testAttendee.starredCandidate;
-        [this.headerStarStatus, this.isAllCandidateStarred] =
-          this.testAttendeeArray.some((x) => !x.starredCandidate)
-            ? ["star_border", false]
-            : ["star", true];
-        if (testAttendee.starredCandidate) this.starredCandidateCount += 1;
-        else this.starredCandidateCount -= 1;
-      });
+    this.reportService.setStarredCandidate(testAttendee.id).subscribe(() => {
+      const starredCandidate = _.find(
+        this.testAttendeeArray,
+        (ta) => ta.id === testAttendee.id
+      ) as TestAttendee;
+      starredCandidate.starredCandidate = !testAttendee.starredCandidate;
+      [this.headerStarStatus, this.isAllCandidateStarred] =
+        this.testAttendeeArray.some((x) => !x.starredCandidate)
+          ? ["star_border", false]
+          : ["star", true];
+      if (testAttendee.starredCandidate) this.starredCandidateCount += 1;
+      else this.starredCandidateCount -= 1;
+    });
   }
   /**
    * Resumes test if Allow test resume is supervised
@@ -512,8 +519,8 @@ export class TestReportComponent implements OnInit {
       { title: "Score", dataKey: "score" },
       { title: "Percentage", dataKey: "percentage" },
     ];
+    applyPlugin(jsPDF);
     const doc = new jsPDF("p", "pt");
-    
     doc.autoTable(columns, reports, {
       styles: {
         pageBreak: "auto",
@@ -682,7 +689,8 @@ export class TestReportComponent implements OnInit {
           this.totalNoOfTestQuestions = y.totalTestQuestions;
         });
         const totalMarks =
-          this.totalNoOfTestQuestions * parseInt(String(this.test.correctMarks));
+          this.totalNoOfTestQuestions *
+          parseInt(String(this.test.correctMarks));
         workSheet1.addRow({
           rollNo: testTakers.rollNo,
           name: testTakers.name,
@@ -969,4 +977,3 @@ export class TestReportComponent implements OnInit {
 function saveAs(blob: Blob, arg1: string) {
   throw new Error("Function not implemented.");
 }
-

@@ -129,7 +129,7 @@ export class QuestionsProgrammingComponent implements OnInit {
         this.selectedDifficulty =
           DifficultyLevel[this.questionModel.question.difficultyLevel];
         this.testCases =
-          this.questionModel.codeSnippetQuestion?.codeSnippetQuestionTestCases as CodeSnippetQuestionsTestCases[];
+          this.questionModel.codeSnippetQuestion?.codeSnippetQuestionTestCases;
         this.isDefaultTestCaseAdded = this.testCases.some(
           (testcase) => +testcase.testCaseType === TestCaseType.Default
         );
@@ -238,7 +238,10 @@ export class QuestionsProgrammingComponent implements OnInit {
       );
       // If question is being editted then set the category
       if (this.isQuestionEdited || this.isQuestionDuplicated)
-        this.selectedCategory = _.find(this.categoryList, (category) => category.id === this.questionModel.question.categoryID)?.categoryName as string;
+        this.selectedCategory = _.find(
+          this.categoryList,
+          (category) => category.id === this.questionModel.question.categoryID
+        )?.categoryName as string;
       this.loader = false;
       this.isCategoryReady = true;
     });
@@ -287,11 +290,23 @@ export class QuestionsProgrammingComponent implements OnInit {
    * @param category : category to be added
    */
   selectCategory(category: string) {
-    this.categoryList = this.categoryList.filter((x) => x.categoryName !== category);
+    this.categoryList = this.categoryList.filter(
+      (x) => x.categoryName !== category
+    );
     this.selectedCategory = category;
-    if (this.categoryList !== undefined && this.categoryList !== null && category !== undefined && category !== null) {
-      this.questionModel.question.categoryID = (_.find(this.categoryList, (cat) => cat.categoryName === category) as Category).id;   
-    } 
+    if (
+      this.categoryList !== undefined &&
+      this.categoryList !== null &&
+      category !== undefined &&
+      category !== null
+    ) {
+      this.questionModel.question.categoryID = (
+        _.find(
+          this.categoryList,
+          (cat) => cat.categoryName === category
+        ) as Category
+      ).id;
+    }
   }
 
   /**
@@ -364,7 +379,8 @@ export class QuestionsProgrammingComponent implements OnInit {
         this.testCases.forEach((x) => (x.id = 0));
         this.questionModel.question.id = 0;
       }
-      this.questionModel.codeSnippetQuestion.codeSnippetQuestionTestCases = this.testCases;
+      this.questionModel.codeSnippetQuestion.codeSnippetQuestionTestCases =
+        this.testCases;
       this.questionModel.codeSnippetQuestion.languageList = [];
       this.selectedLanguageList.forEach((language) => {
         this.questionModel.codeSnippetQuestion.languageList.push(language);
@@ -413,9 +429,11 @@ export class QuestionsProgrammingComponent implements OnInit {
       this.selectedDifficulty = difficultyLevel;
       this.questionModel.question.difficultyLevel =
         DifficultyLevel[this.selectedDifficulty];
-      this.questionModel.question.categoryID = (this.categoryList.find(
-        (x) => x.categoryName === this.selectedCategory
-      ) as Category).id;
+      this.questionModel.question.categoryID = (
+        this.categoryList.find(
+          (x) => x.categoryName === this.selectedCategory
+        ) as Category
+      ).id;
     } else if (categoryName === "AllCategory" && difficultyLevel !== "All") {
       this.isCategorySelected = false;
       this.selectedDifficulty = difficultyLevel;
@@ -423,9 +441,11 @@ export class QuestionsProgrammingComponent implements OnInit {
         DifficultyLevel[this.selectedDifficulty];
     } else if (categoryName !== "AllCategory" && difficultyLevel === "All") {
       this.isCategorySelected = true;
-      this.questionModel.question.categoryID = (this.categoryList.find(
-        (x) => x.categoryName === this.selectedCategory
-      ) as Category).id;
+      this.questionModel.question.categoryID = (
+        this.categoryList.find(
+          (x) => x.categoryName === this.selectedCategory
+        ) as Category
+      ).id;
     }
   }
 

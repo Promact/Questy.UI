@@ -90,7 +90,13 @@
             "main": "app/main.conduct.ts",
             "polyfills": "polyfills.ts",
             "tsConfig": "tsconfig.json",
-            "assets": [],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "node_modules/tinymce",
+                "output": "/tinymce/"
+              }
+            ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",

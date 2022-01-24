@@ -36,7 +36,7 @@
         <div class="report-title-block clearfix">
             <div class="pull-left">
                 <h2>Test Report</h2>
-                <select class="form-control" [(ngModel)]="testCompletionStatus" (change)="setTestStatusType(testCompletionStatus)">
+                <select title="testCompleteStatus" class="form-control" [(ngModel)]="testCompletionStatus" (change)="setTestStatusType(testCompletionStatus)">
                     <option value="0">All Candidates ({{allCount}})</option>
                     <option value="1">Completed Test ({{completedTestCount}})</option>
                     <option value="2">Expired Test ({{expiredTestCount}})</option>
@@ -56,23 +56,23 @@
             <button type="button" class="btn" (click)="generateReportForUnfinishedTest()" *ngIf="showGenerateReportButton && !noCandidateFound">Generate Report</button>
         </div>
         <div class="grid-container" *ngIf="!noCandidateFound">
-            <table class="data-grid" [md2Data]="testAttendeeArray" #report="md2DataTable" [rowsPerPage]="10" [(activePage)]="activePage">
+            <table class="data-grid" mat-table [dataSource]="testAttandeeDataSource" #report="matTable">
                 <thead>
                     <tr>
-                        <th><md-checkbox class="only-checkbox" [(ngModel)]="checkedAllCandidate" (change)="selectAllCandidates()" [disabled]="isGeneratingReport"></md-checkbox></th>
+                        <th><mat-checkbox class="only-checkbox" [(ngModel)]="checkedAllCandidate" (change)="selectAllCandidates()" [disabled]="isGeneratingReport"></mat-checkbox></th>
                         <th><em class="material-icons" [ngClass]="{starred : isAllCandidateStarred}" (click)="setAllCandidatesStarred()">{{headerStarStatus}}</em></th>
-                        <th class="h5" md2SortBy="firstName">Name</th>
-                        <th class="h5" md2SortBy="email">Email</th>
-                        <th class="h5" md2SortBy="createdDateTime">Test Date</th>
-                        <th class="h5" md2SortBy="report.totalMarksScored">Score</th>
-                        <th class="h5" md2SortBy="report.percentage">Percentage</th>
+                        <th class="h5" mat2SortBy="firstName">Name</th>
+                        <th class="h5" mat2SortBy="email">Email</th>
+                        <th class="h5" mat2SortBy="createdDateTime">Test Date</th>
+                        <th class="h5" mat2SortBy="report.totalMarksScored">Score</th>
+                        <th class="h5" mat2SortBy="report.percentage">Percentage</th>
                         <th class="h5"><span *ngIf="isAnyTestResume">Allow Resume?</span></th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let testAttendee of report.data;let i = index">
-                        <td><md-checkbox class="only-checkbox" [(ngModel)]="testAttendee.checkedCandidate" (change)="selectIndividualCandidate(testAttendee,testAttendee.checkedCandidate)" [disabled]="testAttendee.generatingReport"></md-checkbox></td>
+                    <tr *ngFor="let testAttendee of testAttendeeArray;let i = index">
+                        <td><mat-checkbox class="only-checkbox" [(ngModel)]="testAttendee.checkedCandidate" (change)="selectIndividualCandidate(testAttendee,testAttendee.checkedCandidate)" [disabled]="testAttendee.generatingReport"></mat-checkbox></td>
                         <td><em class="material-icons" [ngClass]="{starred : testAttendee.starredCandidate}" (click)="setStarredCandidate(testAttendee)">{{isStarredCandidate(testAttendee)}}</em></td>
                         <td><a class="theme-text font-semibold" [routerLink]="['individual-report/',testAttendee.id]" [class.stop-redirection]="testAttendee.reporNotFoundYet">{{testAttendee.firstName}} {{testAttendee.lastName}}</a></td>
                         <td>{{testAttendee.email}}</td>
@@ -93,7 +93,7 @@
                             <span class="records-info">Showing {{startingIndexOfActivePage(activePage,count)}} to {{endingIndexOfActivePage(activePage,count)}} of {{count}} records </span>
                         </td>
                         <td colspan="5">
-                            <md2-pagination></md2-pagination>
+                            <mat-paginator [pageSize]="10"></mat-paginator>
                         </td>
                     </tr>
                 </tfoot>

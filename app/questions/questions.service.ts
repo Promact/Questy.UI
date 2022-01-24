@@ -50,7 +50,9 @@ export class QuestionsService {
    * gets list of coding languages
    */
   getCodingLanguage() {
-    return this.httpService.get<string[]>(`${this.questionsApiUrl}/codinglanguage`);
+    return this.httpService.get<string[]>(
+      `${this.questionsApiUrl}/codinglanguage`
+    );
   }
 
   /**

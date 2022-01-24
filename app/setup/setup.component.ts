@@ -32,17 +32,19 @@ export class SetupComponent {
    */
   validateConnectionString(setup: any) {
     this.loader = true;
-    this.setupService.validateConnectionString(this.connectionString).subscribe({
-      next:(response) => {
-        if (response === true) setup.next();
-        else this.stepOneErrorMessage = true;
-        this.loader = false;
-      },
-      error:(err) => {
-        this.stepOneErrorMessage = true;
-        this.loader = false;
-      }
-    });
+    this.setupService
+      .validateConnectionString(this.connectionString)
+      .subscribe({
+        next: (response) => {
+          if (response === true) setup.next();
+          else this.stepOneErrorMessage = true;
+          this.loader = false;
+        },
+        error: (err) => {
+          this.stepOneErrorMessage = true;
+          this.loader = false;
+        },
+      });
   }
 
   /**
@@ -96,7 +98,7 @@ export class SetupComponent {
       error: (err) => {
         this.stepThreeErrorMessage = true;
         this.loader = false;
-      }
+      },
     });
   }
 

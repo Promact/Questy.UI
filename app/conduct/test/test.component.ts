@@ -497,9 +497,10 @@ export class TestComponent implements OnInit {
       QuestionType.codeSnippetQuestion;
 
     if (!this.isQuestionCodeSnippetType) {
-      this.options = this.testQuestions[index].question
-        .singleMultipleAnswerQuestion
-        ?.singleMultipleAnswerQuestionOption as SingleMultipleAnswerQuestionOption[];
+      this.options =
+        this.testQuestions[
+          index
+        ].question.singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption;
       // Sets boolean if question is single choice
       this.isQuestionSingleChoice =
         this.testQuestions[index].question.question.questionType ===
@@ -545,8 +546,8 @@ export class TestComponent implements OnInit {
       const codingAnswer = this.testAnswers.find(
         (x) => x.questionId === this.testQuestions[index].question.question.id
       );
-      this.languageMode = this.testQuestions[index].question.codeSnippetQuestion
-        ?.languageList as string[];
+      this.languageMode =
+        this.testQuestions[index].question.codeSnippetQuestion?.languageList;
       if (codingAnswer !== undefined) {
         this.codeAnswer = codingAnswer.code.source;
         this.selectLanguage = isNaN(+codingAnswer.code.language)
@@ -798,19 +799,17 @@ export class TestComponent implements OnInit {
   ) {
     if (isSingleChoice) {
       this.clearResponse(questionIndex);
-      const smaOption = this.testQuestions[questionIndex].question
-        .singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption[
-        optionIndex
-      ] as SingleMultipleAnswerQuestionOption;
+      const smaOption =
+        this.testQuestions[questionIndex].question.singleMultipleAnswerQuestion
+          ?.singleMultipleAnswerQuestionOption[optionIndex];
       smaOption.isAnswer = true;
     } else {
       const checked =
         this.testQuestions[questionIndex].question.singleMultipleAnswerQuestion
           ?.singleMultipleAnswerQuestionOption[optionIndex].isAnswer;
-      const smaOption = this.testQuestions[questionIndex].question
-        .singleMultipleAnswerQuestion?.singleMultipleAnswerQuestionOption[
-        optionIndex
-      ] as SingleMultipleAnswerQuestionOption;
+      const smaOption =
+        this.testQuestions[questionIndex].question.singleMultipleAnswerQuestion
+          ?.singleMultipleAnswerQuestionOption[optionIndex];
       smaOption.isAnswer = !checked;
       if (
         !this.testQuestions[

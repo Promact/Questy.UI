@@ -19,9 +19,9 @@ import { ReportsModule } from "./reports/reports.module";
     QuestionsModule,
     TestsModule,
     ProfileModule,
-    ReportsModule,    
+    ReportsModule,
   ],
   providers: [],
-  declarations: [AppComponent],  
+  declarations: [AppComponent],
 })
 export class AppModule {}
