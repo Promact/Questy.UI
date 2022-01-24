@@ -1,7 +1,5 @@
 ﻿import { Component, Inject } from "@angular/core";
-import { Test } from "../tests.model";
-import { Router } from "@angular/router";
-import { MdDialog, MdDialogRef, MD_DIALOG_DATA } from "@angular/material";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 @Component({
   moduleId: module.id,
@@ -10,11 +8,15 @@ import { MdDialog, MdDialogRef, MD_DIALOG_DATA } from "@angular/material";
 })
 export class RandomQuestionSelectionDialogComponent {
   isErrorMessageVisible: boolean;
-  isPatternMismatched: boolean;
+  isPatternMismatched!: boolean;
 
   constructor(
-    public dialogRef: MdDialogRef<RandomQuestionSelectionDialogComponent>,
-    @Inject(MD_DIALOG_DATA) public data: any
+    public dialogRef: MatDialogRef<RandomQuestionSelectionDialogComponent>,
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      numberOfQuestions: number;
+      numberOfQuestionsInSelectedCategory: number;
+    }
   ) {
     this.isErrorMessageVisible = false;
   }

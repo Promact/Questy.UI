@@ -1,8 +1,9 @@
 ﻿import { Component } from "@angular/core";
 import { ChangePasswordModel } from "../password.model";
-import { MdDialogRef } from "@angular/material";
+import { MatDialogRef } from "@angular/material/dialog";
 import { ProfileService } from "../profile.service";
-import { MdSnackBar } from "@angular/material";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   moduleId: module.id,
@@ -11,16 +12,16 @@ import { MdSnackBar } from "@angular/material";
 })
 export class ChangePasswordDialogComponent {
   constructor(
-    public profileService: ProfileService,
-    public dialog: MdDialogRef<any>,
-    public snackBar: MdSnackBar
+    private readonly profileService: ProfileService,
+    private readonly dialog: MatDialogRef<unknown>,
+    private readonly snackBar: MatSnackBar
   ) {}
   user: ChangePasswordModel = new ChangePasswordModel();
   isPasswordSame = true;
-  response: any;
-  errorMesseage: any;
+  response!: HttpErrorResponse;
+  errorMesseage!: string;
   errorCorrection = true;
-  loader: boolean;
+  loader!: boolean;
 
   /**
    * update the database with new password
@@ -30,25 +31,21 @@ export class ChangePasswordDialogComponent {
     this.loader = true;
     if (userPassword.newPassword === userPassword.confirmPassword) {
       this.isPasswordSame = true;
-      this.profileService.updateUserPassword(userPassword).subscribe(
-        (response) => {
+      this.profileService.updateUserPassword(userPassword).subscribe({
+        next: () => {
           this.loader = false;
           this.dialog.close();
-          const snackBarRef = this.snackBar.open(
-            "Your password has been changed.",
-            "Dismiss",
-            {
-              duration: 3000,
-            }
-          );
+          this.snackBar.open("Your password has been changed.", "Dismiss", {
+            duration: 3000,
+          });
         },
-        (err) => {
+        error: (err: HttpErrorResponse) => {
           this.loader = false;
           this.errorCorrection = true;
-          this.response = err.json();
-          this.errorMesseage = this.response["error"];
-        }
-      );
+          this.response = err;
+          this.errorMesseage = this.response["error"] as string;
+        },
+      });
     } else {
       this.loader = false;
       this.isPasswordSame = false;

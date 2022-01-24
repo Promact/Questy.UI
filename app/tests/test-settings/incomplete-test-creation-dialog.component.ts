@@ -1,5 +1,5 @@
 ﻿import { Component, Inject, OnInit } from "@angular/core";
-import { MdDialog, MdDialogRef, MD_DIALOG_DATA } from "@angular/material";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ActivatedRoute } from "@angular/router";
 import { Test } from "../tests.model";
 
@@ -9,18 +9,17 @@ import { Test } from "../tests.model";
   templateUrl: "incomplete-test-creation-dialog.html",
 })
 export class IncompleteTestCreationDialogComponent implements OnInit {
-  testId: number;
-  isQuestionMissing: boolean;
+  testId!: number;
+  isQuestionMissing!: boolean;
 
   constructor(
-    public dialogRef: MdDialogRef<IncompleteTestCreationDialogComponent>,
-    @Inject(MD_DIALOG_DATA) public data: any,
-    public route: ActivatedRoute
+    private readonly dialogRef: MatDialogRef<IncompleteTestCreationDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) private readonly data: Test,
+    private readonly route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    let test = new Test();
-    test = this.data;
+    const test = this.data;
     this.testId = test.id;
     this.isQuestionMissing = test.isQuestionMissing;
   }

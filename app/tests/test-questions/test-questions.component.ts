@@ -1,20 +1,15 @@
 ﻿import { Component, OnInit } from "@angular/core";
-import { Question } from "../../questions/question.model";
 import { Category } from "../../questions/category.model";
 import { TestService } from "../tests.service";
 import { Router, ActivatedRoute } from "@angular/router";
-import {
-  MdSnackBar,
-  MdSnackBarConfig,
-  MdDialog,
-  MdDialogRef,
-  MD_DIALOG_DATA,
-} from "@angular/material";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from "@angular/material/dialog";
 import { DifficultyLevel } from "../../questions/enum-difficultylevel";
 import { Test, TestQuestionAC } from "../tests.model";
 import { QuestionBase } from "../../questions/question";
 import { QuestionType } from "../../questions/enum-questiontype";
 import { RandomQuestionSelectionDialogComponent } from "./random-question-selection-dialog.component";
+import { shuffle } from "lodash-es";
 
 @Component({
   moduleId: module.id,
@@ -22,30 +17,30 @@ import { RandomQuestionSelectionDialogComponent } from "./random-question-select
   templateUrl: "test-questions.html",
 })
 export class TestQuestionsComponent implements OnInit {
-  editName: boolean;
+  editName!: boolean;
   DifficultyLevel = DifficultyLevel;
   QuestionType = QuestionType;
   questionsToAdd: TestQuestionAC[];
-  testId: number;
+  testId!: number;
   isSaveExit: boolean;
   testDetails: Test;
   loader = false;
   loader_question = false;
   optionName: string[];
-  testNameReference: string;
-  isAnyCategorySelectedForTest: boolean;
-  isEditTestEnabled: boolean;
+  testNameReference!: string;
+  isAnyCategorySelectedForTest!: boolean;
+  isEditTestEnabled!: boolean;
   disablePreview: boolean;
   array: QuestionBase[];
-  randomQuestionsArray: QuestionBase[];
+  randomQuestionsArray!: QuestionBase[];
   questionList: QuestionBase[];
 
   constructor(
     private testService: TestService,
-    public snackBar: MdSnackBar,
+    public snackBar: MatSnackBar,
     public router: ActivatedRoute,
     public route: Router,
-    public dialog: MdDialog
+    public dialog: MatDialog
   ) {
     this.testDetails = new Test();
     this.isSaveExit = false;
@@ -55,7 +50,7 @@ export class TestQuestionsComponent implements OnInit {
     this.array = [];
     this.questionList = [];
     this.router.params.subscribe((params) => {
-      this.testId = params["id"];
+      this.testId = params["id"] as number;
     });
   }
 
@@ -127,8 +122,8 @@ export class TestQuestionsComponent implements OnInit {
    */
   getTestDetails() {
     this.loader = true;
-    this.testService.getTestById(this.testId).subscribe(
-      (response) => {
+    this.testService.getTestById(this.testId).subscribe({
+      next: (response) => {
         this.testDetails = response;
         this.disablePreview =
           this.testDetails.categoryAcList === null ||
@@ -143,12 +138,12 @@ export class TestQuestionsComponent implements OnInit {
           });
         this.loader = false;
       },
-      (err) => {
+      error: async () => {
         this.loader = false;
         this.openSnackBar("No test found for this id.");
-        this.route.navigate(["/tests"]);
-      }
-    );
+        await this.route.navigate(["/tests"]);
+      },
+    });
   }
 
   /**
@@ -174,7 +169,7 @@ export class TestQuestionsComponent implements OnInit {
   /**
    * Adds all the questions to to database and navigate to test-settings.component
    */
-  saveNext() {
+  async saveNext() {
     this.loader = true;
     this.questionsToAdd = new Array<TestQuestionAC>();
     // It checks for every category of a test
@@ -193,25 +188,25 @@ export class TestQuestionsComponent implements OnInit {
     if (this.isEditTestEnabled) {
       this.testService
         .addTestQuestions(this.questionsToAdd, this.testId)
-        .subscribe(
-          (response) => {
+        .subscribe({
+          next: async (response) => {
             if (response) {
-              this.openSnackBar(response.message);
+              //this.openSnackBar(response.message);
               if (this.isSaveExit) {
                 this.loader = false;
-                this.route.navigate(["/tests"]);
+                await this.route.navigate(["/tests"]);
               } else {
                 this.loader = false;
-                this.route.navigate(["tests/" + this.testId + "/settings"]);
+                await this.route.navigate([`tests/${this.testId}/settings`]);
               }
             }
           },
-          (error) => {
+          error: () => {
             this.loader = false;
             this.openSnackBar("Something went wrong. Please try again later.");
-          }
-        );
-    } else this.route.navigate(["tests/" + this.testId + "/settings"]);
+          },
+        });
+    } else await this.route.navigate([`tests/${this.testId}/settings`]);
   }
 
   /**
@@ -237,10 +232,10 @@ export class TestQuestionsComponent implements OnInit {
   /**
    * Adds the questions to question table and redirect to test dashboard
    */
-  saveExit() {
+  async saveExit() {
     this.isSaveExit = true;
-    if (this.isEditTestEnabled) this.saveNext();
-    else this.route.navigate(["/tests"]);
+    if (this.isEditTestEnabled) await this.saveNext();
+    else await this.route.navigate(["/tests"]);
   }
 
   /**
@@ -259,7 +254,7 @@ export class TestQuestionsComponent implements OnInit {
   GetShuffledQuestionArray(k: number) {
     this.testDetails.categoryAcList[k].numberOfRandomQuestionsSelected =
       this.testDetails.categoryAcList[k].numberOfSelectedQuestion;
-    this.randomQuestionsArray = this.shuffleArray(this.array);
+    this.randomQuestionsArray = shuffle(this.array);
   }
 
   /**
@@ -294,22 +289,6 @@ export class TestQuestionsComponent implements OnInit {
   }
 
   /**
-   * Shuffles the contents of the array
-   * @param arrayToShuffle contains the array whose contents are to be shuffled
-   */
-  private shuffleArray(arrayToShuffle: any[]) {
-    const max = arrayToShuffle.length - 1;
-    for (let i = 0; i < max; i++) {
-      const pickIndex = Math.floor(Math.random() * max);
-      [arrayToShuffle[i], arrayToShuffle[pickIndex]] = [
-        arrayToShuffle[pickIndex],
-        arrayToShuffle[i],
-      ];
-    }
-    return arrayToShuffle;
-  }
-
-  /**
    * Opens the dialog box where the number of questions to be selected randomly is to be entered
    * @param category is the object of Category
    * @param k contains the index of the category which is being selected
@@ -325,7 +304,7 @@ export class TestQuestionsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      category.numberOfRandomQuestionsSelected = result;
+      category.numberOfRandomQuestionsSelected = result as number;
       if (result !== "")
         this.selectRandomQuestions(category.numberOfRandomQuestionsSelected, k);
       else

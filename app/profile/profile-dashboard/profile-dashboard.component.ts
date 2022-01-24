@@ -1,5 +1,5 @@
-﻿import { Component, OnInit, ViewChild } from "@angular/core";
-import { MdDialog } from "@angular/material";
+﻿import { Component, OnInit } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
 import { ApplicationUser } from "../profile.model";
 import { ProfileService } from "../profile.service";
 import { ChangePasswordDialogComponent } from "./change-password-dialog.component";
@@ -15,7 +15,10 @@ export class ProfileDashboardComponent implements OnInit {
   ngOnInit() {
     this.getUserDetails();
   }
-  constructor(public profileService: ProfileService, public dialog: MdDialog) {
+  constructor(
+    private readonly profileService: ProfileService,
+    private readonly dialog: MatDialog
+  ) {
     this.loader = true;
   }
 

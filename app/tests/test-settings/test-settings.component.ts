@@ -1,67 +1,64 @@
-﻿import { Component, OnInit, ViewChild, Input } from "@angular/core";
+﻿import { Component, OnInit } from "@angular/core";
 import { TestService } from "../tests.service";
-import {
-  MdDialog,
-  MdSnackBar,
-  MdDialogRef,
-  MD_DIALOG_DATA,
-} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute } from "@angular/router";
 import { Router } from "@angular/router";
-import { FormGroup } from "@angular/forms";
 import { TestOrder } from "../enum-testorder";
 import { Test } from "../tests.model";
 import { BrowserTolerance } from "../enum-browsertolerance";
 import { AllowTestResume } from "../enum-allowtestresume";
 import { IncompleteTestCreationDialogComponent } from "./incomplete-test-creation-dialog.component";
 import { TestIPAddress } from "../test-IPAdddress";
-
+import { every, isUndefined, isNull } from "lodash-es";
+import { HttpErrorResponse } from "@angular/common/http";
+import { lastValueFrom } from "rxjs";
 @Component({
   moduleId: module.id,
   selector: "test-settings",
   templateUrl: "test-settings.html",
 })
 export class TestSettingsComponent implements OnInit {
-  isFocusLostNull: boolean;
-  showIsPausedButton: boolean;
-  isRelaunched: boolean;
+  isFocusLostNull!: boolean;
+  showIsPausedButton!: boolean;
+  isRelaunched!: boolean;
   testDetails: Test;
-  testId: number;
+  testId!: number;
   validEndDate: boolean;
-  endDate: string;
+  endDate!: string;
   validTime: boolean;
   validStartDate: boolean;
   currentDate: Date;
   isLaunchedAlready: boolean;
-  testNameUpdatedMessage: string;
+  testNameUpdatedMessage!: string;
   testSettingsUpdatedMessage: string;
-  testNameRef: string;
-  isTestNameExist: boolean;
+  testNameRef!: string;
+  isTestNameExist!: boolean;
   QuestionOrder = TestOrder;
   OptionOrder = TestOrder;
   BrowserTolerance = BrowserTolerance;
   AllowTestResume = AllowTestResume;
-  response: any;
-  errorMessage: string;
-  testNameReference: string;
-  isSectionOrQuestionAdded: boolean;
-  loader: boolean;
+  response!: HttpErrorResponse;
+  errorMessage!: string;
+  testNameReference!: string;
+  isSectionOrQuestionAdded!: boolean;
+  loader!: boolean;
   isAttendeeExistForTest: boolean;
-  testLink: string;
+  testLink!: string;
   copiedContent: boolean;
   tooltipMessage: string;
   ipAddressArray: TestIPAddress[] = [];
   numberOfIpFields: number[] = [];
   disablePreview: boolean;
   isIpAddressAdded: boolean;
-  isIpAddressFieldNull: boolean;
+  isIpAddressFieldNull!: boolean;
 
   constructor(
-    public dialog: MdDialog,
+    public dialog: MatDialog,
     private testService: TestService,
     private router: Router,
     private route: ActivatedRoute,
-    public snackbarRef: MdSnackBar
+    public snackbarRef: MatSnackBar
   ) {
     this.testDetails = new Test();
     this.isLaunchedAlready = false;
@@ -83,7 +80,7 @@ export class TestSettingsComponent implements OnInit {
    */
   ngOnInit() {
     this.loader = true;
-    this.testId = this.route.snapshot.params["id"];
+    this.testId = this.route.snapshot.params["id"] as number;
     this.getTestById(this.testId);
   }
 
@@ -92,20 +89,25 @@ export class TestSettingsComponent implements OnInit {
    * @param id contains the value of the Id from the route
    */
   getTestById(id: number) {
-    this.testService.getTestById(id).subscribe(
-      (response) => {
+    this.testService.getTestById(id).subscribe({
+      next: (response) => {
         this.testDetails = response;
         this.testNameReference = this.testDetails.testName;
         this.disablePreview =
-          this.testDetails.categoryAcList === null ||
-          this.testDetails.categoryAcList.every((x) => !x.isSelect) ||
-          this.testDetails.categoryAcList.every(
+          isUndefined(this.testDetails.categoryAcList) ||
+          isNull(this.testDetails.categoryAcList) ||
+          every(
+            this.testDetails.categoryAcList,
+            (category) => !category.isSelect
+          ) ||
+          every(
+            this.testDetails.categoryAcList,
             (x) => x.numberOfSelectedQuestion === 0
           );
         this.loader = false;
         const magicString = this.testDetails.link;
         const domain = window.location.origin;
-        this.testLink = domain + "/conduct/" + magicString;
+        this.testLink = `${domain}/conduct/${magicString}`;
         this.testDetails.startDate = this.toDateString(
           new Date(<string>this.testDetails.startDate)
         );
@@ -114,12 +116,12 @@ export class TestSettingsComponent implements OnInit {
         );
         this.loader = false;
       },
-      (err) => {
+      error: async () => {
         this.loader = false;
         this.openSnackBar("No test found for this id.");
-        this.router.navigate(["/tests"]);
-      }
-    );
+        await this.router.navigate(["/tests"]);
+      },
+    });
   }
 
   /**
@@ -130,9 +132,9 @@ export class TestSettingsComponent implements OnInit {
     return (
       date.getFullYear().toString() +
       "-" +
-      ("0" + (date.getMonth() + 1)).slice(-2) +
+      `0${date.getMonth() + 1}`.slice(-2) +
       "-" +
-      ("0" + date.getDate()).slice(-2) +
+      `0${date.getDate()}`.slice(-2) +
       "T" +
       date.toTimeString().slice(0, 5)
     );
@@ -143,7 +145,7 @@ export class TestSettingsComponent implements OnInit {
    * @param message contains the message to be displayed when the snackbar gets opened
    */
   openSnackBar(message: string) {
-    const snackBarRef = this.snackbarRef.open(message, "Dismiss", {
+    this.snackbarRef.open(message, "Dismiss", {
       duration: 4000,
     });
   }
@@ -195,8 +197,8 @@ export class TestSettingsComponent implements OnInit {
     testObject.startDate = new Date(<string>testObject.startDate).toISOString();
     testObject.endDate = new Date(<string>testObject.endDate).toISOString();
 
-    this.testService.updateTestById(id, testObject).subscribe(
-      (response) => {
+    this.testService.updateTestById(id, testObject).subscribe({
+      next: () => {
         this.loader = true;
         const snackBarRef = this.snackbarRef.open(
           "Saved changes successfully.",
@@ -205,20 +207,22 @@ export class TestSettingsComponent implements OnInit {
             duration: 3000,
           }
         );
-        snackBarRef.afterDismissed().subscribe(() => {
-          this.router.navigate(["/tests"]);
-          this.loader = false;
+        snackBarRef.afterDismissed().subscribe({
+          next: async () => {
+            await this.router.navigate(["/tests"]);
+            this.loader = false;
+          },
         });
       },
-      (errorHandling) => {
+      error: (errorHandling: HttpErrorResponse) => {
         this.loader = false;
-        this.response = errorHandling.json();
-        this.errorMessage = this.response["error"];
+        this.response = errorHandling;
+        this.errorMessage = this.response["error"] as string;
         this.snackbarRef.open(this.errorMessage, "Dismiss", {
           duration: 3000,
         });
-      }
-    );
+      },
+    });
   }
 
   /**
@@ -227,7 +231,7 @@ export class TestSettingsComponent implements OnInit {
    * @param testObject is an object of class Test
    * @param isTestLaunched is a boolean value indicating whether the test has been launched or not
    */
-  launchTestDialog(id: number, testObject: Test, isTestLaunched: boolean) {
+  launchTestDialog(id: number, testObject: Test) {
     const isCategoryAdded = this.testDetails.categoryAcList.some((x) => {
       return x.isSelect;
     });
@@ -243,36 +247,34 @@ export class TestSettingsComponent implements OnInit {
           <string>testObject.startDate
         ).toISOString();
         testObject.endDate = new Date(<string>testObject.endDate).toISOString();
-        this.testService.updateTestById(id, testObject).subscribe(
-          (response) => {
+        this.testService.updateTestById(id, testObject).subscribe({
+          next: () => {
             this.ngOnInit();
             this.openSnackBar("Your test has been launched successfully.");
           },
-          (errorHandling) => {
-            this.response = errorHandling.json();
-            this.errorMessage = this.response["error"];
+          error: (errorHandling: HttpErrorResponse) => {
+            this.response = errorHandling;
+            this.errorMessage = this.response["error"] as string;
             this.snackbarRef.open(this.errorMessage, "Dismiss", {
               duration: 3000,
             });
-          }
-        );
+          },
+        });
       } else {
         this.testDetails.isQuestionMissing = true;
-        const dialogRef = this.dialog.open(
-          IncompleteTestCreationDialogComponent,
-          { data: this.testDetails, disableClose: true, hasBackdrop: true }
-        );
-      }
-    } else {
-      this.testDetails.isQuestionMissing = false;
-      const dialogRef = this.dialog.open(
-        IncompleteTestCreationDialogComponent,
-        {
+        this.dialog.open(IncompleteTestCreationDialogComponent, {
           data: this.testDetails,
           disableClose: true,
           hasBackdrop: true,
-        }
-      );
+        });
+      }
+    } else {
+      this.testDetails.isQuestionMissing = false;
+      this.dialog.open(IncompleteTestCreationDialogComponent, {
+        data: this.testDetails,
+        disableClose: true,
+        hasBackdrop: true,
+      });
     }
   }
   /**
@@ -302,7 +304,7 @@ export class TestSettingsComponent implements OnInit {
    */
   resumeTest() {
     this.testDetails.isPaused = false;
-    const testObject = JSON.parse(JSON.stringify(this.testDetails));
+    const testObject = JSON.parse(JSON.stringify(this.testDetails)) as Test;
 
     testObject.startDate = new Date(
       <string>this.testDetails.startDate
@@ -337,10 +339,10 @@ export class TestSettingsComponent implements OnInit {
    * @param ipId is the Id of the ip address to be removed
    * @param ipAddress is the value of the ip address to be removed
    */
-  removeIpAddress(index: number, ipId: number, ipAddress: string) {
+  async removeIpAddress(index: number, ipId: number, ipAddress: string) {
     this.testDetails.testIpAddress.splice(index, 1);
     if (ipId !== undefined)
-      this.testService.deleteTestipAddress(ipId).subscribe((response) => {});
+      await lastValueFrom(this.testService.deleteTestipAddress(ipId));
     this.isIpAddressAdded =
       this.testDetails.testIpAddress.length === 0 ||
       (this.testDetails.testIpAddress.length > 0 &&
@@ -380,7 +382,7 @@ export class TestSettingsComponent implements OnInit {
    * @param $event is of type Event and is used to call stopPropagation()
    * @param testLink is the link of the test
    */
-  showTooltipMessage($event: Event, testLink: any) {
+  showTooltipMessage($event: MouseEvent, testLink: HTMLInputElement) {
     $event.stopPropagation();
     setTimeout(() => {
       testLink.select();

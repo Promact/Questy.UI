@@ -1,11 +1,4 @@
-﻿import {
-  Component,
-  OnInit,
-  ViewChild,
-  Input,
-  Output,
-  EventEmitter,
-} from "@angular/core";
+﻿import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { Test } from "../../tests.model";
 import { TestService } from "../../tests.service";
 import { ActivatedRoute } from "@angular/router";
@@ -19,39 +12,39 @@ import { MockRouteService } from "../../../questions/questions-single-multiple-a
   templateUrl: "create-test-footer.html",
 })
 export class CreateTestFooterComponent implements OnInit {
-  testId: number;
+  testId!: number;
   isTestSection: boolean;
   isTestQuestion: boolean;
   isTestSettings: boolean;
   @Input("settingsForm")
-  public settingsForm: NgForm;
+  public settingsForm!: NgForm;
   @Input("validStartDate")
-  public validStartDate: boolean;
+  public validStartDate!: boolean;
   @Input()
-  showIsPausedButton: boolean;
+  showIsPausedButton!: boolean;
   @Input("validEndDate")
-  public validEndDate: boolean;
+  public validEndDate!: boolean;
   @Input("validTime")
-  public validTime: boolean;
+  public validTime!: boolean;
   @Input("isIpAddressAdded")
-  public isIpAddressAdded: boolean;
-  @Output() saveTestSettings: any;
-  @Output() launchTestDialog: any;
-  @Output() resumeTest: any;
-  @Output() saveExit: any;
-  @Output() saveNext: any;
-  @Output() pauseTest: any;
-  @Output() SaveCategory: any;
+  public isIpAddressAdded!: boolean;
+  @Output() saveTestSettings: EventEmitter<void>;
+  @Output() launchTestDialog: EventEmitter<boolean>;
+  @Output() resumeTest: EventEmitter<void>;
+  @Output() saveExit: EventEmitter<void>;
+  @Output() saveNext: EventEmitter<void>;
+  @Output() pauseTest: EventEmitter<void>;
+  @Output() SaveCategory: EventEmitter<boolean>;
   @Input("testDetails")
-  public testDetails: Test;
+  public testDetails!: Test;
   @Input("isValid")
-  public isValid: boolean;
-  isSelectButton: boolean;
+  public isValid!: boolean;
+  isSelectButton!: boolean;
   isTestLaunched: boolean;
   @Input()
-  loader: boolean;
+  loader!: boolean;
   @Input()
-  isFocusLostNull: boolean;
+  isFocusLostNull!: boolean;
 
   constructor(
     private testService: TestService,
@@ -62,13 +55,13 @@ export class CreateTestFooterComponent implements OnInit {
     this.isTestSection = false;
     this.isTestQuestion = false;
     this.isTestSettings = false;
-    this.saveTestSettings = new EventEmitter();
-    this.launchTestDialog = new EventEmitter();
-    this.pauseTest = new EventEmitter();
-    this.resumeTest = new EventEmitter();
-    this.saveExit = new EventEmitter();
-    this.saveNext = new EventEmitter();
-    this.SaveCategory = new EventEmitter();
+    this.saveTestSettings = new EventEmitter<void>();
+    this.launchTestDialog = new EventEmitter<boolean>();
+    this.pauseTest = new EventEmitter<void>();
+    this.resumeTest = new EventEmitter<void>();
+    this.saveExit = new EventEmitter<void>();
+    this.saveNext = new EventEmitter<void>();
+    this.SaveCategory = new EventEmitter<boolean>();
     this.isTestLaunched = false;
   }
 
@@ -76,7 +69,7 @@ export class CreateTestFooterComponent implements OnInit {
    * Gets the Id of the Test from the route and fills the Settings saved for the selected Test in their respective fields
    */
   ngOnInit() {
-    this.testId = this.route.snapshot.params["id"];
+    this.testId = this.route.snapshot.params["id"] as number;
     this.getComponent();
   }
 
@@ -84,13 +77,13 @@ export class CreateTestFooterComponent implements OnInit {
    * Displays the Component whose route matches that of the url
    */
   getComponent() {
-    const url = this.mockRouteService.getCurrentUrl(this.router);
+    const url = this.router.url;
     this.isTestSection =
-      url === "/tests/" + this.testId + "/sections" ? true : false;
+      url === `/tests/${this.testId}/sections` ? true : false;
     this.isTestQuestion =
-      url === "/tests/" + this.testId + "/questions" ? true : false;
+      url === `/tests/${this.testId}/questions` ? true : false;
     this.isTestSettings =
-      url === "/tests/" + this.testId + "/settings" ? true : false;
+      url === `/tests/${this.testId}/settings` ? true : false;
   }
 
   /**

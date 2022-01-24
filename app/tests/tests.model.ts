@@ -27,7 +27,7 @@ export class Test {
   questionOrder!: TestOrder;
   optionOrder!: TestOrder;
   allowTestResume!: AllowTestResume;
-  categoryAcList: Category[] | null | undefined = [];
+  categoryAcList!: Category[];
   testIpAddress: TestIPAddress[] = [];
   isEditTestEnabled!: boolean;
   isQuestionMissing!: boolean;

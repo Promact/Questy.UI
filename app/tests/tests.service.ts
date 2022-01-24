@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpService } from "../core/http.service";
 import { Test, TestCategory, TestQuestionAC } from "./tests.model";
 import { Subject } from "rxjs";
+import { QuestionBase } from "app/questions/question";
 
 @Injectable()
 export class TestService {
@@ -14,7 +15,7 @@ export class TestService {
    * get list of tests
    */
   getTests() {
-    return this.httpService.get(this.testApiUrl);
+    return this.httpService.get<Test[]>(this.testApiUrl);
   }
 
   /**
@@ -23,7 +24,7 @@ export class TestService {
    * @param test
    */
   addTests(test: Test) {
-    return this.httpService.post(this.testApiUrl, test);
+    return this.httpService.post<Test>(this.testApiUrl, test);
   }
 
   /**
@@ -86,7 +87,7 @@ export class TestService {
     return this.httpService.get(`${this.testApiUrl}/${testId}/testAttendee`);
   }
 
-  addTestCategories(testId: number, testCategory: TestCategory) {
+  addTestCategories(testId: number, testCategory: TestCategory[]) {
     return this.httpService.post(
       `${this.testApiUrl}/addTestCategories/${testId}`,
       testCategory
@@ -121,7 +122,7 @@ export class TestService {
    * @param categoryId is passed to identify that particular "category"
    */
   getQuestions(testId: number, categoryId: number) {
-    return this.httpService.get(
+    return this.httpService.get<QuestionBase[]>(
       `${this.testApiUrl}/questions/${testId}/${categoryId}`
     );
   }
@@ -143,7 +144,7 @@ export class TestService {
    * @param id is passed to identify that particular "Test"
    */
   getTestById(id: number) {
-    return this.httpService.get(`${this.testApiUrl}/${id}`);
+    return this.httpService.get<Test>(`${this.testApiUrl}/${id}`);
   }
 
   /**
@@ -163,8 +164,8 @@ export class TestService {
    * @param testName: name of the test that is duplicated
    */
   setTestCopiedNumber(testName: string) {
-    return this.httpService.get(
-      this.testApiUrl + "/" + testName + "/setTestCopiedNumber"
+    return this.httpService.get<number>(
+      `${this.testApiUrl}/${testName}/setTestCopiedNumber`
     );
   }
 }
