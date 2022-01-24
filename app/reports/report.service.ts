@@ -1,9 +1,12 @@
 ﻿import { Injectable } from "@angular/core";
-import { Test } from "app/tests/tests.model";
+import { Test, TestQuestion } from "app/tests/tests.model";
 import { HttpService } from "../core/http.service";
 import { Report } from "./report.model";
 import { ReportQuestionsCount } from "./test-report/reportquestionscount";
-import { TestAttendee } from "./testAttendee";
+import { TestAttendee } from "../reports/testAttendee";
+import { TestAnswers } from "./testanswers.model";
+import { CodeSnippetTestCasesDetails } from "./code-snippet-test-cases-details.model";
+import { TestCodeSolutionDetails } from "./test-code-solution-details.model";
 
 @Injectable()
 export class ReportService {
@@ -54,11 +57,7 @@ export class ReportService {
     selectedTestStatus: number
   ) {
     return this.httpService.put(
-      this.reportsApiUrl +
-        "/star/all/" +
-        selectedTestStatus +
-        "?searchString=" +
-        searchString,
+      `${this.reportsApiUrl}/star/all/${selectedTestStatus}?searchString=${searchString}`,
       status
     );
   }
@@ -68,8 +67,8 @@ export class ReportService {
    * @param id: Id of the test attendee
    */
   getTestAttendeeById(id: number) {
-    return this.httpService.get(
-      this.reportsApiUrl + "/" + id + "/testAttendee"
+    return this.httpService.get<TestAttendee>(
+      `${this.reportsApiUrl}/${id}/testAttendee`
     );
   }
 
@@ -78,8 +77,8 @@ export class ReportService {
    * @param testId: Id of the test qhos questions are to be fetched
    */
   getTestQuestions(testId: number) {
-    return this.httpService.get(
-      this.reportsApiUrl + "/" + testId + "/testQuestions"
+    return this.httpService.get<TestQuestion[]>(
+      `${this.reportsApiUrl}/${testId}/testQuestions`
     );
   }
 
@@ -88,7 +87,9 @@ export class ReportService {
    * @param id: Id of the test attendee
    */
   getTestAttendeeAnswers(id: number) {
-    return this.httpService.get(this.reportsApiUrl + "/" + id + "/testAnswers");
+    return this.httpService.get<TestAnswers[]>(
+      `${this.reportsApiUrl}/${id}/testAnswers`
+    );
   }
 
   /**
@@ -97,8 +98,8 @@ export class ReportService {
    * @param testId: Id of the test taken by the test attendee
    */
   getStudentPercentile(testAttendeeId: number, testId: number) {
-    return this.httpService.get(
-      this.reportsApiUrl + "/" + testAttendeeId + "/" + testId + "/percentile"
+    return this.httpService.get<number>(
+      `${this.reportsApiUrl}/${testAttendeeId}/${testId}/percentile`
     );
   }
 
@@ -121,13 +122,8 @@ export class ReportService {
     attendeeId: number,
     questionId: number
   ) {
-    return this.httpService.get(
-      this.reportsApiUrl +
-        "/" +
-        attendeeId +
-        "/" +
-        questionId +
-        "/codeSnippetTestCasesDetails"
+    return this.httpService.get<CodeSnippetTestCasesDetails[]>(
+      `${this.reportsApiUrl}/${attendeeId}/${questionId}/codeSnippetTestCasesDetails`
     );
   }
 
@@ -137,13 +133,8 @@ export class ReportService {
    * @param questionId: Id of the code snippet question of a particular test
    */
   getCodeSnippetQuestionMarks(attendeeId: number, questionId: number) {
-    return this.httpService.get(
-      this.reportsApiUrl +
-        "/" +
-        attendeeId +
-        "/" +
-        questionId +
-        "/scoreOfCodeSnippetQuestion"
+    return this.httpService.get<string>(
+      `${this.reportsApiUrl}/${attendeeId}/${questionId}/scoreOfCodeSnippetQuestion`
     );
   }
 
@@ -153,13 +144,8 @@ export class ReportService {
    * @param questionId: Id of the code snippet question of a particular test
    */
   getTestCodeSolutionDetails(attendeeId: number, questionId: number) {
-    return this.httpService.get(
-      this.reportsApiUrl +
-        "/" +
-        attendeeId +
-        "/" +
-        questionId +
-        "/testCodeSolutionDetails"
+    return this.httpService.get<TestCodeSolutionDetails>(
+      `${this.reportsApiUrl}/${attendeeId}/${questionId}/testCodeSolutionDetails`
     );
   }
 
@@ -169,24 +155,19 @@ export class ReportService {
     isTestEnd: boolean
   ) {
     return this.httpService.post(
-      this.reportsApiUrl + "/createSession/" + testLink + "/" + isTestEnd,
+      `${this.reportsApiUrl}/createSession/${testLink}/${String(isTestEnd)}`,
       attendee
     );
   }
 
   updateCandidateInfo(attendeeId: number, isTestResume: boolean) {
     return this.httpService.get(
-      this.reportsApiUrl +
-        "/" +
-        attendeeId +
-        "/" +
-        isTestResume +
-        "/sendRequest"
+      `${this.reportsApiUrl}/${attendeeId}/${String(isTestResume)}/sendRequest`
     );
   }
   getInfoResumeTest(attendeeId: number) {
     return this.httpService.get<Report>(
-      this.reportsApiUrl + "/getWindowClose/" + attendeeId
+      `${this.reportsApiUrl}/getWindowClose/${attendeeId}`
     );
   }
 
@@ -195,8 +176,8 @@ export class ReportService {
    * @param attendeeId: Contains the id of the test attendee from the route
    */
   getTotalNumberOfAttemptedQuestions(attendeeId: number) {
-    return this.httpService.get(
-      this.reportsApiUrl + "/" + attendeeId + "/attemptedQuestions"
+    return this.httpService.get<number>(
+      `${this.reportsApiUrl}/${attendeeId}/attemptedQuestions`
     );
   }
 
@@ -212,8 +193,8 @@ export class ReportService {
    * @param testId contains the id of the test from the route
    */
   getAttendeeIdList(testId: number) {
-    return this.httpService.get(
-      this.reportsApiUrl + "/" + testId + "/getAttendeeIdList"
+    return this.httpService.get<number[]>(
+      `${this.reportsApiUrl}/${testId}/getAttendeeIdList`
     );
   }
 }

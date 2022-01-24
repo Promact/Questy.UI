@@ -1,5 +1,4 @@
 ﻿import { Injectable } from "@angular/core";
-import { ApplicationUser } from "app/profile/profile.model";
 import { HttpService } from "../core/http.service";
 import {
   BasicSetup,

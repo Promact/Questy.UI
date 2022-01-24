@@ -28,6 +28,7 @@
     "core-js": "3.20.3",
     "exceljs": "4.3.0",
     "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
     "ieee754": "^1.2.1",
     "jspdf": "2.5.0",
     "jspdf-autotable": "^3.5.23",

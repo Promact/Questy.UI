@@ -136,40 +136,42 @@ export class TestReportComponent implements OnInit {
    * Fetches test name of particular test
    */
   getTestName() {
-    this.reportService.getTestName(this.testId).subscribe((test) => {
-      this.test = test;
+    this.reportService.getTestName(this.testId).subscribe({
+      next: async (test) => {
+        this.test = test;
 
-      // If the connection is already established update the expected end time
-      if (this.connectionService.isConnected) {
-        this.connectionService.updateExpectedEndTime(
-          this.test.duration,
-          this.testId
-        );
-      } else {
-        // start socket connection and retrieve estimated end time
-        this.connectionService.startConnection(() => {
-          this.connectionService.joinAdminGroup();
-          this.connectionService.updateExpectedEndTime(
+        // If the connection is already established update the expected end time
+        if (this.connectionService.isConnected) {
+          await this.connectionService.updateExpectedEndTime(
             this.test.duration,
             this.testId
           );
-        });
-      }
+        } else {
+          // start socket connection and retrieve estimated end time
+          await this.connectionService.startConnection(async () => {
+            await this.connectionService.joinAdminGroup();
+            await this.connectionService.updateExpectedEndTime(
+              this.test.duration,
+              this.testId
+            );
+          });
+        }
 
-      const testEndListener = setInterval(() => {
-        const currentDate = new Date();
-        const offset = new Date().getTimezoneOffset();
-        const testEndDate =
-          typeof this.test.endDate === "string"
-            ? new Date(this.test.endDate)
-            : this.test.endDate;
-        testEndDate.setMinutes(testEndDate.getMinutes() - offset);
-        this.hasTestEnded =
-          currentDate.getTime() > testEndDate.getTime() &&
-          this.getNumberOfActiveAttendee() === 0;
+        const testEndListener = setInterval(() => {
+          const currentDate = new Date();
+          const offset = new Date().getTimezoneOffset();
+          const testEndDate =
+            typeof this.test.endDate === "string"
+              ? new Date(this.test.endDate)
+              : this.test.endDate;
+          testEndDate.setMinutes(testEndDate.getMinutes() - offset);
+          this.hasTestEnded =
+            currentDate.getTime() > testEndDate.getTime() &&
+            this.getNumberOfActiveAttendee() === 0;
 
-        if (this.hasTestEnded) clearInterval(testEndListener);
-      }, 1000);
+          if (this.hasTestEnded) clearInterval(testEndListener);
+        }, 1000);
+      },
     });
 
     this.getAllTestCandidates();
@@ -307,17 +309,19 @@ export class TestReportComponent implements OnInit {
   resumeTest(attendee: TestAttendee) {
     this.reportService
       .createSessionForAttendee(attendee, this.test.link, false)
-      .subscribe((response) => {
-        if (response) {
-          attendee.report.isTestPausedUnWillingly = false;
-          this.connectionService.sendReport(response);
-          this.isAnyTestResume = this.testAttendeeArray.some(
-            (x) => x.report.isTestPausedUnWillingly
-          );
-          this.snackbarRef.open("Test resumed successfully", "Dismiss", {
-            duration: 4000,
-          });
-        }
+      .subscribe({
+        next: async (response) => {
+          if (response) {
+            attendee.report.isTestPausedUnWillingly = false;
+            await this.connectionService.sendReport(response);
+            this.isAnyTestResume = this.testAttendeeArray.some(
+              (x) => x.report.isTestPausedUnWillingly
+            );
+            this.snackbarRef.open("Test resumed successfully", "Dismiss", {
+              duration: 4000,
+            });
+          }
+        },
       });
   }
 

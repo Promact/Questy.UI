@@ -2,19 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ReportService } from "../report.service";
 import { TestAttendee } from "../testattendee.model";
-import { QuestionDisplay } from "../../questions/question-display";
 import { TestQuestion } from "../../tests/tests.model";
 import { TestAnswers } from "../testanswers.model";
 import { SingleMultipleAnswerQuestionOption } from "../../questions/single-multiple-answer-question-option.model";
-import { ChartsModule } from "ng2-charts/ng2-charts";
 import { TestLogs } from "../testlogs.model";
-import { TestConduct } from "../testConduct.model";
-import { QuestionType } from "../../questions/enum-questiontype";
-import { CodeSnippetTestCasesDetails } from "../code-snippet-test-cases-details.model";
 import { ProgrammingLanguage } from "../programminglanguage.enum";
-import { TestCodeSolutionDetails } from "../test-code-solution-details.model";
-import { QuestionStatus } from "../../conduct/question_status.enum";
-declare let jsPDF: any;
+import jsPDF from "jspdf";
 
 @Component({
   moduleId: module.id,
@@ -26,53 +19,53 @@ export class IndividualReportComponent implements OnInit {
   pieChartType: string;
   correctPieChartLabels: string[];
   testAttendeeId: number;
-  testAttendee: TestAttendee;
-  testName: string;
+  testAttendee!: TestAttendee;
+  testName!: string;
   loader: boolean;
-  testStatus: string;
-  testId: number;
+  testStatus!: string;
+  testId!: number;
   testQuestions: TestQuestion[];
   optionName: string[];
   correctAnswers: number;
   incorrectAnswers: number;
-  notAttempted: number;
-  totalQuestions: number;
+  notAttempted!: number;
+  totalQuestions!: number;
   testAnswers: TestAnswers[];
-  correctMarks: string;
-  incorrectmarks: string;
-  marks: number;
-  percentage: number;
-  percentile: number;
-  timeTakenInHours: number;
-  timeTakenInMinutes: number;
-  timeTakenInSeconds: number;
+  correctMarks!: string;
+  incorrectmarks!: string;
+  marks!: number;
+  percentage!: number;
+  percentile!: string;
+  timeTakenInHours!: number;
+  timeTakenInMinutes!: number;
+  timeTakenInSeconds!: number;
   easy: number;
   medium: number;
   hard: number;
-  testLogs: TestLogs;
-  testLogsVisible: boolean;
-  closeWindowLogVisible: boolean;
-  resumeTestLog: boolean;
-  numberOfQuestionsAttempted: number;
-  timeTakenInHoursVisible: boolean;
-  timeTakenInMinutesVisible: boolean;
-  timeTakenInSecondsVisible: boolean;
-  awayFromTestWindowVisible: boolean;
-  numberOfCorrectOptions: number;
+  testLogs!: TestLogs;
+  testLogsVisible!: boolean;
+  closeWindowLogVisible!: boolean;
+  resumeTestLog!: boolean;
+  numberOfQuestionsAttempted!: number;
+  timeTakenInHoursVisible!: boolean;
+  timeTakenInMinutesVisible!: boolean;
+  timeTakenInSecondsVisible!: boolean;
+  awayFromTestWindowVisible!: boolean;
+  numberOfCorrectOptions!: number;
   isPercentileVisible: boolean;
   currentDate: Date;
-  individualReportPathContent: string;
+  individualReportPathContent!: string;
   ProgrammingLanguage = ProgrammingLanguage;
-  hideSign: boolean;
-  showPieChart: boolean;
+  hideSign!: boolean;
+  showPieChart!: boolean;
   isPercentageVisible: boolean;
   isScoreVisible: boolean;
   attendeeArray: number[];
-  idOfTestAttendee: number;
-  totalMarksOfTest: number;
-  numberOfQuestionsInTest: number;
-  noOfAnswersCorrect: number;
-  isTestAttendeeAnswerCorrect: boolean;
+  idOfTestAttendee!: number;
+  totalMarksOfTest!: number;
+  numberOfQuestionsInTest!: number;
+  noOfAnswersCorrect!: number;
+  isTestAttendeeAnswerCorrect!: boolean;
 
   constructor(
     private reportsService: ReportService,
@@ -81,7 +74,7 @@ export class IndividualReportComponent implements OnInit {
   ) {
     this.loader = true;
     this.testQuestions = new Array<TestQuestion>();
-    this.testAttendeeId = this.route.snapshot.params["id"];
+    this.testAttendeeId = this.route.snapshot.params["id"] as number;
     this.optionName = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
     this.testAnswers = new Array<TestAnswers>();
     this.questionPieChartLabels = ["Correct", "InCorrect", "Not Attempted"];
@@ -98,7 +91,9 @@ export class IndividualReportComponent implements OnInit {
 
   ngOnInit() {
     this.getTestAttendeeDetails();
-    this.individualReportPathContent = this.route.snapshot.params["download"];
+    this.individualReportPathContent = this.route.snapshot.params[
+      "download"
+    ] as string;
   }
 
   /**
@@ -112,8 +107,8 @@ export class IndividualReportComponent implements OnInit {
         this.testAttendee = response;
         this.testName = this.testAttendee.test.testName;
         this.testId = this.testAttendee.test.id;
-        this.correctMarks = this.testAttendee.test.correctMarks;
-        this.incorrectmarks = this.testAttendee.test.incorrectMarks;
+        this.correctMarks = String(this.testAttendee.test.correctMarks);
+        this.incorrectmarks = String(this.testAttendee.test.incorrectMarks);
         this.hideSign =
           +this.testAttendee.test.incorrectMarks === 0 ? true : false;
         this.marks = this.testAttendee.report.totalMarksScored;
@@ -282,11 +277,11 @@ export class IndividualReportComponent implements OnInit {
   attendeeAnswers() {
     for (let question = 0; question < this.testQuestions.length; question++) {
       if (this.testQuestions[question].question.questionType !== 2) {
-        const options =
-          this.testQuestions[question].question.singleMultipleAnswerQuestion
-            .singleMultipleAnswerQuestionOption;
-        let oldAnswerStatus: boolean;
-        let answerStatus: boolean;
+        const options = this.testQuestions[question].question
+          .singleMultipleAnswerQuestion
+          ?.singleMultipleAnswerQuestionOption as SingleMultipleAnswerQuestionOption[];
+        let oldAnswerStatus = false;
+        let answerStatus = false;
         for (let option = 0; option < options.length; option++) {
           answerStatus = this.isAttendeeAnswerCorrect(
             options[option].id,
@@ -297,11 +292,10 @@ export class IndividualReportComponent implements OnInit {
             oldAnswerStatus = answerStatus;
           } else {
             if (this.testQuestions[question].question.questionType === 1) {
-              const option =
-                this.testQuestions[question].question
-                  .singleMultipleAnswerQuestion
-                  .singleMultipleAnswerQuestionOption;
-              option.forEach((x) => {
+              const option = this.testQuestions[question].question
+                .singleMultipleAnswerQuestion
+                ?.singleMultipleAnswerQuestionOption as SingleMultipleAnswerQuestionOption[];
+              option.forEach(() => {
                 const correctOptions = option.filter(
                   (x) => x.isAnswer === true
                 );
@@ -363,7 +357,7 @@ export class IndividualReportComponent implements OnInit {
               this.testQuestions[question].isCompilationStatusVisible = false;
             } else if (
               this.testQuestions[question].scoreOfCodeSnippetQuestion ===
-              this.testAttendee.test.correctMarks
+              String(this.testAttendee.test.correctMarks)
             ) {
               this.correctAnswers++;
               this.testQuestions[question].questionStatus = 0;
@@ -459,7 +453,7 @@ export class IndividualReportComponent implements OnInit {
    * @param isAnswer is a boolean type variable for checking the answered option is correct or not
    */
   isAttendeeAnswerCorrect(optionId: number, isAnswer: boolean) {
-    let isTestAttendeeAnswerCorrect: boolean;
+    let isTestAttendeeAnswerCorrect = false;
     for (let option = 0; option < this.testAnswers.length; option++) {
       if (this.testAnswers[option].answeredOption === optionId) {
         if (isAnswer) {
@@ -519,7 +513,9 @@ export class IndividualReportComponent implements OnInit {
    */
   printIndividualReport(printSectionId: string) {
     this.loader = true;
-    const elementToPrint = document.getElementById("printSectionId");
+    const elementToPrint = document.getElementById(
+      printSectionId
+    ) as HTMLDivElement;
     const height = elementToPrint.offsetHeight;
     const attendeeName =
       this.testAttendee.firstName + this.testAttendee.lastName;
@@ -531,16 +527,16 @@ export class IndividualReportComponent implements OnInit {
     };
     pdf.internal.scaleFactor = 6.55;
     pdf.text(this.testAttendee.test.testName, 15, 15);
-    pdf.addHTML(elementToPrint, 0, 20, styles, () => {
-      pdf.setProperties({
-        title: testName + "_" + attendeeName + ".pdf",
-      });
+    // pdf.addHTML(elementToPrint, 0, 20, styles, () => {
+    //   pdf.setProperties({
+    //     title: testName + "_" + attendeeName + ".pdf",
+    //   });
 
-      pdf.setFontSize(5);
-      pdf.autoPrint();
-      window.open(pdf.output("bloburl"), "_blank");
-      this.loader = false;
-    });
+    //   pdf.setFontSize(5);
+    //   pdf.autoPrint();
+    //   window.open(pdf.output("bloburl"), "_blank");
+    //   this.loader = false;
+    // });
   }
 
   /**
@@ -549,7 +545,9 @@ export class IndividualReportComponent implements OnInit {
    */
   downloadIndividualReport() {
     this.loader = true;
-    const dataToDownload = document.getElementById("printSectionId");
+    const dataToDownload = document.getElementById(
+      "printSectionId"
+    ) as HTMLDivElement;
     const attendeeName =
       this.testAttendee.firstName + this.testAttendee.lastName;
     const testName = this.testAttendee.test.testName;
@@ -561,14 +559,14 @@ export class IndividualReportComponent implements OnInit {
       pagesplit: true,
     };
     doc.text(this.testAttendee.test.testName, 15, 15);
-    doc.addHTML(dataToDownload, 0, 20, styles, () => {
-      doc.setProperties({
-        title: testName + "_" + attendeeName + ".pdf",
-      });
-      doc.setFontSize(5);
-      doc.save(testName + "_" + attendeeName + ".pdf");
-      this.loader = false;
-    });
+    // doc.addHTML(dataToDownload, 0, 20, styles, () => {
+    //   doc.setProperties({
+    //     title: testName + "_" + attendeeName + ".pdf",
+    //   });
+    //   doc.setFontSize(5);
+    //   doc.save(testName + "_" + attendeeName + ".pdf");
+    //   this.loader = false;
+    // });
   }
 
   /**
@@ -582,21 +580,11 @@ export class IndividualReportComponent implements OnInit {
       if (index === 0) {
         index = this.attendeeArray.length - 1;
         this.idOfTestAttendee = this.attendeeArray[index];
-        window.location.href =
-          window.location.origin +
-          "/reports/test/" +
-          this.testId +
-          "/individual-report/" +
-          this.idOfTestAttendee;
+        window.location.href = `${window.location.origin}/reports/test/${this.testId}/individual-report/${this.idOfTestAttendee}`;
       } else if (index > 0) {
         index = index - 1;
         this.idOfTestAttendee = this.attendeeArray[index];
-        window.location.href =
-          window.location.origin +
-          "/reports/test/" +
-          this.testId +
-          "/individual-report/" +
-          this.idOfTestAttendee;
+        window.location.href = `${window.location.origin}/reports/test/${this.testId}/individual-report/${this.idOfTestAttendee}`;
       }
     });
   }
@@ -611,21 +599,11 @@ export class IndividualReportComponent implements OnInit {
       let index = this.attendeeArray.indexOf(Number(this.testAttendeeId));
       if (index === this.attendeeArray.length - 1) {
         this.idOfTestAttendee = this.attendeeArray[0];
-        window.location.href =
-          window.location.origin +
-          "/reports/test/" +
-          this.testId +
-          "/individual-report/" +
-          this.idOfTestAttendee;
+        window.location.href = `${window.location.origin}/reports/test/${this.testId}/individual-report/${this.idOfTestAttendee}`;
       } else if (index === 0 || index < this.attendeeArray.length - 1) {
         index = index + 1;
         this.idOfTestAttendee = this.attendeeArray[index];
-        window.location.href =
-          window.location.origin +
-          "/reports/test/" +
-          this.testId +
-          "/individual-report/" +
-          this.idOfTestAttendee;
+        window.location.href = `${window.location.origin}/reports/test/${this.testId}/individual-report/${this.idOfTestAttendee}`;
       }
     });
   }

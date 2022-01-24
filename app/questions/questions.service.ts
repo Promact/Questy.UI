@@ -27,7 +27,7 @@ export class QuestionsService {
     question: QuestionBase
   ) {
     return this.httpService.put(
-      this.questionsApiUrl + "/" + questionId,
+      `${this.questionsApiUrl}/${questionId}`,
       question
     );
   }

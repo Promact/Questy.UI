@@ -3,7 +3,7 @@ import { Test } from "../tests/tests.model";
 import { TestLogs } from "../reports/testlogs.model";
 import { TestConduct } from "../reports/testConduct.model";
 
-export class TestAttendee {
+export interface TestAttendee {
   firstName: string;
   lastName: string;
   email: string;
@@ -15,5 +15,5 @@ export class TestAttendee {
   test: Test;
   report: Report;
   testLogs: TestLogs;
-  testConduct: TestConduct[] = [];
+  testConduct: TestConduct[];
 }

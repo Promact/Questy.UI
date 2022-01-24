@@ -43,7 +43,7 @@ export class ConnectionService {
   }
 
   // starts the connection between hub and client
-  async startConnection(_callback?: () => void) {
+  async startConnection(_callback?: () => Promise<void>) {
     if (!this.isConnected) {
       // makes a connection with hub
       this.hubConnection = new HubConnectionBuilder()
@@ -52,7 +52,7 @@ export class ConnectionService {
       this.registerProxy();
       await this.hubConnection.start();
       this.isConnected = true;
-      if (_callback) _callback();
+      if (_callback) await _callback();
     }
   }
 

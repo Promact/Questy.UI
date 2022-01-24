@@ -73,9 +73,12 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
   ngOnInit() {
     this.loader = true;
     const currentUrl = this.router.url;
-    this.selectedCategoryName = this.route.snapshot.params["categoryName"];
-    this.selectedDifficultyLevel =
-      this.route.snapshot.params["difficultyLevelName"];
+    this.selectedCategoryName = this.route.snapshot.params[
+      "categoryName"
+    ] as string;
+    this.selectedDifficultyLevel = this.route.snapshot.params[
+      "difficultyLevelName"
+    ] as string;
     this.questionId = +this.route.snapshot.params["id"];
     this.getQuestionType();
     this.getAllCategories();
@@ -162,8 +165,8 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
   /**
    * Redirect to question dashboard page
    */
-  cancelButtonClicked() {
-    this.router.navigate([
+  async cancelButtonClicked() {
+    await this.router.navigate([
       "/questions/dashboard",
       this.selectedCategoryName,
       this.selectedDifficultyLevel,
