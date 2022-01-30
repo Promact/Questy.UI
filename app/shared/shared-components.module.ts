@@ -10,6 +10,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
 import { AceEditorModule } from "ngx-ace-editor-wrapper";
 import { ConnectionService } from "../core/connection.service";
+import { TestsProgrammingGuideDialogComponent } from "app/conduct/test/tests-programming-guide-dialog.component";
 
 @NgModule({
   imports: [
@@ -23,7 +24,11 @@ import { ConnectionService } from "../core/connection.service";
     MatRadioModule,
   ],
   providers: [ConnectionService],
-  declarations: [TestComponent, PageNotFoundComponent],
+  declarations: [
+    TestComponent,
+    TestsProgrammingGuideDialogComponent,
+    PageNotFoundComponent,
+  ],
   exports: [
     CommonModule,
     FormsModule,

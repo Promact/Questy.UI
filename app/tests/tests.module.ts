@@ -22,6 +22,7 @@ import { DeselectCategoryComponent } from "./test-sections/deselect-category.com
 import { IncompleteTestCreationDialogComponent } from "./test-settings/incomplete-test-creation-dialog.component";
 import { ConductService } from "../conduct/conduct.service";
 import { ConnectionService } from "../core/connection.service";
+import { TestsProgrammingGuideDialogComponent } from "app/conduct/test/tests-programming-guide-dialog.component";
 
 @NgModule({
   imports: [SharedModule, testsRouting, BrowserModule],
@@ -42,6 +43,7 @@ import { ConnectionService } from "../core/connection.service";
     DeselectCategoryComponent,
     IncompleteTestCreationDialogComponent,
     TestPreviewComponent,
+    TestsProgrammingGuideDialogComponent,
   ],
   entryComponents: [
     TestCreateDialogComponent,

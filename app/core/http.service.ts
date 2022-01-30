@@ -1,33 +1,27 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 
 @Injectable()
 export class HttpService {
-  constructor(
-    private readonly http: HttpClient,
-    private readonly headers: HttpHeaders
-  ) {
+  //private readonly httpOptions: HttpParamsOptions;
+  constructor(private readonly http: HttpClient) {
     // Prevent request caching for internet explorer
-    headers.append("Cache-control", "no-cache,no-store");
-    headers.append("Content-Type", "application/json");
-    headers.append("Pragma", "no-cache");
-    headers.append("Expires", "0");
   }
 
   get<T>(url: string): Observable<T> {
-    return this.http.get<T>(url, { headers: this.headers });
+    return this.http.get<T>(url);
   }
 
   post<T>(url: string, body: any): Observable<T> {
-    return this.http.post<T>(url, body, { headers: this.headers });
+    return this.http.post<T>(url, body);
   }
 
   put<T>(url: string, body: T): Observable<T> {
-    return this.http.put<T>(url, body, { headers: this.headers });
+    return this.http.put<T>(url, body);
   }
 
   delete<T>(url: string): Observable<T> {
-    return this.http.delete<T>(url, { headers: this.headers });
+    return this.http.delete<T>(url);
   }
 }

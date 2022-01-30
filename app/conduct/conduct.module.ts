@@ -17,11 +17,13 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { SharedComponentsModule } from "../shared/shared-components.module";
 import { ConnectionService } from "../core/connection.service";
 import { FormsModule } from "@angular/forms";
+import { SharedModule } from "app/shared/shared.module";
 
 @NgModule({
   bootstrap: [ConductComponent],
   imports: [
     SharedComponentsModule,
+    SharedModule,
     BrowserModule,
     conductRouting,
     CoreModule,

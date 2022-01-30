@@ -17,7 +17,7 @@
             "index": "app/app.html",
             "main": "app/main.ts",
             "polyfills": "polyfills.ts",
-            "tsConfig": "tsconfig.json",
+            "tsConfig": "tsconfig.app.json",
             "assets": [],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.css",
@@ -25,7 +25,7 @@
               "./css/style.css"
             ],
             "scripts": [],
-            "deployUrl": "dist"
+            "baseHref": "dist"
           },
           "configurations": {
             "production": {
@@ -36,9 +36,9 @@
                 }
               ],
               "optimization": true,
-              "outputHashing": "none",
+              "outputHashing": "all",
               "sourceMap": false,              
-              "namedChunks": false,
+              "namedChunks": true,
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -66,12 +66,24 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "tsconfig.json"              
+              "tsconfig.app.json"              
             ],
             "exclude": [
               "**/node_modules/**"
             ]
           }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "app:build:production"
+            },
+            "development": {
+              "browserTarget": "app:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
         }
       }
     },
@@ -89,7 +101,7 @@
             "index": "app/conduct/conduct.html",
             "main": "app/main.conduct.ts",
             "polyfills": "polyfills.ts",
-            "tsConfig": "tsconfig.json",
+            "tsConfig": "tsconfig.conduct.json",
             "assets": [
               {
                 "glob": "**/*",
@@ -103,7 +115,7 @@
               "./css/style.css"
             ],
             "scripts": [],
-            "deployUrl": "dist_conduct"
+            "baseHref": "dist_conduct"
           },
           "configurations": {
             "production": {
@@ -114,9 +126,9 @@
                 }
               ],
               "optimization": true,
-              "outputHashing": "none",
+              "outputHashing": "all",
               "sourceMap": false,              
-              "namedChunks": false,
+              "namedChunks": true,
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -153,10 +165,10 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist_setup",
-            "index": "app/setup/setup.html",
+            "index": "app/setup/index.html",
             "main": "app/main.setup.ts",
             "polyfills": "polyfills.ts",
-            "tsConfig": "tsconfig.json",
+            "tsConfig": "tsconfig.setup.json",
             "assets": [],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.css",
@@ -164,7 +176,7 @@
               "./css/style.css"
             ],
             "scripts": [],
-            "deployUrl": "dist_setup"
+            "baseHref": "dist_setup"
           },
           "configurations": {
             "production": {
@@ -175,21 +187,15 @@
                 }
               ],
               "optimization": true,
-              "outputHashing": "none",
+              "outputHashing": "all",
               "sourceMap": false,              
-              "namedChunks": false,
+              "namedChunks": true,
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
             },
-            "hmr": {
-              "fileReplacements": [
-                {
-                  "replace": "app/environments/environment.ts",
-                  "with": "app/environments/environment.hmr.ts"
-                }
-              ],
+            "development": {              
               "optimization": false,
               "outputHashing": "none",
               "sourceMap": true,              
@@ -200,6 +206,18 @@
               "buildOptimizer": false
             }
           }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "setup:build:production"
+            },
+            "development": {
+              "browserTarget": "setup:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
         }
       }
     }

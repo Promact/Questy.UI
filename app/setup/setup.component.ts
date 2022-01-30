@@ -7,7 +7,6 @@ import { RegistrationFields } from "./setup.model";
 import { ServiceResponse } from "./setup.model";
 import { WizardComponent } from "@ever-co/angular2-wizard";
 @Component({
-  moduleId: module.id,
   selector: "setup",
   templateUrl: "setup.html",
 })

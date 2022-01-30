@@ -13,7 +13,7 @@ export class SetupService {
   private emailSettingsUrl = "api/setup/mailsettings";
   private createUserUrl = "api/setup/createuser";
 
-  constructor(private httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) {}
 
   /**
    * This method used for validating connection string

@@ -7,7 +7,6 @@ import { MatTableModule } from "@angular/material/table";
 import { MatMenuModule } from "@angular/material/menu";
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { NgChartsModule } from "ng2-charts";
-//import { PopoverModule } from "ngx-popover";
 import { ClipboardModule } from "ngx-clipboard";
 import { SelectTextAreaDirective } from "../tests/directive";
 import { CommonModule } from "@angular/common";
@@ -17,6 +16,8 @@ import { MatPaginatorModule } from "@angular/material/paginator";
 import { PopoverModule } from "ngx-smart-popover";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatIconModule } from "@angular/material/icon";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 @NgModule({
   imports: [
     SharedComponentsModule,
@@ -30,6 +31,8 @@ import { MatIconModule } from "@angular/material/icon";
     MatPaginatorModule,
     MatTooltipModule,
     MatIconModule,
+    MatDialogModule,
+    MatSnackBarModule,
     PopoverModule,
     CKEditorModule,
     NgChartsModule,
@@ -47,6 +50,8 @@ import { MatIconModule } from "@angular/material/icon";
     MatPaginatorModule,
     MatTooltipModule,
     MatIconModule,
+    MatDialogModule,
+    MatSnackBarModule,
     PopoverModule,
     CKEditorModule,
     NgChartsModule,
