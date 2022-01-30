@@ -58,7 +58,9 @@ export class DuplicateTestDialogComponent {
                     duration: 3000,
                   });
                   this.dialog.close();
-                  await this.route.navigate([`tests/${response.id}/sections`]);
+                  await this.route.navigate([
+                    `tests/${String(response.id)}/sections`,
+                  ]);
                 },
                 error: () => {
                   this.loader = false;

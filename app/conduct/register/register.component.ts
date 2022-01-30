@@ -33,7 +33,7 @@ export class RegisterComponent {
       },
     });
 
-    this.connectionService.startConnection();
+    void this.connectionService.startConnection();
   }
 
   /**
@@ -50,8 +50,8 @@ export class RegisterComponent {
       .subscribe({
         next: async (response) => {
           if (response) {
-            this.connectionService.registerAttendee(response.id);
-            this.connectionService.sendReport(response);
+            await this.connectionService.registerAttendee(response.id);
+            await this.connectionService.sendReport(response);
             this.isErrorMessage = false;
             this.loader = false;
             await this.router.navigate(["instructions"], { replaceUrl: true });

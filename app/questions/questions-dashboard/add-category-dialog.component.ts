@@ -3,7 +3,7 @@ import { Category } from "../category.model";
 import { CategoryService } from "../categories.service";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { QuestionsDashboardComponent } from "./questions-dashboard.component";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   moduleId: module.id,
@@ -11,7 +11,7 @@ import { QuestionsDashboardComponent } from "./questions-dashboard.component";
   templateUrl: "add-category-dialog.html",
 })
 export class AddCategoryDialogComponent {
-  private response: any;
+  private response!: HttpErrorResponse;
   private successMessage: string;
 
   isCategoryNameExist: boolean;
@@ -26,7 +26,7 @@ export class AddCategoryDialogComponent {
     public snackBar: MatSnackBar
   ) {
     this.isCategoryNameExist = false;
-    this.category = new Category();
+    this.category = {} as Category;
     this.successMessage = "Section Added Successfully";
     this.isButtonClicked = false;
   }
@@ -35,7 +35,7 @@ export class AddCategoryDialogComponent {
    * Open snackBar
    */
   openSnackBar(message: string) {
-    const snackBarRef = this.snackBar.open(message, "Dismiss", {
+    this.snackBar.open(message, "Dismiss", {
       duration: 3000,
     });
   }
@@ -54,10 +54,10 @@ export class AddCategoryDialogComponent {
           this.dialogRef.close(this.responseObject);
           this.openSnackBar(this.successMessage);
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.isCategoryNameExist = true;
-          this.response = err.json();
-          this.errorMessage = this.response["error"];
+          this.response = err;
+          this.errorMessage = this.response["error"] as string;
           this.isButtonClicked = false;
         },
       });

@@ -1,4 +1,4 @@
-﻿export class TestAttendeeRank {
-  public attendeeId: number;
-  public attendeeRank: number;
+﻿export interface TestAttendeeRank {
+  attendeeId: number;
+  attendeeRank: number;
 }

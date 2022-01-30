@@ -4,4 +4,5 @@
   lastName: string;
   contactNumber: string;
   rollNumber: string;
+  id: number;
 }

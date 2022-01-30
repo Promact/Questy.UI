@@ -18,14 +18,14 @@
                     </div>
                     <div class="form-group inline-field">
                         <label>Start Date & Time</label>
-                        <input type="datetime-local" class="form-control small-width" [(ngModel)]="testDetails.startDate" name="Start Date" (mouseup)="isStartDateValid()" (keyup)="isStartDateValid()" (blur)="isStartDateValid()" />
+                        <input title="startDate" type="datetime-local" class="form-control small-width" [(ngModel)]="testDetails.startDate" name="Start Date" (mouseup)="isStartDateValid()" (keyup)="isStartDateValid()" (blur)="isStartDateValid()" />
                         <div class="errors-container">
                             <span class="error-msg small-width" *ngIf="validStartDate">Start DateTime must be greater than current DateTime.</span>
                         </div>
                     </div>
                     <div class="form-group inline-field">
                         <label>End Date & Time</label>
-                        <input type="datetime-local" class="form-control small-width" [(ngModel)]="testDetails.endDate" name="End Date" (mouseup)="isEndDateValid(testDetails.endDate)" (keyup)="isEndDateValid(testDetails.endDate)" (blur)="isEndDateValid(testDetails.endDate)" />
+                        <input title="endDate" type="datetime-local" class="form-control small-width" [(ngModel)]="testDetails.endDate" name="End Date" (mouseup)="isEndDateValid(testDetails.endDate)" (keyup)="isEndDateValid(testDetails.endDate)" (blur)="isEndDateValid(testDetails.endDate)" />
                         <div class="errors-container">
                             <span class="error-msg" *ngIf="validEndDate">End DateTime must be greater than start DateTime.</span>
                         </div>
@@ -40,11 +40,11 @@
                                 <span class="error-msg" *ngIf="ip.isErrorMessageVisible">Add IP Address or remove this field.</span>
                             </div>
                         </div>
-                        <button md-mini-fab type="button" [disabled]="testDetails.isLaunched && !testDetails.isPaused || !isIpAddressAdded" (click)="addIpFields()"><md-icon>add</md-icon></button>
+                        <button mat-mini-fab type="button" [disabled]="testDetails.isLaunched && !testDetails.isPaused || !isIpAddressAdded" (click)="addIpFields()"><mat-icon>add</mat-icon></button>
                     </div>
                     <div class="form-group">
                         <label>Browser Tolerance</label>
-                        <select class="form-control half-width" [(ngModel)]="testDetails.browserTolerance" (change)=" changeFocusValue()" name="Browser Tolerance">
+                        <select title="browserTolerance" class="form-control half-width" [(ngModel)]="testDetails.browserTolerance" (change)=" changeFocusValue()" name="Browser Tolerance">
                             <option value="0">Not Applicable</option>
                             <option value="12">Low</option>
                             <option value="7">Medium</option>
@@ -62,7 +62,7 @@
                     </div>
                     <div class="form-group">
                         <label>Question Order</label>
-                        <select class="form-control half-width" [(ngModel)]="testDetails.questionOrder" name="questionOrder">
+                        <select title="questionOrder" class="form-control half-width" [(ngModel)]="testDetails.questionOrder" name="questionOrder">
                             <option value="0">Fixed</option>
                             <option value="1">Random</option>
                         </select>
@@ -70,7 +70,7 @@
                     </div>
                     <div class="form-group">
                         <label>Option Order</label>
-                        <select class="form-control half-width" [(ngModel)]="testDetails.optionOrder" name="optionOrder">
+                        <select title="optionOrder" class="form-control half-width" [(ngModel)]="testDetails.optionOrder" name="optionOrder">
                             <option value="0">Fixed</option>
                             <option value="1">Random</option>
                         </select>
@@ -78,7 +78,7 @@
                     </div>
                     <div class="form-group inline-field">
                         <label>Correct Marks</label><em class="danger-text h4">*</em>
-                        <input type="text" class="form-control small-width" [(ngModel)]="testDetails.correctMarks" name="CorrectMarks" #CorrectMarks="ngModel" required pattern="^(0*[1-9])\d{0,3}(\.{1}\d{1,2})?$" min="0" />
+                        <input title="correctMarks" type="text" class="form-control small-width" [(ngModel)]="testDetails.correctMarks" name="CorrectMarks" #CorrectMarks="ngModel" required pattern="^(0*[1-9])\d{0,3}(\.{1}\d{1,2})?$" min="0" />
                         <div class="errors-container">
                             <span class="error-msg" *ngIf="CorrectMarks.errors && CorrectMarks.dirty && !CorrectMarks.valid && CorrectMarks.errors.required">Required</span>
                             <span class="error-msg" *ngIf="CorrectMarks.errors && CorrectMarks.dirty && !CorrectMarks.valid && CorrectMarks.errors.pattern">Enter valid correct marks.</span>
@@ -86,7 +86,7 @@
                     </div>
                     <div class="form-group inline-field">
                         <label>Incorrect Marks</label><em class="danger-text h4">*</em>
-                        <input type="text" class="form-control small-width" [(ngModel)]="testDetails.incorrectMarks" name="IncorrectMarks" #IncorrectMarks="ngModel" required pattern="^\d{0,3}(\.\d{1,2})?$" min="0" />
+                        <input title="incorrectMarks" type="text" class="form-control small-width" [(ngModel)]="testDetails.incorrectMarks" name="IncorrectMarks" #IncorrectMarks="ngModel" required pattern="^\d{0,3}(\.\d{1,2})?$" min="0" />
                         <div class="errors-container">
                             <span class="error-msg" *ngIf="IncorrectMarks.errors && IncorrectMarks.dirty && !IncorrectMarks.valid && IncorrectMarks.errors.required">Required</span>
                             <span class="error-msg" *ngIf="IncorrectMarks.errors && IncorrectMarks.dirty && !IncorrectMarks.valid && IncorrectMarks.errors.pattern">Enter valid incorrect marks.</span>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="form-group">
                         <label>Allow Test Resume</label>
-                        <select class="form-control half-width" [(ngModel)]="testDetails.allowTestResume" name="allowTestResume">
+                        <select title="allowTestResume" class="form-control half-width" [(ngModel)]="testDetails.allowTestResume" name="allowTestResume">
                             <option value="0">Supervised</option>
                             <option value="1">Unsupervised</option>
                         </select>
@@ -115,7 +115,7 @@
                     </div>
 
                 </fieldset>
-                <create-test-footer  [isFocusLostNull]="isFocusLostNull" [loader]="!loader" [testDetails]="testDetails" (saveTestSettings)="saveTestSettings(testDetails.id,testDetails)" (launchTestDialog)="launchTestDialog(testDetails.id,testDetails,$event)" (pauseTest)="pauseTest()" (resumeTest)="resumeTest()" [settingsForm]="settingsForm" [validStartDate]="validStartDate" [validEndDate]="validEndDate" [validTime]="validTime" [isIpAddressAdded]="isIpAddressAdded"></create-test-footer>
+                <create-test-footer  [isFocusLostNull]="isFocusLostNull" [loader]="!loader" [testDetails]="testDetails" (saveTestSettings)="saveTestSettings(testDetails.id,testDetails)" (launchTestDialog)="launchTestDialog(testDetails.id,testDetails)" (pauseTest)="pauseTest()" (resumeTest)="resumeTest()" [settingsForm]="settingsForm" [validStartDate]="validStartDate" [validEndDate]="validEndDate" [validTime]="validTime" [isIpAddressAdded]="isIpAddressAdded"></create-test-footer>
             </div>
         </div>
     </form>

@@ -1,6 +1,6 @@
 ﻿import { ProgrammingLanguage } from "./programminglanguage.enum";
 
-export class TestCodeSolutionDetails {
+export interface TestCodeSolutionDetails {
   language: ProgrammingLanguage;
   totalNumberOfAttempts: number;
   numberOfSuccessfulAttempts: number;

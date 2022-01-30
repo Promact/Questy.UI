@@ -1,7 +1,6 @@
 ﻿import { TestCaseType } from "../questions/enum-test-case-type";
-import { ProgrammingLanguage } from "./programminglanguage.enum";
 
-export class CodeSnippetTestCasesDetails {
+export interface CodeSnippetTestCasesDetails {
   testCaseName: string;
   testCaseType: TestCaseType;
   testCaseInput: string;

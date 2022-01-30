@@ -1,7 +1,7 @@
 ﻿import { Category } from "../questions/category.model";
 
-export class TestDetails {
+export interface TestDetails {
   id: number;
   testName: string;
-  categoryAcList: Category[] = [];
+  categoryAcList: Category[];
 }

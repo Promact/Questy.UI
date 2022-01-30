@@ -1,7 +1,7 @@
 ﻿import { QuestionType } from "../questions/enum-questiontype";
 import { QuestionStatus } from "../conduct/question_status.enum";
 
-export class TestConduct {
+export interface TestConduct {
   id: number;
   questionId: number;
   questionType: QuestionType;

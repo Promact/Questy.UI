@@ -8,6 +8,7 @@ import { QuestionsService } from "../questions.service";
 import { DifficultyLevel } from "../enum-difficultylevel";
 import { SingleMultipleAnswerQuestionOption } from "../single-multiple-answer-question-option.model";
 import { MockRouteService } from "./mock-route.service";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   moduleId: module.id,
@@ -124,12 +125,9 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
     return this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion
       ?.singleMultipleAnswerQuestionOption.length === 0
       ? 0
-      : Math.max.apply(
-          Math,
-          this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.map(
-            function (o) {
-              return o.id;
-            }
+      : Math.max(
+          ...this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.map(
+            (o) => o.id
           )
         );
   }
@@ -154,7 +152,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
         );
         this.loader = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackBar.open("Failed to load category.", "Dismiss", {
           duration: 3000,
         });
@@ -286,7 +284,8 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
   getCategoryId(category: string) {
     this.categoryName = category;
     this.singleMultipleAnswerQuestion.question.categoryID =
-      this.categoryArray.find((x) => x.categoryName === this.categoryName)!.id;
+      this.categoryArray.find((x) => x.categoryName === this.categoryName)
+        ?.id as number;
   }
 
   /**
@@ -295,7 +294,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
   getCategoryName() {
     this.categoryName = this.categoryArray.find(
       (x) => x.id === this.singleMultipleAnswerQuestion.question.categoryID
-    )!.categoryName;
+    )?.categoryName as string;
   }
 
   /**
@@ -326,7 +325,7 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
    */
   saveSingleMultipleAnswerQuestion(singleMultipleAnswerQuestion: QuestionBase) {
     this.singleMultipleAnswerQuestion.question.difficultyLevel =
-      DifficultyLevel[this.difficultyLevelSelected];
+      DifficultyLevel[this.difficultyLevelSelected] as DifficultyLevel;
     this.singleMultipleAnswerQuestion.singleMultipleAnswerQuestion.singleMultipleAnswerQuestionOption.forEach(
       (x) => (x.id = 0)
     );
@@ -352,21 +351,21 @@ export class SingleMultipleAnswerQuestionComponent implements OnInit {
       : this.questionService.addSingleMultipleAnswerQuestion(
           singleMultipleAnswerQuestion
         )
-    ).subscribe(
-      (response) => {
+    ).subscribe({
+      next: async () => {
         this.snackBar.open(this.successMessage, "Dismiss", { duration: 3000 });
-        this.router.navigate([
+        await this.router.navigate([
           "questions/dashboard",
           this.categoryName,
           this.difficultyLevelSelected,
         ]);
       },
-      (err) => {
-        this.snackBar.open(this.failedMessage + " " + err._body, "Dismiss", {
+      error: (err: HttpErrorResponse) => {
+        this.snackBar.open(`${this.failedMessage} ${err.message}`, "Dismiss", {
           duration: 3000,
         });
-      }
-    );
+      },
+    });
   }
 
   /**

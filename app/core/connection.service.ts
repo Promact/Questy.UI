@@ -1,7 +1,7 @@
 ﻿import { Injectable, EventEmitter, NgZone } from "@angular/core";
 
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import { TestAttendee } from "app/reports/testAttendee";
+import { TestAttendeeAc } from "app/reports/testAttendeeAc";
 
 // This service is used as a middleware of the communication between clinet ans server hub in real time
 @Injectable()
@@ -10,12 +10,12 @@ export class ConnectionService {
   isConnected: boolean;
   forceClose!: boolean;
 
-  public recievedAttendee: EventEmitter<TestAttendee>;
+  public recievedAttendee: EventEmitter<TestAttendeeAc>;
   public recievedAttendeeId: EventEmitter<any>;
   public recievedEstimatedEndTime: EventEmitter<any>;
 
   constructor(private _zone: NgZone) {
-    this.recievedAttendee = new EventEmitter<TestAttendee>();
+    this.recievedAttendee = new EventEmitter<TestAttendeeAc>();
     this.recievedAttendeeId = new EventEmitter<any>();
     this.recievedEstimatedEndTime = new EventEmitter<any>();
     // makes a connection with hub
@@ -27,7 +27,7 @@ export class ConnectionService {
   }
   // This method defines that what action should be taken when getReport and getRequest methods are invoked from the TrappistHub
   registerProxy() {
-    this.hubConnection.on("getReport", (testAttendee: TestAttendee) => {
+    this.hubConnection.on("getReport", (testAttendee: TestAttendeeAc) => {
       this._zone.run(() => this.recievedAttendee.emit(testAttendee));
     });
     this.hubConnection.on("getAttendeeIdWhoRequestedForResumeTest", (id) => {
@@ -82,7 +82,7 @@ export class ConnectionService {
     );
   }
 
-  getReport(testAttendee: TestAttendee) {
+  getReport(testAttendee: TestAttendeeAc) {
     return testAttendee;
   }
 

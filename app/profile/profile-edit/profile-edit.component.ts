@@ -10,7 +10,7 @@ import { ProfileService } from "../profile.service";
   templateUrl: "profile-edit.html",
 })
 export class ProfileEditComponent implements OnInit {
-  editUser: ApplicationUser = new ApplicationUser();
+  editUser: ApplicationUser = {} as ApplicationUser;
   nameLength = false;
   loader!: boolean;
   constructor(

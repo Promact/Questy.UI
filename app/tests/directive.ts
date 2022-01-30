@@ -4,7 +4,7 @@
   selector: "[defaultSelect]",
 })
 export class SelectTextAreaDirective implements AfterViewInit {
-  constructor(private elRef: ElementRef) {}
+  constructor(private elRef: ElementRef<HTMLInputElement>) {}
   ngAfterViewInit(): void {
     const input = this.elRef.nativeElement;
     setTimeout(() => {

@@ -71,7 +71,7 @@
                 <canvas baseChart
                         [data]="questionPieChartValue()"
                         [labels]="questionPieChartLabels"
-                        [chartType]="pieChartType"
+                        [type]="pieChartType"
                         (chartHovered)="questionPieChartValue()"></canvas>
               </h5>
             </div>
@@ -80,7 +80,7 @@
                 <canvas baseChart
                         [data]="correctPieChartValue()"
                         [labels]="correctPieChartLabels"
-                        [chartType]="pieChartType"
+                        [type]="pieChartType"
                         (chartHovered)="correctPieChartValue()"></canvas>
               </h5>
             </div>

@@ -1,4 +1,4 @@
-﻿export class ApplicationUser {
+﻿export interface ApplicationUser {
   name: string;
   organizationName: string;
   email: string;

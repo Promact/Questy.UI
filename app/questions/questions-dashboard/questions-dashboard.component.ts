@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, ViewChild } from "@angular/core";
+﻿import { Component, OnInit } from "@angular/core";
 import { Location } from "@angular/common";
 import { MatDialog } from "@angular/material/dialog";
 import { AddCategoryDialogComponent } from "./add-category-dialog.component";
@@ -14,6 +14,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { UpdateCategoryDialogComponent } from "./update-category-dialog.component";
 import { Question } from "../question.model";
 import { QuestionCount } from "../numberOfQuestion";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   moduleId: module.id,
@@ -61,8 +62,8 @@ export class QuestionsDashboardComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location
   ) {
-    this.category = new Category();
-    this.selectedCategory = new Category();
+    this.category = {} as Category;
+    this.selectedCategory = {} as Category;
     this.numberOfQuestions = new QuestionCount();
     this.optionName = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
     this.categoryArray = new Array<Category>();
@@ -86,10 +87,13 @@ export class QuestionsDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loader = true;
-    this.selectedCategoryName = this.route.snapshot.params["categoryName"];
-    this.SelectedDifficultyLevel =
-      this.route.snapshot.params["difficultyLevelName"];
-    this.searchText = this.route.snapshot.params["matchString"];
+    this.selectedCategoryName = this.route.snapshot.params[
+      "categoryName"
+    ] as string;
+    this.SelectedDifficultyLevel = this.route.snapshot.params[
+      "difficultyLevelName"
+    ] as string;
+    this.searchText = this.route.snapshot.params["matchString"] as string;
     if (this.searchText !== "" && this.searchText !== undefined) {
       this.showSearchInput = true;
       this.matchString = this.searchText;
@@ -121,7 +125,7 @@ export class QuestionsDashboardComponent implements OnInit {
    * @param categoryName: Catergory selected while adding
    */
   SelectCategoryDifficulty(difficulty: string, categoryName: string) {
-    this.selectedDifficulty = DifficultyLevel[difficulty];
+    this.selectedDifficulty = DifficultyLevel[difficulty] as DifficultyLevel;
     this.selectedCategory.categoryName = categoryName;
     this.categoryArray.forEach((x) => {
       if (x.categoryName === this.selectedCategoryName)
@@ -133,7 +137,7 @@ export class QuestionsDashboardComponent implements OnInit {
       categoryName !== "AllCategory" &&
       !this.categoryArray.some((x) => x.categoryName === categoryName)
     ) {
-      this.router.navigate(["404"]);
+      void this.router.navigate(["404"]);
       return;
     }
 
@@ -176,7 +180,7 @@ export class QuestionsDashboardComponent implements OnInit {
    */
   getAllQuestions() {
     this.loader = true;
-    this.searchText = this.route.snapshot.params["matchString"];
+    this.searchText = this.route.snapshot.params["matchString"] as string;
     this.categroyId = 0;
     this.countTheQuestion();
     this.difficultyLevel = "All";
@@ -190,29 +194,33 @@ export class QuestionsDashboardComponent implements OnInit {
         this.difficultyLevel,
         this.matchString
       )
-      .subscribe((questionsList) => {
-        this.question = questionsList;
-        this.questionDisplay = this.questionDisplay.concat(this.question);
-        if (this.questionDisplay.length !== 0)
-          this.id = this.questionDisplay[this.questionDisplay.length - 1].id;
-        this.selectedDifficulty = DifficultyLevel[this.difficultyLevel];
-        if (this.searchText !== undefined && this.matchString.length > 0) {
-          this.router.navigate([
-            "questions/dashboard",
-            "AllCategory",
-            this.difficultyLevel,
-            this.searchText,
-          ]);
-          this.showSearchInput = true;
-        } else
-          this.router.navigate([
-            "questions/dashboard",
-            "AllCategory",
-            this.difficultyLevel,
-          ]);
-        this.loader = false;
-        this.selectedCategory = new Category();
-        this.isAllQuestionsHaveCome = false;
+      .subscribe({
+        next: async (questionsList) => {
+          this.question = questionsList;
+          this.questionDisplay = this.questionDisplay.concat(this.question);
+          if (this.questionDisplay.length !== 0)
+            this.id = this.questionDisplay[this.questionDisplay.length - 1].id;
+          this.selectedDifficulty = DifficultyLevel[
+            this.difficultyLevel
+          ] as DifficultyLevel;
+          if (this.searchText !== undefined && this.matchString.length > 0) {
+            await this.router.navigate([
+              "questions/dashboard",
+              "AllCategory",
+              this.difficultyLevel,
+              this.searchText,
+            ]);
+            this.showSearchInput = true;
+          } else
+            await this.router.navigate([
+              "questions/dashboard",
+              "AllCategory",
+              this.difficultyLevel,
+            ]);
+          this.loader = false;
+          this.selectedCategory = {} as Category;
+          this.isAllQuestionsHaveCome = false;
+        },
       });
   }
 
@@ -293,16 +301,18 @@ export class QuestionsDashboardComponent implements OnInit {
         this.difficultyLevel,
         this.matchString
       )
-      .subscribe(
-        (questionsList) => {
+      .subscribe({
+        next: async (questionsList) => {
           this.questionDisplay = questionsList;
           if (this.questionDisplay.length !== 0)
             this.id = this.questionDisplay[this.questionDisplay.length - 1].id;
-          this.selectedDifficulty = DifficultyLevel[this.difficultyLevel];
+          this.selectedDifficulty = DifficultyLevel[
+            this.difficultyLevel
+          ] as DifficultyLevel;
           this.selectedCategory.categoryName = categoryName;
           this.selectedCategory.id = categoryId;
           if (this.searchText !== undefined && this.searchText.length > 0) {
-            this.router.navigate([
+            await this.router.navigate([
               "questions/dashboard",
               categoryName,
               difficultyLevel,
@@ -311,19 +321,19 @@ export class QuestionsDashboardComponent implements OnInit {
             this.showSearchInput = true;
             this.matchString = this.searchText;
           } else
-            this.router.navigate([
+            await this.router.navigate([
               "questions/dashboard",
               categoryName,
               difficultyLevel,
             ]);
           this.loader = false;
         },
-        (err) => {
+        error: async (err: HttpErrorResponse) => {
           console.log(err);
           // If error in loading question then redirect to '404 not found' page
-          if (err.status === 404) this.router.navigate(["404"]);
-        }
-      );
+          if (err.status === 404) await this.router.navigate(["404"]);
+        },
+      });
   }
 
   /**
@@ -332,7 +342,7 @@ export class QuestionsDashboardComponent implements OnInit {
    */
   difficultyWiseSearch(difficulty: string) {
     this.loader = true;
-    this.searchText = this.route.snapshot.params["matchString"];
+    this.searchText = this.route.snapshot.params["matchString"] as string;
     window.scrollTo(0, 0);
     this.id = 0;
     this.difficultyLevel = difficulty;
@@ -355,27 +365,31 @@ export class QuestionsDashboardComponent implements OnInit {
         this.difficultyLevel,
         this.matchString
       )
-      .subscribe((questionsList) => {
-        this.questionDisplay = questionsList;
-        if (this.questionDisplay.length !== 0)
-          this.id = this.questionDisplay[this.questionDisplay.length - 1].id;
-        this.selectedDifficulty = DifficultyLevel[difficulty];
-        if (this.searchText !== undefined) {
-          this.router.navigate([
-            "questions/dashboard",
-            this.selectedCategory.categoryName,
-            difficulty,
-            this.searchText,
-          ]);
-          this.showSearchInput = true;
-          this.matchString = this.searchText;
-        } else
-          this.router.navigate([
-            "questions/dashboard",
-            this.selectedCategory.categoryName,
-            difficulty,
-          ]);
-        this.loader = false;
+      .subscribe({
+        next: async (questionsList) => {
+          this.questionDisplay = questionsList;
+          if (this.questionDisplay.length !== 0)
+            this.id = this.questionDisplay[this.questionDisplay.length - 1].id;
+          this.selectedDifficulty = DifficultyLevel[
+            difficulty
+          ] as DifficultyLevel;
+          if (this.searchText !== undefined) {
+            await this.router.navigate([
+              "questions/dashboard",
+              this.selectedCategory.categoryName,
+              difficulty,
+              this.searchText,
+            ]);
+            this.showSearchInput = true;
+            this.matchString = this.searchText;
+          } else
+            await this.router.navigate([
+              "questions/dashboard",
+              this.selectedCategory.categoryName,
+              difficulty,
+            ]);
+          this.loader = false;
+        },
       });
   }
 
@@ -383,7 +397,7 @@ export class QuestionsDashboardComponent implements OnInit {
    * To get the Search criteria from the user
    * @param matchString: String that needs to be searched
    */
-  getQuestionsMatchingSearchCriteria(matchString: string) {
+  async getQuestionsMatchingSearchCriteria(matchString: string) {
     this.matchString = matchString;
 
     let url = "";
@@ -449,7 +463,7 @@ export class QuestionsDashboardComponent implements OnInit {
       this.questionDisplay = new Array<QuestionDisplay>();
       if (this.selectedCategory.categoryName === undefined)
         this.selectedCategory.categoryName = "AllCategory";
-      this.router.navigate([
+      await this.router.navigate([
         "questions/dashboard",
         this.selectedCategory.categoryName,
         this.difficultyLevel,
@@ -475,7 +489,7 @@ export class QuestionsDashboardComponent implements OnInit {
     });
     adddialogRef.afterClosed().subscribe((categoryToAdd) => {
       if (categoryToAdd !== "" && categoryToAdd !== undefined) {
-        this.categoryArray.push(categoryToAdd);
+        this.categoryArray.push(categoryToAdd as Category);
         this.sortCategory();
       }
       this.isCategoryPresent = this.categoryArray.length === 0 ? false : true;
@@ -496,9 +510,9 @@ export class QuestionsDashboardComponent implements OnInit {
     });
     updateDialogRef.componentInstance.category = JSON.parse(
       JSON.stringify(category)
-    );
-    updateDialogRef.afterClosed().subscribe((updatedCategory) => {
-      if (updatedCategory !== "" && updatedCategory !== undefined) {
+    ) as Category;
+    updateDialogRef.afterClosed().subscribe((updatedCategory: Category) => {
+      if (updatedCategory !== undefined) {
         categoryToUpdate.categoryName = updatedCategory.categoryName;
         this.question.forEach((x) => {
           if (x.category.id === categoryToUpdate.id) {
@@ -524,7 +538,7 @@ export class QuestionsDashboardComponent implements OnInit {
       hasBackdrop: true,
     });
     deleteDialogRef.componentInstance.category = category;
-    deleteDialogRef.afterClosed().subscribe((deletedCategory) => {
+    deleteDialogRef.afterClosed().subscribe((deletedCategory: Category) => {
       if (deletedCategory) {
         this.categoryArray.splice(
           this.categoryArray.indexOf(deletedCategory),
@@ -546,31 +560,33 @@ export class QuestionsDashboardComponent implements OnInit {
       hasBackdrop: true,
     });
     deleteDialogRef.componentInstance.question = questionToDelete;
-    deleteDialogRef.afterClosed().subscribe((deletedQuestion) => {
-      if (deletedQuestion) {
-        this.question.splice(this.question.indexOf(deletedQuestion), 1);
-        this.questionDisplay.splice(
-          this.questionDisplay.indexOf(deletedQuestion),
-          1
-        );
-        this.countTheQuestion();
-      }
-    });
+    deleteDialogRef
+      .afterClosed()
+      .subscribe((deletedQuestion: QuestionDisplay) => {
+        if (deletedQuestion) {
+          this.question.splice(this.question.indexOf(deletedQuestion), 1);
+          this.questionDisplay.splice(
+            this.questionDisplay.indexOf(deletedQuestion),
+            1
+          );
+          this.countTheQuestion();
+        }
+      });
   }
 
   /**
    * Routes to respective components for editing Question
    * @param question: Object of type QuestionDisplay
    */
-  editQuestion(question: QuestionDisplay) {
+  async editQuestion(question: QuestionDisplay) {
     if (question.questionType === QuestionType.codeSnippetQuestion) {
-      this.router.navigate(["questions", "programming", question.id]);
+      await this.router.navigate(["questions", "programming", question.id]);
     } else {
       const questionType =
         question.questionType === 0
           ? "edit-single-answer"
           : "edit-multiple-answers";
-      this.router.navigate(["questions", questionType, question.id]);
+      await this.router.navigate(["questions", questionType, question.id]);
     }
   }
 
@@ -592,23 +608,23 @@ export class QuestionsDashboardComponent implements OnInit {
    * Method to navigate to questions to duplicate the question
    * @param question:QuestionDisplay object
    */
-  duplicateQuestion(question: QuestionDisplay) {
+  async duplicateQuestion(question: QuestionDisplay) {
     if (question.questionType === QuestionType.codeSnippetQuestion) {
-      this.router.navigate([
+      await this.router.navigate([
         "questions",
         "programming",
         "duplicate",
         question.id,
       ]);
     } else if (question.questionType === QuestionType.singleAnswer) {
-      this.router.navigate([
+      await this.router.navigate([
         "questions",
         "single-answer",
         "duplicate",
         question.id,
       ]);
     } else {
-      this.router.navigate([
+      await this.router.navigate([
         "questions",
         "multiple-answers",
         "duplicate",
@@ -623,7 +639,11 @@ export class QuestionsDashboardComponent implements OnInit {
    * @param search:is of type any
    * @param matchString:is string that needs to be searched
    */
-  selectTextArea($event: any, search: any, matchString: string) {
+  selectTextArea(
+    $event: Event,
+    search: HTMLTextAreaElement,
+    matchString: string
+  ) {
     this.matchString = matchString;
     // if ((this.matchString !== undefined || this.matchString !== ' ') && (this.selectedCategoryName === undefined || this.SelectedDifficultyLevel === undefined)) {
     //    this.router.navigate(['question/search', this.matchString]);
@@ -646,12 +666,12 @@ export class QuestionsDashboardComponent implements OnInit {
    * Select selected catgeory and difficulty level and pass it to route while adding question
    * @param questiontype: Type of the question
    */
-  selectSelectionAndDifficultyType(questiontype: string) {
+  async selectSelectionAndDifficultyType(questiontype: string) {
     let categoryName = this.selectedCategory.categoryName;
     const difficultyLevel = DifficultyLevel[this.selectedDifficulty];
     if (categoryName === undefined) categoryName = "AllCategory";
     if (questiontype === "single-answer")
-      this.router.navigate([
+      await this.router.navigate([
         "questions",
         "single-answer",
         "add",
@@ -659,7 +679,7 @@ export class QuestionsDashboardComponent implements OnInit {
         difficultyLevel,
       ]);
     else if (questiontype === "multiple-answer")
-      this.router.navigate([
+      await this.router.navigate([
         "questions",
         "multiple-answers",
         "add",
@@ -667,7 +687,7 @@ export class QuestionsDashboardComponent implements OnInit {
         difficultyLevel,
       ]);
     else if (questiontype === "programming")
-      this.router.navigate([
+      await this.router.navigate([
         "questions",
         "programming",
         "add",

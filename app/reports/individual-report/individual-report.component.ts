@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { ReportService } from "../report.service";
 import { TestAttendee } from "../testattendee.model";
 import { TestQuestion } from "../../tests/tests.model";
@@ -69,8 +69,7 @@ export class IndividualReportComponent implements OnInit {
 
   constructor(
     private reportsService: ReportService,
-    private route: ActivatedRoute,
-    private router: Router
+    private route: ActivatedRoute
   ) {
     this.loader = true;
     this.testQuestions = new Array<TestQuestion>();
@@ -103,7 +102,7 @@ export class IndividualReportComponent implements OnInit {
     // Gets test attendee details
     this.reportsService
       .getTestAttendeeById(this.testAttendeeId)
-      .subscribe((response) => {
+      .subscribe((response: TestAttendee) => {
         this.testAttendee = response;
         this.testName = this.testAttendee.test.testName;
         this.testId = this.testAttendee.test.id;
@@ -517,14 +516,7 @@ export class IndividualReportComponent implements OnInit {
       printSectionId
     ) as HTMLDivElement;
     const height = elementToPrint.offsetHeight;
-    const attendeeName =
-      this.testAttendee.firstName + this.testAttendee.lastName;
-    const testName = this.testAttendee.test.testName;
     const pdf = new jsPDF("p", "mm", [187, height]);
-    const styles = {
-      background: "#FFFFFF",
-      pagesplit: true,
-    };
     pdf.internal.scaleFactor = 6.55;
     pdf.text(this.testAttendee.test.testName, 15, 15);
     // pdf.addHTML(elementToPrint, 0, 20, styles, () => {
@@ -548,16 +540,9 @@ export class IndividualReportComponent implements OnInit {
     const dataToDownload = document.getElementById(
       "printSectionId"
     ) as HTMLDivElement;
-    const attendeeName =
-      this.testAttendee.firstName + this.testAttendee.lastName;
-    const testName = this.testAttendee.test.testName;
 
     const height = dataToDownload.offsetHeight;
     const doc = new jsPDF("p", "mm", [187, height]);
-    const styles = {
-      background: "#FFFFFF",
-      pagesplit: true,
-    };
     doc.text(this.testAttendee.test.testName, 15, 15);
     // doc.addHTML(dataToDownload, 0, 20, styles, () => {
     //   doc.setProperties({

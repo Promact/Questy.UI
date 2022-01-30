@@ -3,10 +3,11 @@ import { Test, TestQuestion } from "app/tests/tests.model";
 import { HttpService } from "../core/http.service";
 import { Report } from "./report.model";
 import { ReportQuestionsCount } from "./test-report/reportquestionscount";
-import { TestAttendee } from "../reports/testAttendee";
+import { TestAttendeeAc } from "./testAttendeeAc";
 import { TestAnswers } from "./testanswers.model";
 import { CodeSnippetTestCasesDetails } from "./code-snippet-test-cases-details.model";
 import { TestCodeSolutionDetails } from "./test-code-solution-details.model";
+import { TestAttendee } from "./testattendee.model";
 
 @Injectable()
 export class ReportService {
@@ -29,7 +30,7 @@ export class ReportService {
    * @param testId: Id of the test
    */
   getAllTestAttendees(testId: number) {
-    return this.httpService.get<TestAttendee[]>(
+    return this.httpService.get<TestAttendeeAc[]>(
       `${this.reportsApiUrl}/${testId}`
     );
   }
@@ -150,7 +151,7 @@ export class ReportService {
   }
 
   createSessionForAttendee(
-    attendee: any,
+    attendee: TestAttendee,
     testLink: string,
     isTestEnd: boolean
   ) {
@@ -182,7 +183,7 @@ export class ReportService {
   }
 
   generateReport(attendeeIdList: number[]) {
-    return this.httpService.post<TestAttendee[]>(
+    return this.httpService.post<TestAttendeeAc[]>(
       `${this.reportsApiUrl}/generateReport`,
       attendeeIdList
     );

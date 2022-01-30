@@ -29,7 +29,9 @@ module.exports = {
       'files': ['*.spec.ts'],
       'plugins': ['jasmine'],
       'rules': {
-        '@typescript-eslint/unbound-method': 'off',        
+        '@typescript-eslint/unbound-method': 'off',
+        'MicrosoftEdge': 'off',       
+        'axe/forms': 'off',
       },
     }
   ],

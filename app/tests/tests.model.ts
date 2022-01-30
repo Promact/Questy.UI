@@ -75,14 +75,14 @@ export class TestQuestion {
   constructor() {
     this.codeSnippetQuestionTestCasesDetails =
       new Array<CodeSnippetTestCasesDetails>();
-    this.testCodeSolutionDetails = new TestCodeSolutionDetails();
+    this.testCodeSolutionDetails = {} as TestCodeSolutionDetails;
   }
 }
 
-export class TestQuestionAC {
-  public id!: number;
+export interface TestQuestionAC {
+  id: number;
 
-  public categoryID!: number;
+  categoryID: number;
 
-  public isSelect!: boolean;
+  isSelect: boolean;
 }

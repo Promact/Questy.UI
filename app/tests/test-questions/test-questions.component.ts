@@ -178,7 +178,7 @@ export class TestQuestionsComponent implements OnInit {
       if (category.isSelect && category.questionList !== null)
         // Every question from category are concatenated to single array which will be sent to add to test
         category.questionList.forEach((question) => {
-          const questionToAdd = new TestQuestionAC();
+          const questionToAdd = {} as TestQuestionAC;
           questionToAdd.categoryID = question.question.categoryID;
           questionToAdd.id = question.question.id;
           questionToAdd.isSelect = question.question.isSelect;

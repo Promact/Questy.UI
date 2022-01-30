@@ -1,4 +1,4 @@
-﻿export class TestIPAddress {
+﻿export interface TestIPAddress {
   id: number;
   ipAddress: string;
   createdDateTime: Date;

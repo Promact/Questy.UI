@@ -1,6 +1,6 @@
 import { TestStatus } from "../reports/enum-test-state";
 
-export class Report {
+export interface Report {
   totalMarksScored: number;
   percentage: number;
   percentile: number;

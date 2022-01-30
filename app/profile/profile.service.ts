@@ -6,8 +6,8 @@ import { ChangePasswordModel } from "./password.model";
 @Injectable()
 export class ProfileService {
   private profileApiUrl = "api/profile";
-  editUser: ApplicationUser = new ApplicationUser();
-  user: ApplicationUser = new ApplicationUser();
+  editUser: ApplicationUser = {} as ApplicationUser;
+  user: ApplicationUser = {} as ApplicationUser;
 
   constructor(public httpService: HttpService) {}
 

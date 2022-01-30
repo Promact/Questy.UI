@@ -43,7 +43,15 @@
               </div>
             </div>
           </div>-->
-          <ckeditor [config]="{extraPlugins:'divarea'}" [(ngModel)]="questionModel.question.questionDetail" id="detail" name="detail" minlength="1" (focusout)="onFocusCkeditor($event)" #detail="ngModel" required></ckeditor>
+          <ckeditor [config]="{extraPlugins:'divarea'}" 
+          [(ngModel)]="questionModel.question.questionDetail" 
+          id="detail" 
+          name="detail" 
+          minlength="1" 
+          (focusout)="onFocusCkeditor()" 
+          #detail="ngModel" 
+          required></ckeditor>
+          
           <div class="errors-container">
             <div *ngIf="detail.errors && isCkeditorDirtly">
               <div [hidden]="!detail.errors.required">

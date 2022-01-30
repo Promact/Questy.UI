@@ -15,8 +15,8 @@
                     <button type="button" class="icon-btn ml10" (click)="showEditButton(box.value)"><em class="material-icons danger-text">close</em></button>
                 </span>
                 <span class="errors-container">
-                    <span class="error-msg" *ngIf="isWhiteSpaceError || (name.dirty && !name.valid && name.errors.required)">Required</span>
-                    <span class="error-msg" *ngIf="name.dirty && !name.valid && name.errors.pattern">Test name should be alphanumeric. Allowed special symbols are @, _ and white space.</span>
+                    <span class="error-msg" *ngIf="isWhiteSpaceError || (name.dirty && !name.valid && name.errors?.required)">Required</span>
+                    <span class="error-msg" *ngIf="name.dirty && !name.valid && name.errors?.pattern">Test name should be alphanumeric. Allowed special symbols are @, _ and white space.</span>
                     <span class="error-msg" *ngIf="isTestNameExist">Test with this name already exists</span>
                 </span>
             </span>
@@ -27,8 +27,8 @@
             <popover-content #myPopover [closeOnClickOutside]="true">
                 <label>Test Link</label>
                 <div class="url-container">
-                    <input type="text" class="form-control" [(ngModel)]="testLink" name="link" id="link" #link readonly/>
-                    <em e2e="copytoclipboard-btn" class="material-icons" ngxClipboard [cbContent]="testLink" (cbOnSuccess)="copiedContent = true" mdTooltip={{tooltipMessage}} (click)="showTooltipMessage($event,link)" (mouseenter)="changeTooltipMessage()">content_copy</em>
+                    <input title="testLink" type="text" class="form-control" [(ngModel)]="testLink" name="link" id="link" #link readonly/>
+                    <em e2e="copytoclipboard-btn" class="material-icons" ngxClipboard [cbContent]="testLink" (cbOnSuccess)="copiedContent = true" matTooltip={{tooltipMessage}} (click)="showTooltipMessage($event,link)" (mouseenter)="changeTooltipMessage()">content_copy</em>
                 </div>
             </popover-content>
         </div>

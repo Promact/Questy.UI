@@ -327,7 +327,7 @@ export class TestSettingsComponent implements OnInit {
    * Adds the IP address fields
    */
   addIpFields() {
-    const ip = new TestIPAddress();
+    const ip = {} as TestIPAddress;
     this.testDetails.testIpAddress.push(ip);
     this.IpAddressAdded(ip.ipAddress);
     this.showErrorMessage(ip);

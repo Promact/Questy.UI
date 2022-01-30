@@ -1,4 +1,4 @@
-﻿export class TestLogs {
+﻿export interface TestLogs {
   visitTestLink: Date;
   fillRegistrationForm: Date;
   startTest: Date;

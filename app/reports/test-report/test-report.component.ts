@@ -2,7 +2,7 @@
 import { DatePipe } from "@angular/common";
 import { ReportService } from "../report.service";
 import { ActivatedRoute } from "@angular/router";
-import { TestAttendee } from "../testAttendee";
+import { TestAttendeeAc } from "../testAttendeeAc";
 import { TestStatus } from "../enum-test-state";
 import { Test } from "../../tests/tests.model";
 import { TestInstructions } from "../../conduct/testInstructions.model";
@@ -18,6 +18,7 @@ import { find } from "lodash-es";
 import autoTable from "jspdf-autotable";
 import { MatTableDataSource } from "@angular/material/table";
 import { saveAs } from "file-saver";
+import { TestAttendee } from "../testattendee.model";
 
 @Component({
   moduleId: module.id,
@@ -28,9 +29,9 @@ export class TestReportComponent implements OnInit {
   routeForIndividualTestReport: unknown;
   showSearchInput!: boolean;
   searchString: string;
-  testAttendeeArray: TestAttendee[];
-  attendeeArray: TestAttendee[];
-  sortedAttendeeArray: TestAttendee[];
+  testAttendeeArray: TestAttendeeAc[];
+  attendeeArray: TestAttendeeAc[];
+  sortedAttendeeArray: TestAttendeeAc[];
   testId!: number;
   starredCandidateArray!: string[];
   testCompletionStatus: string;
@@ -73,12 +74,12 @@ export class TestReportComponent implements OnInit {
   unfinishedTestCount: number;
   starredCandidateCount: number;
   noCandidateFound!: boolean;
-  attendees: TestAttendee[] = [];
-  testAttendeeSignalR: TestAttendee;
+  attendees: TestAttendeeAc[] = [];
+  testAttendeeSignalR: TestAttendeeAc;
   estimatedTime: string;
   isTestCompleted: boolean;
   hasTestEnded: boolean;
-  testAttandeeDataSource: MatTableDataSource<TestAttendee>;
+  testAttandeeDataSource: MatTableDataSource<TestAttendeeAc>;
 
   constructor(
     private readonly reportService: ReportService,
@@ -87,9 +88,9 @@ export class TestReportComponent implements OnInit {
     private readonly connectionService: ConnectionService,
     private readonly datePipe: DatePipe
   ) {
-    this.testAttendeeArray = new Array<TestAttendee>();
-    this.attendeeArray = new Array<TestAttendee>();
-    this.sortedAttendeeArray = new Array<TestAttendee>();
+    this.testAttendeeArray = new Array<TestAttendeeAc>();
+    this.attendeeArray = new Array<TestAttendeeAc>();
+    this.sortedAttendeeArray = new Array<TestAttendeeAc>();
     this.testCompletionStatus = "0";
     this.selectedTestStatus = TestStatus.allCandidates;
     this.searchString = "";
@@ -116,7 +117,7 @@ export class TestReportComponent implements OnInit {
     this.expiredTestCount = 0;
     this.unfinishedTestCount = 0;
     this.starredCandidateCount = 0;
-    this.testAttendeeSignalR = new TestAttendee();
+    this.testAttendeeSignalR = new TestAttendeeAc();
     this.isTestCompleted = false;
     this.estimatedTime = "Getting status...";
     this.hasTestEnded = true;
@@ -175,29 +176,31 @@ export class TestReportComponent implements OnInit {
     });
 
     this.getAllTestCandidates();
-    this.connectionService.recievedAttendee.subscribe((attendee) => {
-      const testAttendee = this.testAttendeeArray.find(
-        (x) => x.id === attendee.id
-      );
-      if (testAttendee !== undefined)
-        this.testAttendeeArray.splice(
-          this.testAttendeeArray.findIndex((x) => x.id === testAttendee.id),
-          1
+    this.connectionService.recievedAttendee.subscribe(
+      (attendee: TestAttendeeAc) => {
+        const testAttendee = this.testAttendeeArray.find(
+          (x) => x.id === attendee.id
         );
-      if (attendee.report === null) attendee.report = new Report();
-      this.testAttendeeArray.unshift(attendee);
-      this.isAnyCandidateExist = this.testAttendeeArray.some(
-        (x) => x.report !== null
-      );
-      [this.headerStarStatus, this.isAllCandidateStarred] =
-        this.testAttendeeArray.some((x) => !x.starredCandidate)
-          ? ["star_border", false]
-          : ["star", true];
-    });
+        if (testAttendee !== undefined)
+          this.testAttendeeArray.splice(
+            this.testAttendeeArray.findIndex((x) => x.id === testAttendee.id),
+            1
+          );
+        if (attendee.report === null) attendee.report = new Report();
+        this.testAttendeeArray.unshift(attendee);
+        this.isAnyCandidateExist = this.testAttendeeArray.some(
+          (x) => x.report !== null
+        );
+        [this.headerStarStatus, this.isAllCandidateStarred] =
+          this.testAttendeeArray.some((x) => !x.starredCandidate)
+            ? ["star_border", false]
+            : ["star", true];
+      }
+    );
     this.connectionService.recievedAttendeeId.subscribe((attendeeId) => {
       const attendee = this.testAttendeeArray.find(
         (x) => x.id === attendeeId
-      ) as TestAttendee;
+      ) as TestAttendeeAc;
       attendee.report.isTestPausedUnWillingly = true;
       this.testAttendeeArray.splice(
         this.testAttendeeArray.findIndex((x) => x.id === attendeeId),
@@ -228,7 +231,7 @@ export class TestReportComponent implements OnInit {
   getAllTestCandidates() {
     this.reportService
       .getAllTestAttendees(this.testId)
-      .subscribe((attendeeList) => {
+      .subscribe((attendeeList: TestAttendeeAc[]) => {
         this.attendeeArray = attendeeList;
         this.isAnyCandidateExist =
           this.attendeeArray.length === 0 ? false : true;
@@ -287,12 +290,12 @@ export class TestReportComponent implements OnInit {
    * Toggles the star condition of a candidate
    * @param testAttendee: Object of TestAttendee type
    */
-  setStarredCandidate(testAttendee: TestAttendee) {
+  setStarredCandidate(testAttendee: TestAttendeeAc) {
     this.reportService.setStarredCandidate(testAttendee.id).subscribe(() => {
       const starredCandidate = find(
         this.testAttendeeArray,
         (ta) => ta.id === testAttendee.id
-      ) as TestAttendee;
+      ) as TestAttendeeAc;
       starredCandidate.starredCandidate = !testAttendee.starredCandidate;
       [this.headerStarStatus, this.isAllCandidateStarred] =
         this.testAttendeeArray.some((x) => !x.starredCandidate)
@@ -329,7 +332,7 @@ export class TestReportComponent implements OnInit {
    * Checks whther a candidate is satrred
    * @param attendee: Object of TestAttendee type
    */
-  isStarredCandidate(attendee: TestAttendee) {
+  isStarredCandidate(attendee: TestAttendeeAc) {
     return attendee.starredCandidate ? "star" : "star_border";
   }
 
@@ -392,10 +395,10 @@ export class TestReportComponent implements OnInit {
    * @param searchString String that to be searched
    */
   filter(selectedTestStatus: TestStatus, searchString: string) {
-    const tempAttendeeArray: TestAttendee[] = [];
+    const tempAttendeeArray: TestAttendeeAc[] = [];
     searchString = searchString.toLowerCase();
     this.testAttendeeArray = [];
-    const starAttendeeArray: TestAttendee[] = [];
+    const starAttendeeArray: TestAttendeeAc[] = [];
     if (this.showStarCandidates) {
       this.attendeeArray.forEach((k) => {
         if (k.starredCandidate) starAttendeeArray.push(k);
@@ -761,7 +764,7 @@ export class TestReportComponent implements OnInit {
    * @param testAttendee: Object of the testAttendee table
    * @param select: Checkbox value of the checked candidate
    */
-  selectIndividualCandidate(testAttendee: TestAttendee, select: boolean) {
+  selectIndividualCandidate(testAttendee: TestAttendeeAc, select: boolean) {
     testAttendee.checkedCandidate = select;
   }
 
@@ -825,7 +828,7 @@ export class TestReportComponent implements OnInit {
         rank += 1;
         previousScore = newScore;
       } else previousScore = newScore;
-      const testRankDetails = new TestAttendeeRank();
+      const testRankDetails = {} as TestAttendeeRank;
       testRankDetails.attendeeId = attendeeId;
       testRankDetails.attendeeRank = rank;
       this.testAttendeeRank.push(testRankDetails);
@@ -847,7 +850,7 @@ export class TestReportComponent implements OnInit {
   /**
    * Generate report for unfinished test
    */
-  generateReportForUnfinishedTest(testAttendee?: TestAttendee) {
+  generateReportForUnfinishedTest(testAttendee?: TestAttendeeAc) {
     const confirmation = window.confirm(
       "Do you want to generate report of this candidate ?"
     );
@@ -874,9 +877,11 @@ export class TestReportComponent implements OnInit {
       }
 
       this.reportService.generateReport(attendeeIdList).subscribe((res) => {
-        this.testAttendeeArray.forEach((o, i, a) => {
-          if (res.some((x) => x.id === a[i].id)) {
-            a[i] = res.find((x) => x.id === a[i].id) as TestAttendee;
+        this.testAttendeeArray.forEach((o, i, a: TestAttendeeAc[]) => {
+          if (res.some((x: TestAttendeeAc) => x.id === a[i].id)) {
+            a[i] = res.find(
+              (x: TestAttendeeAc) => x.id === a[i].id
+            ) as unknown as TestAttendeeAc;
           }
           if (!isSomeChecked) {
             a[i].generatingReport = false;
@@ -906,7 +911,7 @@ export class TestReportComponent implements OnInit {
     return !this.showGenerateReportButton || isAllReportGenerated;
   }
 
-  isReportGenerated(testAttendee: TestAttendee) {
+  isReportGenerated(testAttendee: TestAttendeeAc) {
     return testAttendee.report.testStatus !== TestStatus.allCandidates;
   }
 

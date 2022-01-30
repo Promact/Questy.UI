@@ -16,7 +16,7 @@ export class ChangePasswordDialogComponent {
     private readonly dialog: MatDialogRef<unknown>,
     private readonly snackBar: MatSnackBar
   ) {}
-  user: ChangePasswordModel = new ChangePasswordModel();
+  user: ChangePasswordModel = {} as ChangePasswordModel;
   isPasswordSame = true;
   response!: HttpErrorResponse;
   errorMesseage!: string;

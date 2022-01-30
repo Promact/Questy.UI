@@ -5,6 +5,8 @@ import { Test } from "app/tests/tests.model";
 import { TestQuestions } from "app/conduct/test_conduct.model";
 import { Category } from "app/questions/category.model";
 import { TestLogs } from "app/reports/testlogs.model";
+import { SingleMultipleAnswerQuestion } from "app/questions/single-multiple-question";
+import { CodeSnippetQuestion } from "app/questions/code.snippet.model";
 
 export const FakeTest: Test = {
   id: 2002,
@@ -25,7 +27,7 @@ export const FakeTest: Test = {
   questionOrder: 1,
   optionOrder: 1,
   allowTestResume: 0,
-  categoryAcList: null,
+  categoryAcList: [] as Category[],
   testIpAddress: [],
   numberOfTestAttendees: 18,
   numberOfTestSections: 1,
@@ -58,7 +60,7 @@ export const FakeTestQuestions: TestQuestions[] = [
         isSelect: false,
         category: {} as Category,
       },
-      singleMultipleAnswerQuestion: null,
+      singleMultipleAnswerQuestion: {} as SingleMultipleAnswerQuestion,
       codeSnippetQuestion: {
         checkCodeComplexity: true,
         checkTimeComplexity: true,
@@ -101,7 +103,7 @@ export const FakeTestQuestions: TestQuestions[] = [
           },
         ],
       },
-      codeSnippetQuestion: null,
+      codeSnippetQuestion: {} as CodeSnippetQuestion,
     },
     questionStatus: 3,
   },

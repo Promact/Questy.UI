@@ -3,6 +3,7 @@ import { CategoryService } from "../categories.service";
 import { Category } from "../../questions/category.model";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialogRef } from "@angular/material/dialog";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   moduleId: module.id,
@@ -10,7 +11,7 @@ import { MatDialogRef } from "@angular/material/dialog";
   templateUrl: "delete-category-dialog.html",
 })
 export class DeleteCategoryDialogComponent {
-  private response!: JSON;
+  private response!: HttpErrorResponse;
 
   successMessage: string;
   errorMessage: string;
@@ -30,7 +31,7 @@ export class DeleteCategoryDialogComponent {
    * Open a Snackbar
    */
   openSnackBar(message: string) {
-    const snackBarRef = this.snackBar.open(message, "Dismiss", {
+    this.snackBar.open(message, "Dismiss", {
       duration: 3000,
     });
   }
@@ -40,14 +41,14 @@ export class DeleteCategoryDialogComponent {
    */
   deleteCategory(category: Category) {
     this.categoryService.deleteCategory(category.id).subscribe({
-      next: (response) => {
+      next: () => {
         this.dialog.close(category);
         this.openSnackBar(this.successMessage);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         if (err.status === 400) {
-          this.response = err.json();
-          this.errorMessage = this.response["error"][0];
+          this.response = err;
+          this.errorMessage = this.response["error"] as string;
           this.dialog.close(null);
           this.openSnackBar(this.errorMessage);
         } else {

@@ -32,6 +32,7 @@ import { TestService } from "../../tests/tests.service";
 import { ConnectionService } from "../../core/connection.service";
 import { TestBundleModel } from "../test_bundle_model";
 import * as _ from "lodash";
+import { delay } from "lodash";
 
 @Component({
   selector: "test",
@@ -143,7 +144,7 @@ export class TestComponent implements OnInit {
 
   ngOnInit() {
     this.getTestBundle(this.testLink);
-    this.connectionService.startConnection();
+    void this.connectionService.startConnection();
   }
 
   /**
@@ -173,7 +174,7 @@ export class TestComponent implements OnInit {
     this.conductService
       .getTestBundle(this.testLink, this.testTypePreview)
       .subscribe({
-        next: (response) => {
+        next: async (response) => {
           this.testBundle = response;
           this.test = this.testBundle.test;
           this.testQuestions = this.testBundle.testQuestions;
@@ -193,18 +194,19 @@ export class TestComponent implements OnInit {
             this.shuffleOption();
           }
 
-          window.onbeforeunload = (ev: BeforeUnloadEvent) => {
+          window.onbeforeunload = async (ev: BeforeUnloadEvent) => {
             this.isCloseWindow = true;
             this.saveTestLogs();
-            this.connectionService.stopConnection();
+            await this.connectionService.stopConnection();
 
             // Below code snippet will execute if the user cancels the dailog {ref: https://stackoverflow.com/a/4651049/9083810}
-            setTimeout(() => {
-              setTimeout(() => {
-                this.connectionService.startConnection(() => {
-                  this.connectionService.registerAttendee(this.testAttendee.id);
-                });
-              }, 100);
+            delay(() => {
+              delay(async () => {
+                await this.connectionService.startConnection();
+                await this.connectionService.registerAttendee(
+                  this.testAttendee.id
+                );
+              }, 1000);
             }, 1);
             // End of code snippet
 
@@ -218,7 +220,7 @@ export class TestComponent implements OnInit {
           if (this.testTypePreview) this.navigateToQuestionIndex(0);
           else this.getTestStatus();
 
-          this.connectionService.registerAttendee(this.testAttendee.id);
+          await this.connectionService.registerAttendee(this.testAttendee.id);
           this.clockIntervalListener = this.getClockInterval();
         },
         error: () => {
@@ -423,8 +425,8 @@ export class TestComponent implements OnInit {
    */
   resumeTest() {
     this.isTestReady = false;
-    this.conductService.getAnswer(this.testAttendee.id).subscribe(
-      (response) => {
+    this.conductService.getAnswer(this.testAttendee.id).subscribe({
+      next: (response) => {
         this.testAnswers = response;
         _.forEach(this.testQuestions, (question: TestQuestions) => {
           const answer = _.find(
@@ -448,8 +450,8 @@ export class TestComponent implements OnInit {
         this.navigateToQuestionIndex(0);
         this.isInitializing = false;
       },
-      () => {
-        this.connectionService.updateExpectedEndTime(
+      error: async () => {
+        await this.connectionService.updateExpectedEndTime(
           this.test.duration,
           this.test.id
         );
@@ -457,8 +459,8 @@ export class TestComponent implements OnInit {
         this.navigateToQuestionIndex(0);
         this.isTestReady = true;
         this.isInitializing = false;
-      }
-    );
+      },
+    });
   }
 
   /**
@@ -1037,16 +1039,18 @@ export class TestComponent implements OnInit {
     if (this.resumable === AllowTestResume.Supervised) {
       this.conductService
         .setTestStatus(this.testAttendee.id, testStatus)
-        .subscribe((response) => {
-          if (response) {
-            this.connectionService.sendReport(response);
-            this.connectionService.updateExpectedEndTime(
-              this.test.duration,
-              this.test.id
-            );
-            this.testEnded = true;
-            void this.router.navigate(["test-summary"], { replaceUrl: true });
-          }
+        .subscribe({
+          next: async (response) => {
+            if (response) {
+              await this.connectionService.sendReport(response);
+              await this.connectionService.updateExpectedEndTime(
+                this.test.duration,
+                this.test.id
+              );
+              this.testEnded = true;
+              void this.router.navigate(["test-summary"], { replaceUrl: true });
+            }
+          },
         });
     } else if (
       this.resumable === AllowTestResume.Unsupervised &&

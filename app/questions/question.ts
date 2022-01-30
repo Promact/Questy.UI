@@ -8,7 +8,7 @@ export class QuestionBase {
   codeSnippetQuestion: CodeSnippetQuestion;
 
   constructor() {
-    this.question = new Question();
+    this.question = {} as Question;
     this.singleMultipleAnswerQuestion = new SingleMultipleAnswerQuestion();
     this.codeSnippetQuestion = new CodeSnippetQuestion();
   }

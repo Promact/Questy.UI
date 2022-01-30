@@ -153,7 +153,7 @@ export class TestService {
    * @param newTestId: Id of the duplicated Test
    */
   duplicateTest(testId: number, test: Test) {
-    return this.httpService.post(
+    return this.httpService.post<Test>(
       `${this.testApiUrl}/${testId}/duplicateTest`,
       test
     );

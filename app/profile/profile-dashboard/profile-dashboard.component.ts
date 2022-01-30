@@ -10,7 +10,7 @@ import { ChangePasswordDialogComponent } from "./change-password-dialog.componen
   templateUrl: "profile-dashboard.html",
 })
 export class ProfileDashboardComponent implements OnInit {
-  user: ApplicationUser = new ApplicationUser();
+  user: ApplicationUser = {} as ApplicationUser;
   loader: boolean;
   ngOnInit() {
     this.getUserDetails();

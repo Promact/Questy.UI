@@ -3,6 +3,7 @@ import { CategoryService } from "../categories.service";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Category } from "../category.model";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable()
 @Component({
@@ -11,7 +12,7 @@ import { Category } from "../category.model";
   templateUrl: "update-category-dialog.html",
 })
 export class UpdateCategoryDialogComponent {
-  private response: any;
+  private response!: HttpErrorResponse;
   private successMessage: string;
 
   isCategoryNameExist: boolean;
@@ -34,7 +35,7 @@ export class UpdateCategoryDialogComponent {
    * Open snackbar
    */
   openSnackBar(message: string) {
-    const snackBarRef = this.snackBar.open(message, "", {
+    this.snackBar.open(message, "", {
       duration: 3000,
     });
   }
@@ -47,19 +48,19 @@ export class UpdateCategoryDialogComponent {
     this.isButtonClicked = true;
     category.categoryName = category.categoryName.trim();
     if (category.categoryName) {
-      this.categoryService.updateCategory(category.id, category).subscribe(
-        (result) => {
+      this.categoryService.updateCategory(category.id, category).subscribe({
+        next: (result) => {
           this.responseObject = result;
           this.dialogRef.close(this.responseObject);
           this.openSnackBar(this.successMessage);
         },
-        (err) => {
+        error: (err: HttpErrorResponse) => {
           this.isCategoryNameExist = true;
-          this.response = err.json();
-          this.errorMessage = this.response["error"][0];
+          this.response = err;
+          //this.errorMessage = this.response["error"][0] as string;
           this.isButtonClicked = false;
-        }
-      );
+        },
+      });
     }
   }
 

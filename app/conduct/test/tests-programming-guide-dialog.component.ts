@@ -1,7 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
-import { Router } from "@angular/router";
+﻿import { Component } from "@angular/core";
 
 @Component({
   selector: "tests-programming-guide-dialog",
@@ -9,13 +6,10 @@ import { Router } from "@angular/router";
 })
 export class TestsProgrammingGuideDialogComponent {
   response: any;
-  isDeleteAllowed: boolean;
-  errorMessage: string;
-  successMessage: string;
+  isDeleteAllowed!: boolean;
+  errorMessage!: string;
+  successMessage!: string;
 
-  constructor(
-    public dialog: MatDialogRef<any>,
-    public snackBar: MatSnackBar,
-    private router: Router
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  constructor() {}
 }

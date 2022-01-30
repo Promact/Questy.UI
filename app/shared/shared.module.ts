@@ -14,6 +14,9 @@ import { CommonModule } from "@angular/common";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatPaginatorModule } from "@angular/material/paginator";
+import { PopoverModule } from "ngx-smart-popover";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatIconModule } from "@angular/material/icon";
 @NgModule({
   imports: [
     SharedComponentsModule,
@@ -25,6 +28,9 @@ import { MatPaginatorModule } from "@angular/material/paginator";
     MatChipsModule,
     MatAutocompleteModule,
     MatPaginatorModule,
+    MatTooltipModule,
+    MatIconModule,
+    PopoverModule,
     CKEditorModule,
     NgChartsModule,
     ClipboardModule,
@@ -39,6 +45,9 @@ import { MatPaginatorModule } from "@angular/material/paginator";
     MatChipsModule,
     MatAutocompleteModule,
     MatPaginatorModule,
+    MatTooltipModule,
+    MatIconModule,
+    PopoverModule,
     CKEditorModule,
     NgChartsModule,
     ClipboardModule,

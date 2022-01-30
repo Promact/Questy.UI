@@ -8,8 +8,9 @@ import { TestBundleModel } from "./test_bundle_model";
 import { CodeResponse } from "./code.response.model";
 import { TestLogs } from "app/reports/testlogs.model";
 import { SessionData } from "./session.model";
-import { TestAttendee } from "../reports/testattendee.model";
+import { TestAttendees } from "./register/register.model";
 import { Test } from "app/tests/tests.model";
+import { TestAttendee } from "app/reports/testattendee.model";
 
 @Injectable()
 export class ConductService {
@@ -22,8 +23,8 @@ export class ConductService {
    * @param magicString-It will contain test link
    * @param testAttendee-This model object contain test attendee credential which are first name, last name, email, roll number, contact number.
    */
-  registerTestAttendee(magicString: string, testAttendee: TestAttendee) {
-    return this.httpService.post<TestAttendee>(
+  registerTestAttendee(magicString: string, testAttendee: TestAttendees) {
+    return this.httpService.post<TestAttendees>(
       this.testConductUrl + magicString + "/register",
       testAttendee
     );

@@ -1,6 +1,6 @@
 ﻿import { TestConduct } from "./testConduct.model";
 
-export class TestAnswers {
+export interface TestAnswers {
   id: number;
   testConductId: number;
   answeredCodeSnippet: string;

@@ -8,24 +8,24 @@
                 <span class="test-name">{{testDetails.testName}}</span>
             </h1>
             <div class="pull-right">
-                <div class="settings-menu" [mdMenuTriggerFor]="settingsMenu">
+                <div class="settings-menu" [matMenuTriggerFor]="settingsMenu">
                     <em class="material-icons">settings_applications</em>
                     <em class="material-icons">arrow_drop_down</em>
                 </div>
-                <md-menu #settingsMenu="mdMenu" [overlapTrigger]="false" xPosition="before">
-                    <button md-menu-item [disabled]="!isEditTestEnabled" (click)="editTest(testDetails)">Edit</button>
-                    <a md-menu-item (click)="deleteTestDialog(testDetails)">Delete</a>
-                    <a md-menu-item (click)="duplicateTestDialog(testDetails)">Duplicate</a>
-                    <a md-menu-item (click)="navigateToTestSettings()">Settings</a>
-                </md-menu>
+                <mat-menu #settingsMenu="matMenu" [overlapTrigger]="false" xPosition="before">
+                    <button mat-menu-item [disabled]="!isEditTestEnabled" (click)="editTest(testDetails)">Edit</button>
+                    <a mat-menu-item (click)="deleteTestDialog(testDetails)">Delete</a>
+                    <a mat-menu-item (click)="duplicateTestDialog(testDetails)">Duplicate</a>
+                    <a mat-menu-item (click)="navigateToTestSettings()">Settings</a>
+                </mat-menu>
                 <button type="button" class="btn" [popover]="myPopover"><em class="material-icons">link</em>Get Test Link</button>
                 <button type="button" class="btn btn-primary pull-right" [disabled]="disablePreview" (click)="openNewWindowForPreview()"><em class="material-icons">remove_red_eye</em> Preview</button>
             </div>
             <popover-content #myPopover [closeOnClickOutside]="true">
                 <label>Test Link</label>
                 <div class="url-container">
-                    <input type="text" class="form-control" [(ngModel)]="testLink" name="link" id="link" #link readonly/>
-                    <em class="material-icons" ngxClipboard [cbContent]="testLink" (cbOnSuccess)="copiedContent = true" mdTooltip={{tooltipMessage}} (click)="showTooltipMessage($event,link)" (mouseenter)="changeTooltipMessage()">content_copy</em>
+                    <input title="testLink" type="text" class="form-control" [(ngModel)]="testLink" name="link" id="link" #link readonly/>
+                    <em class="material-icons" ngxClipboard [cbContent]="testLink" (cbOnSuccess)="copiedContent = true" matTooltip={{tooltipMessage}} (click)="showTooltipMessage($event,link)" (mouseenter)="changeTooltipMessage()">content_copy</em>
                 </div>
             </popover-content>
         </div>
@@ -37,9 +37,9 @@
         </div>
         <h5 class="mt20 mb20" *ngIf="!isCategorySelected">No Sections/Questions have been selected yet. To do so, please click <a class="theme-text" [routerLink]="['/tests',testDetails.id,'sections']">here</a>.</h5>
         <ng-container *ngFor="let category of testDetails.categoryAcList;let k=index">
-            <md2-accordion class="questions-selection" *ngIf="category.isSelect">
-                <md2-accordion-tab class="collapsible-block" [disabled]="category.isQuestionAbsent">
-                    <md2-accordion-header class="collapsible-header clearfix" *ngIf="category.isSelect" [class.active]="category.isAccordionOpen" (click)="getAllquestions(category,k)">
+            <mat-accordion class="questions-selection" *ngIf="category.isSelect">
+                <mat-expansion-panel class="collapsible-block" [disabled]="category.isQuestionAbsent">
+                    <mat-expansion-panel-header class="collapsible-header clearfix" *ngIf="category.isSelect" [class.active]="category.isAccordionOpen" (click)="getAllquestions(category,k)">
                         <div class="title-info h2 pull-left">
                             <span>{{category.categoryName}}</span>
                         </div>
@@ -47,7 +47,7 @@
                             <span class="h7 qs-selected">{{category.numberOfSelectedQuestion}} question(s)</span>
                             <span class="collapsible-icon" *ngIf="!category.isQuestionAbsent"><em class="material-icons add-icon">add</em><em class="material-icons remove-icon">remove</em></span>
                         </div>
-                    </md2-accordion-header>
+                    </mat-expansion-panel-header>
 
                     <div class="collapsible-body p0">
                         <div class="qs-container" *ngFor="let question of category.questionList;let i=index">
@@ -65,8 +65,8 @@
                         </div>
                     </div>
 
-                </md2-accordion-tab>
-            </md2-accordion>
+                </mat-expansion-panel>
+            </mat-accordion>
         </ng-container>
         <div class="bottom-info">
             <span>{{testDetails.numberOfTestAttendees}} Candidates</span>
