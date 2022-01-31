@@ -25,7 +25,7 @@ jobs:
         shell: bash
         run: |
             npm ci                                  # Install all dependencies
-            npm run ci:lint                         # Lint the code
+            #npm run ci:lint                         # Lint the code
             npm run build:prod                      # Build the application
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
