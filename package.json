@@ -78,7 +78,7 @@
   },
   "scripts": {
     "lint": "eslint app --ext .ts,.json --fix --cache -f json",
-    "ci:lint": "cross-env eslint app --ext .ts,.json -f json -o eslint-report.json --debug",
+    "ci:lint": "npx eslint app --ext .ts,.json -f json -o eslint-report.json --debug",
     "build": "cross-env ng build app && ng build conduct && ng build setup",
     "build:app": "ng build app",
     "build:setup": "ng build setup",
