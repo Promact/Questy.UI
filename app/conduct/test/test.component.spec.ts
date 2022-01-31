@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import {
   throwError as observableThrowError,
   of as observableOf,
