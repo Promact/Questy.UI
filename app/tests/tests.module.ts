@@ -42,8 +42,7 @@ import { TestsProgrammingGuideDialogComponent } from "app/conduct/test/tests-pro
     FilterPipe,
     DeselectCategoryComponent,
     IncompleteTestCreationDialogComponent,
-    TestPreviewComponent,
-    TestsProgrammingGuideDialogComponent,
+    TestPreviewComponent,    
   ],
   entryComponents: [
     TestCreateDialogComponent,
