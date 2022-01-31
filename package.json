@@ -78,7 +78,7 @@
   },
   "scripts": {
     "lint": "eslint app --ext .ts,.json --fix --cache -f json",
-    "ci:lint": "npx eslint app --ext .ts,.json -f json -o eslint-report.json --debug",
+    "ci:lint": "cross-env NODE_OPTIONS=--max_old_space_size=8192 eslint app --ext .ts,.json -f json -o eslint-report.json",
     "build": "cross-env ng build app && ng build conduct && ng build setup",
     "build:app": "ng build app",
     "build:setup": "ng build setup",
