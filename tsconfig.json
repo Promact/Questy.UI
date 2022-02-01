@@ -6,7 +6,7 @@
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true,
     "strictFunctionTypes": true,
-    "strictNullChecks": true,
+    "strictNullChecks": true,    
   },
   "compilerOptions": {
     "baseUrl": ".",
@@ -32,12 +32,6 @@
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
     "strict": true,
-    "plugins": [
-      {
-        "name": "typescript-tslint-plugin",
-        "configFile": "../tslint.json"
-      }
-    ],
     "skipLibCheck": true
   },
   "compileOnSave": false,

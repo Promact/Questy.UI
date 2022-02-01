@@ -21,12 +21,6 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'      
-      - name: Build        
-        shell: bash
-        run: |
-            npm ci                                  # Install all dependencies
-            npm run build:prod                      # Build the application
-      - run: npm run ci:lint                
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
@@ -35,3 +29,8 @@ jobs:
         with:          
           args: >            
             -Dsonar.projectVersion=${{ github.run_number }}
+      - name: Build        
+        shell: bash
+        run: |
+            npm ci                                  # Install all dependencies
+            npm run build:prod                      # Build the application            
