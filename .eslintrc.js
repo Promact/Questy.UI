@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-undef
 module.exports = {
   'env': {
     'browser': true,
@@ -17,7 +16,7 @@ module.exports = {
   'parserOptions': {
     'ecmaVersion': 'latest',
     'sourceType': 'module',
-    'project': './tsconfig.json',
+    'project': './tsconfig.all.json',
   },
   'plugins': [
     '@typescript-eslint',
