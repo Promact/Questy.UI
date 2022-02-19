@@ -32,7 +32,7 @@
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "ieee754": "^1.2.1",
-    "jspdf": "2.5.0",
+    "jspdf": "2.5.1",
     "jspdf-autotable": "^3.5.23",
     "lodash-es": "^4.17.21",
     "ng2-charts": "^3.0.8",
