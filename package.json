@@ -43,7 +43,7 @@
     "ngx-smart-popover": "^1.4.0",
     "rxjs": "7.5.2",
     "screenfull": "^6.0.1",
-    "tinymce": "^5.10.2",
+    "tinymce": "^5.10.9",
     "tslib": "^2.3.1",
     "web-animations-js": "^2.3.1",
     "zone.js": "^0.11.4"
