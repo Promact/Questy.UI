@@ -21,7 +21,7 @@
     "@tinymce/tinymce-angular": "^5.0.0",
     "@types/lodash": "^4.14.178",
     "base64-js": "^1.5.1",
-    "bootstrap": "^4.6.1",
+    "bootstrap": "^5.0.0",
     "brace": "^0.11.1",
     "buffer": "^6.0.3",
     "chart.js": "^3.7.0",
