@@ -5,7 +5,7 @@
   "dependencies": {
     "@angular/animations": "13.2.0",
     "@angular/cdk": "13.2.0",
-    "@angular/cli": "^13.2.1",
+    "@angular/cli": "^20.3.15",
     "@angular/common": "13.2.0",
     "@angular/compiler": "13.2.0",
     "@angular/compiler-cli": "13.2.0",
@@ -34,7 +34,7 @@
     "ieee754": "^1.2.1",
     "jspdf": "2.5.0",
     "jspdf-autotable": "^3.5.23",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.23",
     "ng2-charts": "^3.0.8",
     "ngx-ace-editor-wrapper": "^9.1.12",
     "ngx-bootstrap": "^8.0.0",
